@@ -120,56 +120,56 @@ jobs:
           # For posting a rich message using Block Kit
           payload: |
             {
-            "attachments": [
-              {
-                "blocks": [
-                  {
-                    "type": "header",
-                    "text": {
-                      "type": "plain_text",
-                      "text": "Github Action",
-                      "emoji": true
+              "attachments": [
+                {
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Github Action",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Name:*\n ${{ github.event_name }} "
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Type:*\n ${{ github.event.action }} ${{ github.event.ref_type }} ${{ github.event.ref }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch:*\n ${{ github.event.pull_request.head.ref }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Status:*\n `${{ job.status }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                        }
+                      ]
                     }
-                  },
-                  {
-                    "type": "section",
-                    "fields": [
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Name:*\n ${{ github.event_name }} "
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Type:*\n ${{ github.event.action }} ${{ github.event.ref_type }} ${{ github.event.ref }}"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "section",
-                    "fields": [
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Branch:*\n ${{ github.event.pull_request.head.ref }}"
-                      },
-                      {
-                        "type": "mrkdwn",
-                        "text": "*Status:*\n `${{ job.status }}`"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "context",
-                    "elements": [
-                      {
-                        "type": "mrkdwn",
-                        "text": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
+                  ]
+                }
+              ]
+            }
 
 #      - name: "Finalizing Tasks"
 #        if: success()
