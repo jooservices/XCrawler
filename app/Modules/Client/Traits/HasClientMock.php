@@ -29,9 +29,14 @@ trait HasClientMock
      *
      * @throws Exception
      */
-    public function addMockResponse(int $status = 200, array $headers = [], mixed $body = null, string $version = '1.1', string $reason = null): self
-    {
-        if (!isset($this->mocking)) {
+    public function addMockResponse(
+        int $status = 200,
+        array $headers = [],
+        mixed $body = null,
+        string $version = '1.1',
+        string $reason = null
+    ): self {
+        if (! isset($this->mocking)) {
             throw new Exception('Mocking is not enabled');
         }
 
@@ -49,7 +54,7 @@ trait HasClientMock
         ResponseInterface $response = null,
         Throwable $previous = null
     ): self {
-        if (!isset($this->mocking)) {
+        if (! isset($this->mocking)) {
             throw new Exception('Mocking is not enabled');
         }
 

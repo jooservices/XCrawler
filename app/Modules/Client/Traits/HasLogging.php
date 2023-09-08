@@ -11,8 +11,11 @@ trait HasLogging
 {
     protected LoggerInterface $logger;
 
-    public function enableLogging(LoggerInterface $logger, string $format = MessageFormatter::SHORT, string $level = LogLevel::INFO): self
-    {
+    public function enableLogging(
+        LoggerInterface $logger,
+        string $format = MessageFormatter::SHORT,
+        string $level = LogLevel::INFO
+    ): self {
         $this->logger = $logger;
 
         /**
