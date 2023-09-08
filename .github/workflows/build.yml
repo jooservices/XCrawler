@@ -10,73 +10,77 @@ on:
 
 jobs:
 
-#  code_standards:
-#    name: Code standards check
-#    strategy:
-#      matrix:
-#        lint: [ phpstan, phpmd, phpcs ]
-#
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Setup PHP with pre-release PECL extension
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: '8.2'
-#          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
-#          coverage: pcov
-#
-#      - name: Setup application
-#        if: success()
-#        run: |
-#          php -r "file_exists('.env') || copy('.env.example', '.env');"
-#          composer install --no-ansi --no-scripts --no-progress --prefer-dist
-#
-#      - name: Lint
-#        run: composer ${{ matrix.lint }}
-#
-#  tests:
-#    name: Execute UnitTest
-#
-#    runs-on: ubuntu-latest
-#
-#    needs: [ code_standards ]
-#
-#    services:
-#      mariadb:
-#        image: mariadb
-#        ports:
-#          - 3306:3306
-#        env:
-#          MARIADB_DATABASE: laravel
-#          MARIADB_PASSWORD: root
-#          MARIADB_ROOT_PASSWORD: root
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Setup PHP with pre-release PECL extension
-#        uses: shivammathur/setup-php@v2
-#        with:
-#          php-version: '8.2'
-#          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
-#          coverage: pcov
-#
-#      - name: Setup application
-#        if: success()
-#        run: |
-#          php -r "file_exists('.env') || copy('.env.example', '.env');"
-#          composer install --no-ansi --no-scripts --no-progress --prefer-dist
-#          php artisan key:generate
-#          chmod -R 777 storage bootstrap/cache
-#          php artisan config:clear
-#          php artisan migrate:fresh
-#
-#      - name: Execute tests (Unit and Feature tests) via PHPUnit
-#        if: success()
-#        run: composer test
+  code_standards:
+    name: Code standards check
+    strategy:
+      matrix:
+        lint: [ phpstan, phpmd, phpcs ]
+
+    runs-on:
+      - self-hosted
+      - ubuntu
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP with pre-release PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
+          coverage: pcov
+
+      - name: Setup application
+        if: success()
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          composer install --no-ansi --no-scripts --no-progress --prefer-dist
+
+      - name: Lint
+        run: composer ${{ matrix.lint }}
+
+  tests:
+    name: Execute UnitTest
+
+    runs-on:
+      - self-hosted
+      - ubuntu
+
+    needs: [ code_standards ]
+
+    services:
+      mariadb:
+        image: mariadb
+        ports:
+          - 3306:3306
+        env:
+          MARIADB_DATABASE: laravel
+          MARIADB_PASSWORD: root
+          MARIADB_ROOT_PASSWORD: root
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP with pre-release PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
+          coverage: pcov
+
+      - name: Setup application
+        if: success()
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          composer install --no-ansi --no-scripts --no-progress --prefer-dist
+          php artisan key:generate
+          chmod -R 777 storage bootstrap/cache
+          php artisan config:clear
+          php artisan migrate:fresh
+
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        if: success()
+        run: composer test
 
   #      - name: Coverage
   #        uses: actions/upload-artifact@v3
@@ -87,8 +91,10 @@ jobs:
 
   finalizing_build:
     name: "All Parallel Tests passed"
-    runs-on: ubuntu-latest
-    #needs: [ tests ]
+    runs-on:
+      - self-hosted
+      - ubuntu
+    needs: [ tests ]
 
     steps:
       #      - name: Download build from artifact
@@ -171,7 +177,7 @@ jobs:
               ]
             }
 
-#      - name: "Finalizing Tasks"
-#        if: success()
-#        run: |
-#          echo "Build finished"
+      - name: "Finalizing Tasks"
+        if: success()
+        run: |
+          echo "Build finished"
