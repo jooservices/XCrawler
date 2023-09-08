@@ -143,6 +143,15 @@ jobs:
                   ]
                 },
                 {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Status:*\n ${{ job.status }}"
+                    }
+                  ]
+                },
+                {
                   "type": "divider"
                 },
                 {
