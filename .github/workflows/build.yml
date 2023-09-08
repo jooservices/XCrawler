@@ -125,7 +125,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Github Action completed",
+                    "text": "Github Action",
                     "emoji": true
                   }
                 },
@@ -147,7 +147,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Status:*\n ${{ job.status }}"
+                      "text": "*Status:*\n ${{ job.status }} ${{ steps.jobs.outputs.html_url }}"
                     }
                   ]
                 },
