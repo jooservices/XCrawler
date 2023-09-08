@@ -86,12 +86,12 @@ jobs:
         if: success()
         run: composer test
 
-  #      - name: Coverage
-  #        uses: actions/upload-artifact@v3
-  #        if: success()
-  #        with:
-  #          name: coverage-reports
-  #          path: coverage-tests-${{ matrix.lint }}.xml
+      - name: Coverage
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: coverage-reports
+          path: coverage-tests.xml
 
   finalizing_build:
     name: "All Parallel Tests passed"
@@ -180,6 +180,7 @@ jobs:
                 }
               ]
             }
+
 
       - name: "Finalizing Tasks"
         if: success()
