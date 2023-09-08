@@ -122,7 +122,6 @@ jobs:
             {
               "attachments": [
                 {
-                  "color": "${{ job.status == 'success' && 'good' || 'danger' }}",
                   "blocks": [
                     {
                       "type": "header",
