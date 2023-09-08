@@ -147,12 +147,13 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
+                      "text": "*Branch:*\n ${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+                    },
+                    {
+                      "type": "mrkdwn",
                       "text": "*Status:*\n ${{ job.status }} ${{ steps.jobs.outputs.html_url }} ${{ github.run_id }} ${{ runner.name }}"
                     }
                   ]
-                },
-                {
-                  "type": "divider"
                 },
                 {
                   "type": "context",
