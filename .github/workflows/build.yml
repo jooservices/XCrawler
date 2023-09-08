@@ -1,5 +1,5 @@
 # https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
-name: Baristaschool - Build & Tests
+name: XCrawler - Build & Tests
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 on:
