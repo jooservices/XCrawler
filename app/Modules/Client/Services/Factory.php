@@ -23,7 +23,7 @@ class Factory implements FactoryInterface, MockingInterface
     protected Client $client;
 
     /**
-     * @var object[]
+     * @phpstan-ignore-next-line
      */
     protected array $history = [];
 
@@ -60,6 +60,9 @@ class Factory implements FactoryInterface, MockingInterface
         return $this;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getHistory(Client $client): array
     {
         return $this->history[spl_object_id($client)] ?? [];
