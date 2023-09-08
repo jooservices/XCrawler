@@ -122,6 +122,7 @@ jobs:
             {
               "attachments": [
                 {
+                  "color": "${{ job.status }}",
                   "blocks": [
                     {
                       "type": "header",
