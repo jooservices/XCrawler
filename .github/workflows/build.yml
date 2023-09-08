@@ -60,6 +60,11 @@ jobs:
           MARIADB_PASSWORD: root
           MARIADB_ROOT_PASSWORD: root
 
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+
     steps:
       - uses: actions/checkout@v4
 
