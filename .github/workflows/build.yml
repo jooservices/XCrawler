@@ -147,7 +147,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Branch:*\n ${{ GITHUB_HEAD_REF }}:${{ GITHUB_REF#refs/heads/ }}"
+                      "text": "*Branch:*\n ${{ github.event.pull_request.head.ref }}"
                     },
                     {
                       "type": "mrkdwn",
