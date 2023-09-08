@@ -105,13 +105,17 @@ jobs:
       #          directory: ./reports
 
       - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
         env:
-          SLACK_USERNAME: "GitHub Actions"
-          SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: 'Unit Tests passed'
-          SLACK_TITLE: "GitHub Actions"
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+          channel-id: 'xcrawler-github'
+          # For posting a simple plain text message
+          slack-message: "Unit tests passed successfully"
 
       - name: "Finalizing Tasks"
         if: success()
