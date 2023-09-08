@@ -16,13 +16,17 @@ jobs:
       matrix:
         lint: [ phpstan, phpmd, phpcs ]
 
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup PHP with pre-release PECL extension
         uses: shivammathur/setup-php@v2
+        env:
+          runner: self-hosted
         with:
           php-version: '8.2'
           extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
@@ -40,7 +44,9 @@ jobs:
   tests:
     name: Execute UnitTest
 
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu
 
     needs: [ code_standards ]
 
@@ -50,8 +56,8 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MARIADB_PASSWORD: root
           MARIADB_DATABASE: laravel
+          MARIADB_PASSWORD: root
           MARIADB_ROOT_PASSWORD: root
 
     steps:
@@ -59,6 +65,8 @@ jobs:
 
       - name: Setup PHP with pre-release PECL extension
         uses: shivammathur/setup-php@v2
+        env:
+          runner: self-hosted
         with:
           php-version: '8.2'
           extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
@@ -87,7 +95,9 @@ jobs:
 
   finalizing_build:
     name: "All Parallel Tests passed"
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ubuntu
     needs: [ tests ]
 
     steps:
@@ -103,6 +113,73 @@ jobs:
       #        with:
       #          token: ${{ secrets.CODECOV_TOKEN }}
       #          directory: ./reports
+
+      - name: Slack Notification
+        id: slack
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+          channel-id: 'xcrawler-github'
+
+          # This data can be any valid JSON from a previous step in the GitHub Action
+          # For posting a rich message using Block Kit
+          payload: |
+            {
+              "attachments": [
+                {
+                  "blocks": [
+                    {
+                      "type": "header",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Github Action",
+                        "emoji": true
+                      }
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Name:*\n ${{ github.event_name }} "
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Type:*\n ${{ github.event.action }} ${{ github.event.ref_type }} ${{ github.event.ref }}"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch:*\n ${{ github.event.pull_request.head.ref }}"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Status:*\n `${{ job.status }}`"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "context",
+                      "elements": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
 
       - name: "Finalizing Tasks"
         if: success()
