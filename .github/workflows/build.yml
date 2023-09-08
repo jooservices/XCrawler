@@ -50,9 +50,10 @@ jobs:
         ports:
           - 3306:3306
         env:
-          MARIADB_PASSWORD: root
           MARIADB_DATABASE: laravel
+          MARIADB_PASSWORD: root
           MARIADB_ROOT_PASSWORD: root
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
 
     steps:
       - uses: actions/checkout@v4
