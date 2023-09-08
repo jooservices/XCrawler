@@ -1,5 +1,5 @@
 # https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
-name: Baristaschool - Build & Tests
+name: XCrawler - Build & Tests
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 on:
@@ -103,6 +103,14 @@ jobs:
       #        with:
       #          token: ${{ secrets.CODECOV_TOKEN }}
       #          directory: ./reports
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_COLOR: ${{ job.status }}
+          SLACK_MESSAGE: 'Unit Tests passed
+          SLACK_TITLE: "GitHub Actions"
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
       - name: "Finalizing Tasks"
         if: success()
