@@ -20,7 +20,7 @@ class FactoryTest extends TestCase
         $this->factory = app(Factory::class);
     }
 
-    public function testEnableMockingWithoutQueue()
+    public function testEnableMockingWithoutQueue(): void
     {
         $this->expectException(OutOfBoundsException::class);
         $client = $this->factory
@@ -30,7 +30,7 @@ class FactoryTest extends TestCase
         $client->request('GET', $this->faker->url);
     }
 
-    public function testMockingException()
+    public function testMockingException(): void
     {
         $this->expectException(RequestException::class);
         $client = $this->factory
@@ -43,7 +43,7 @@ class FactoryTest extends TestCase
         $client->request('GET', $this->faker->url);
     }
 
-    public function testMockingRequestSuccess()
+    public function testMockingRequestSuccess(): void
     {
         $client = $this->factory
             ->enableMocking()
@@ -73,7 +73,7 @@ class FactoryTest extends TestCase
         $client->request('GET', $this->faker->url);
     }
 
-    public function testRequestFailed()
+    public function testRequestFailed(): void
     {
         $this->expectException(ServerException::class);
         $client = $this->factory

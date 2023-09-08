@@ -2,6 +2,7 @@
 
 namespace App\Modules\Client\Traits;
 
+use App\Modules\Client\Services\Factory;
 use Illuminate\Support\Collection;
 
 trait HasOptions
@@ -13,6 +14,11 @@ trait HasOptions
         $this->options = collect();
     }
 
+    /**
+     * @phpstan-ignore-next-line
+     *
+     * @return HasOptions|Factory
+     */
     public function addOptions(array $options): self
     {
         $this->options->merge($options);
@@ -20,16 +26,21 @@ trait HasOptions
         return $this;
     }
 
+    public function getOptions(): Collection
+    {
+        return $this->options;
+    }
+
+    /**
+     * @phpstan-ignore-next-line
+     *
+     * @return HasOptions|Factory
+     */
     public function setOptions(array $options): self
     {
         $this->options = collect($options);
 
         return $this;
-    }
-
-    public function getOptions(): Collection
-    {
-        return $this->options;
     }
 
     public function getOption(string $key, mixed $default = null): mixed
@@ -49,6 +60,10 @@ trait HasOptions
         return $this;
     }
 
+    /**
+     * @phpstan-ignore-next-line
+     * @return array
+     */
     public function getOptionsArray(): array
     {
         return $this->options->toArray();

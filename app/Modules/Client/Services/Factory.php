@@ -2,31 +2,30 @@
 
 namespace App\Modules\Client\Services;
 
+use App\Modules\Client\Interfaces\FactoryInterface;
+use App\Modules\Client\Interfaces\MockingInterface;
+use App\Modules\Client\Traits\HasClientMock;
+use App\Modules\Client\Traits\HasLogging;
 use App\Modules\Client\Traits\HasOptions;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Response;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
-use Throwable;
 
-class Factory
+class Factory implements FactoryInterface, MockingInterface
 {
+    use HasClientMock;
+    use HasLogging;
     use HasOptions;
 
-    private HandlerStack $handler;
+    protected HandlerStack $handler;
 
-    private MockHandler $mocking;
+    protected Client $client;
 
-    private LoggerInterface $logger;
-
-    private Client $client;
+    /**
+     * @phpstan-ignore-next-line
+     */
+    protected array $history = [];
 
     public function __construct()
     {
@@ -41,36 +40,11 @@ class Factory
         return $this;
     }
 
-    public function enableMocking(): self
-    {
-        $this->mocking = app(MockHandler::class);
-        $this->reset();
-
-        return $this;
-    }
-
-    public function addMockResponse(int $status = 200, array $headers = [], $body = null, string $version = '1.1', string $reason = null): self
-    {
-        if (! isset($this->mocking)) {
-            throw new \Exception('Mocking is not enabled');
-        }
-
-        $this->mocking->append(new Response($status, $headers, $body, $version, $reason));
-
-        return $this;
-    }
-
-    public function addMockRequestException(string $message, RequestInterface $request, ResponseInterface $response = null, Throwable $previous = null): self
-    {
-        if (! isset($this->mocking)) {
-            throw new \Exception('Mocking is not enabled');
-        }
-
-        $this->mocking->append(new RequestException($message, $request, $response, $previous));
-
-        return $this;
-    }
-
+    /**
+     * @SuppressWarnings(PHPMD)
+     *
+     * @return $this
+     */
     public function enableRetries(int $maxRetries = 3, int $delayInSec = 1, int $minErrorCode = 500): self
     {
         $decider = function ($retries, $_, $response) use ($maxRetries, $minErrorCode) {
@@ -89,14 +63,10 @@ class Factory
         return $this;
     }
 
-    public function enableLogging(LoggerInterface $logger, string $format = MessageFormatter::SHORT, string $level = LogLevel::INFO): self
-    {
-        $this->logger = $logger;
-
-        return $this->withMiddleware(Middleware::log($this->logger, new MessageFormatter($format), $level), 'log');
-    }
-
-    public function getHistory($client): array
+    /**
+     * @phpstan-ignore-next-line
+     */
+    public function getHistory(Client $client): array
     {
         return $this->history[spl_object_id($client)] ?? [];
     }
