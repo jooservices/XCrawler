@@ -18,7 +18,7 @@ trait HasLogging
     ): self {
         $this->logger = $logger;
 
-        /**
+        /*
          * @phpstan-ignore-next-line
          */
         return $this->withMiddleware(Middleware::log($this->logger, new MessageFormatter($format), $level), 'log');

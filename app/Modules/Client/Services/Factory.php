@@ -73,7 +73,7 @@ class Factory implements FactoryInterface, MockingInterface
         $this->client = new Client(array_merge(['handler' => $this->handler], $this->getOptionsArray()));
 
         if (isset($this->mocking)) {
-            /**
+            /*
              * @link https://docs.guzzlephp.org/en/stable/testing.html#history-middleware
              */
             $this->history[$id = spl_object_id($this->client)] = [];
