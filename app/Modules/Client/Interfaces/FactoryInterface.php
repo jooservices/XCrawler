@@ -12,6 +12,10 @@ interface FactoryInterface
 
     public function withMiddleware(callable $middleware, string $name = ''): self;
 
+    /**
+* @param Client $client
+* @return array<object>
+     */
     public function getHistory(Client $client): array;
 
     public function make(): Client;

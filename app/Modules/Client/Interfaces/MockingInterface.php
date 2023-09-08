@@ -9,6 +9,10 @@ use Throwable;
 interface MockingInterface
 {
     public function enableMocking(): self;
+
+    /**
+     * @param  array<mixed>  $headers
+     */
     public function addMockResponse(
         int $status = 200,
         array $headers = [],

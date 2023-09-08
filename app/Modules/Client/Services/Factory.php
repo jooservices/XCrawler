@@ -40,18 +40,15 @@ class Factory implements FactoryInterface, MockingInterface
         return $this;
     }
 
-    /**
-     * @SuppressWarnings(PHPMD)
-     *
-     * @return $this
-     */
     public function enableRetries(int $maxRetries = 3, int $delayInSec = 1, int $minErrorCode = 500): self
     {
         $decider = function ($retries, $_, $response) use ($maxRetries, $minErrorCode) {
-            return $retries < $maxRetries && $response instanceof ResponseInterface && $response->getStatusCode() >= $minErrorCode;
+            return $retries < $maxRetries
+                && $response instanceof ResponseInterface
+                && $response->getStatusCode() >= $minErrorCode;
         };
 
-        $increasingDelay = fn ($attempt) => $attempt * $delayInSec * 1000;
+        $increasingDelay = fn($attempt) => $attempt * $delayInSec * 1000;
 
         return $this->withMiddleware(Middleware::retry($decider, $increasingDelay), 'retry');
     }
@@ -63,9 +60,6 @@ class Factory implements FactoryInterface, MockingInterface
         return $this;
     }
 
-    /**
-     * @phpstan-ignore-next-line
-     */
     public function getHistory(Client $client): array
     {
         return $this->history[spl_object_id($client)] ?? [];
