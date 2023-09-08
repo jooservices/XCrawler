@@ -134,11 +134,11 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Type:*\n${{ github.event_name }} "
+                      "text": "*Type:*\n ${{ github.event_name }} "
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Ref:*\n${{ github.event.ref }}"
+                      "text": "*Ref:*\n ${{ github.event.ref }}"
                     }
                   ]
                 },
