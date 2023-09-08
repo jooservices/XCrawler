@@ -109,6 +109,7 @@ jobs:
         uses: slackapi/slack-github-action@v1.24.0
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
           # Slack channel id, channel name, or user id to post message.
           # See also: https://api.slack.com/methods/chat.postMessage#channels
@@ -116,10 +117,19 @@ jobs:
           channel-id: 'xcrawler-github'
 
           # This data can be any valid JSON from a previous step in the GitHub Action
+          # For posting a rich message using Block Kit
           payload: |
             {
-              "key": "value",
-              "foo": "bar"
+              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+                  }
+                }
+              ]
             }
 
       - name: "Finalizing Tasks"
