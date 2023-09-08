@@ -114,8 +114,13 @@ jobs:
           # See also: https://api.slack.com/methods/chat.postMessage#channels
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: 'xcrawler-github'
-          # For posting a simple plain text message
-          slack-message: "Unit tests passed successfully"
+
+          # This data can be any valid JSON from a previous step in the GitHub Action
+          payload: |
+            {
+              "key": "value",
+              "foo": "bar"
+            }
 
       - name: "Finalizing Tasks"
         if: success()
