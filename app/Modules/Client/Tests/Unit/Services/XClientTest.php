@@ -4,9 +4,11 @@ namespace App\Modules\Client\Tests\Unit\Services;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\Client\Services\XClient;
-use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
+use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
 
@@ -20,7 +22,7 @@ class XClientTest extends TestCase
         $url = $this->faker->url;
         $this->instance(
             Client::class,
-            \Mockery::mock(Client::class, function (MockInterface $mock) use ($statusCode, $header, $content) {
+            Mockery::mock(Client::class, function (MockInterface $mock) use ($statusCode, $header, $content) {
                 $mock->shouldReceive('request')
                     ->andReturn(
                         new Response(
@@ -32,7 +34,7 @@ class XClientTest extends TestCase
             })
         );
 
-        $this->instance(Factory::class, \Mockery::mock(Factory::class, function (MockInterface $mock) {
+        $this->instance(Factory::class, Mockery::mock(Factory::class, function (MockInterface $mock) {
             $mock->shouldReceive('enableRetries')
                 ->andReturnSelf();
 
@@ -79,13 +81,17 @@ class XClientTest extends TestCase
         $url = $this->faker->url;
         $this->instance(
             Client::class,
-            \Mockery::mock(Client::class, function (MockInterface $mock) {
+            Mockery::mock(Client::class, function (MockInterface $mock) {
                 $mock->shouldReceive('request')
-                    ->andThrow(new Exception('Error'));
+                    ->andThrow(new ClientException(
+                        'Client Exception',
+                        new Request('GET', $this->faker->url),
+                        new Response(500, [], 'Internal Server Error')
+                    ));
             })
         );
 
-        $this->instance(Factory::class, \Mockery::mock(Factory::class, function (MockInterface $mock) {
+        $this->instance(Factory::class, Mockery::mock(Factory::class, function (MockInterface $mock) {
             $mock->shouldReceive('enableRetries')
                 ->andReturnSelf();
 
@@ -100,9 +106,13 @@ class XClientTest extends TestCase
 
         $this->assertDatabaseHas('request_logs', [
             'url' => $url,
+            'method' => 'GET',
+            'status_code' => 500,
             'is_success' => false,
         ], 'mongodb');
 
-        $this->assertNull($response->getData());
+        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertFalse($response->isSuccessful());
+        $this->assertEquals('Internal Server Error', $response->getData());
     }
 }

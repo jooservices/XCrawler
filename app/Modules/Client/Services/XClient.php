@@ -86,6 +86,7 @@ class XClient
             ]);
         } catch (\Exception $e) {
             $data = ['completed_at' => Carbon::now(),];
+
             if (is_subclass_of($e, RequestException::class)) {
                 $xresponse->setResponse($e->getResponse());
                 $data = array_merge($data, [
