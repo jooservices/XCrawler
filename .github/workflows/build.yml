@@ -107,6 +107,7 @@ jobs:
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
+          SLACK_USERNAME: "GitHub Actions"
           SLACK_COLOR: ${{ job.status }}
           SLACK_MESSAGE: 'Unit Tests passed'
           SLACK_TITLE: "GitHub Actions"
