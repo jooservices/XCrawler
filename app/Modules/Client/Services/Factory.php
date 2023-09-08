@@ -70,7 +70,8 @@ class Factory implements FactoryInterface, MockingInterface
 
     public function make(): Client
     {
-        $this->client = new Client(array_merge(['handler' => $this->handler], $this->getOptionsArray()));
+        $this->client =
+            new Client(array_merge(['handler' => $this->handler], $this->getOptionsArray()));
 
         if (isset($this->mocking)) {
             /*

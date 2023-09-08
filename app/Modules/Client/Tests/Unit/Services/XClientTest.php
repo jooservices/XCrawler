@@ -4,6 +4,7 @@ namespace App\Modules\Client\Tests\Unit\Services;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\Client\Services\XClient;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Mockery\MockInterface;
@@ -21,13 +22,13 @@ class XClientTest extends TestCase
             Client::class,
             \Mockery::mock(Client::class, function (MockInterface $mock) use ($statusCode, $header, $content) {
                 $mock->shouldReceive('request')
-                ->andReturn(
-                    new Response(
-                        $statusCode,
-                        $header,
-                        $content
-                    )
-                );
+                    ->andReturn(
+                        new Response(
+                            $statusCode,
+                            $header,
+                            $content
+                        )
+                    );
             })
         );
 
@@ -71,5 +72,37 @@ class XClientTest extends TestCase
                 'content' => json_encode(['foo' => 'bar']),
             ],
         ];
+    }
+
+    public function testRequestReturnException()
+    {
+        $url = $this->faker->url;
+        $this->instance(
+            Client::class,
+            \Mockery::mock(Client::class, function (MockInterface $mock) {
+                $mock->shouldReceive('request')
+                    ->andThrow(new Exception('Error'));
+            })
+        );
+
+        $this->instance(Factory::class, \Mockery::mock(Factory::class, function (MockInterface $mock) {
+            $mock->shouldReceive('enableRetries')
+                ->andReturnSelf();
+
+            $mock->shouldReceive('make')
+                ->andReturn(app(Client::class));
+
+            $mock->shouldReceive('enableLogging');
+        }));
+
+        $client = app(XClient::class);
+        $response = $client->get($url);
+
+        $this->assertDatabaseHas('request_logs', [
+            'url' => $url,
+            'is_success' => false,
+        ], 'mongodb');
+
+        $this->assertNull($response->getData());
     }
 }
