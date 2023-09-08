@@ -146,6 +146,15 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
+                          "text": "${{ github.event.head_commit.message }}"
+                        },
+                      ]
+                    },
+                    {
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
                           "text": "*Name:*\n ${{ github.event_name }} "
                         },
                         {
