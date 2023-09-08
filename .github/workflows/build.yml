@@ -147,7 +147,7 @@ jobs:
                   "fields": [
                     {
                       "type": "mrkdwn",
-                      "text": "*Status:*\n ${{ job.status }} ${{ steps.jobs.outputs.html_url }} ${{ github.run_id }}"
+                      "text": "*Status:*\n ${{ job.status }} ${{ steps.jobs.outputs.html_url }} ${{ github.run_id }} ${{ runner.name }}"
                     }
                   ]
                 },
