@@ -108,7 +108,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: 'Unit Tests passed
+          SLACK_MESSAGE: 'Unit Tests passed'
           SLACK_TITLE: "GitHub Actions"
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
