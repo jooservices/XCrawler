@@ -2,14 +2,20 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
+         backupStaticAttributes="false"
+
          colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
 >
+
     <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
-        </testsuite>
-        <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
+        <testsuite name="Client">
+            <directory suffix="Test.php">./app/Modules/Client/Tests/Feature</directory>
+            <directory suffix="Test.php">./app/Modules/Client/Tests/Unit</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
