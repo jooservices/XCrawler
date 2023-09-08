@@ -20,6 +20,23 @@ class FactoryTest extends TestCase
         $this->factory = app(Factory::class);
     }
 
+    public function testAddMockResponseWithoutMocking(): void
+    {
+        $this->expectException(\Exception::class);
+
+        $this->factory->addMockResponse();
+    }
+
+    public function testAddMockRequestExceptionWithoutMocking(): void
+    {
+        $this->expectException(\Exception::class);
+
+        $this->factory->addMockRequestException(
+            'Error Communicating with Server',
+            new Request('GET', $this->faker->url)
+        );
+    }
+
     public function testEnableMockingWithoutQueue(): void
     {
         $this->expectException(OutOfBoundsException::class);

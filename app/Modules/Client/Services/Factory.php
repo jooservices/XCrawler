@@ -23,7 +23,7 @@ class Factory implements FactoryInterface, MockingInterface
     protected Client $client;
 
     /**
-     * @phpstan-ignore-next-line
+     * @var object[]
      */
     protected array $history = [];
 
@@ -48,7 +48,7 @@ class Factory implements FactoryInterface, MockingInterface
                 && $response->getStatusCode() >= $minErrorCode;
         };
 
-        $increasingDelay = fn($attempt) => $attempt * $delayInSec * 1000;
+        $increasingDelay = fn ($attempt) => $attempt * $delayInSec * 1000;
 
         return $this->withMiddleware(Middleware::retry($decider, $increasingDelay), 'retry');
     }
