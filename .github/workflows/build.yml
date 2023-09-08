@@ -138,7 +138,7 @@ jobs:
                     },
                     {
                       "type": "mrkdwn",
-                      "text": "*Ref:*\n ${{ github.event.ref }}"
+                      "text": "*Ref:*\n ${{ github.event.action }}"
                     }
                   ]
                 },
