@@ -1,21 +1,20 @@
 <?php
 
-namespace $NAMESPACE$;
+namespace App\Modules\JAV\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Database\Eloquent\Factory;
 
-class $CLASS$ extends ServiceProvider
+class JAVServiceProvider extends ServiceProvider
 {
     /**
      * @var string $moduleName
      */
-    protected $moduleName = '$MODULE$';
+    protected $moduleName = 'JAV';
 
     /**
      * @var string $moduleNameLower
      */
-    protected $moduleNameLower = '$LOWER_NAME$';
+    protected $moduleNameLower = 'jav';
 
     /**
      * Boot the application events.
@@ -25,7 +24,7 @@ class $CLASS$ extends ServiceProvider
     public function boot()
     {
         $this->registerConfig();
-        $this->loadMigrationsFrom(module_path($this->moduleName, '$MIGRATIONS_PATH$'));
+        $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
     /**
