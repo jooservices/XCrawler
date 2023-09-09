@@ -36,11 +36,11 @@ trait HasClientMock
         string $version = '1.1',
         string $reason = null
     ): self {
-        if (! isset($this->mocking)) {
+        if (!isset($this->mocking)) {
             throw new Exception('Mocking is not enabled');
         }
 
-        /**
+        /*
          * @phpstan-ignore-next-line
          */
         $this->mocking->append(new Response($status, $headers, $body, $version, $reason));
@@ -54,7 +54,7 @@ trait HasClientMock
         ResponseInterface $response = null,
         Throwable $previous = null
     ): self {
-        if (! isset($this->mocking)) {
+        if (!isset($this->mocking)) {
             throw new Exception('Mocking is not enabled');
         }
 

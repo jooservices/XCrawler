@@ -60,6 +60,11 @@ jobs:
           MARIADB_PASSWORD: root
           MARIADB_ROOT_PASSWORD: root
 
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+
     steps:
       - uses: actions/checkout@v4
 
@@ -123,7 +128,7 @@ jobs:
           # Slack channel id, channel name, or user id to post message.
           # See also: https://api.slack.com/methods/chat.postMessage#channels
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
-          channel-id: 'xcrawler-github'
+          channel-id: 'xcrawler-notifications'
 
           # This data can be any valid JSON from a previous step in the GitHub Action
           # For posting a rich message using Block Kit
@@ -136,7 +141,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": "Github Action",
+                        "text": "PR passed",
                         "emoji": true
                       }
                     },
