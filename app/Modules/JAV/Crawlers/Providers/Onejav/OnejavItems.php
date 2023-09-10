@@ -6,6 +6,7 @@ use App\Modules\Client\Responses\XResponse;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\JAV\Crawlers\Providers\AbstractProvider;
 use Carbon\Carbon;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -20,10 +21,13 @@ class OnejavItems extends AbstractProvider
 
     protected int $lastPage = 1;
 
-    public function crawl(string $url, array $data = []): ?Collection
+    /**
+     * @throws GuzzleException
+     */
+    public function crawl(string $url, array $data = [], string $method = 'GET'): ?Collection
     {
         $this->url = $url;
-        $this->response = $this->client->get($url, $data);
+        $this->response = $this->client->request($method, $url, $data);
 
         if (! $this->isSuccess($this->response)) {
             return null;
