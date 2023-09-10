@@ -4,7 +4,7 @@ namespace App\Modules\JAV\Tests\Unit\Crawlers;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\JAV\Crawlers\Providers\CrawlerManager;
-use App\Modules\JAV\Crawlers\Providers\Onejav\OnejavItems;
+use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
@@ -43,7 +43,7 @@ class OnejavItemsTest extends TestCase
         }));
 
         $response = app(CrawlerManager::class)
-            ->setProvider(app(OnejavItems::class))
+            ->setProvider(app(Items::class))
             ->crawl($url, [], 'GET');
 
         $this->assertInstanceOf(Collection::class, $response);

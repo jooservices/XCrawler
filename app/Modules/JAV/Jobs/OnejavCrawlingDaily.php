@@ -3,15 +3,17 @@
 namespace App\Modules\JAV\Jobs;
 
 use App\Modules\JAV\Crawlers\Providers\CrawlerManager;
+use App\Modules\JAV\Crawlers\Providers\Onejav\Daily;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
 use App\Modules\JAV\Repositories\Onejav;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 
-class OnejavCrawlingItems implements ShouldQueue
+class OnejavCrawlingDaily implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -23,13 +25,13 @@ class OnejavCrawlingItems implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(private string $url, private array $payload = [])
+    public function __construct()
     {
     }
 
     public function uniqueId(): string
     {
-        return md5(serialize($this->url, $this->payload));
+        return Carbon::now()->format('Y/m/d');
     }
 
     /**
@@ -39,13 +41,13 @@ class OnejavCrawlingItems implements ShouldQueue
      */
     public function handle()
     {
-        $response = app(CrawlerManager::class)
-            ->setProvider(app(Items::class))
-            ->crawl($this->url, $this->payload, 'GET');
-
         $repository = app(Onejav::class);
+        $daily = app(Daily::class);
+        $items = app(CrawlerManager::class)
+            ->setProvider($daily)
+            ->crawl($daily->getUrl(), [], 'GET');
 
-        $response->each(function ($item) use ($repository) {
+        $items->each(function ($item) use ($repository) {
             $repository->firstOrCreate($item->getProperties());
         });
     }

@@ -21,7 +21,7 @@ use Carbon\Carbon;
  * @property float $size
  * @property string $torrent
  */
-class OnejavItemEntity
+class Entity
 {
     use HasProperties;
 

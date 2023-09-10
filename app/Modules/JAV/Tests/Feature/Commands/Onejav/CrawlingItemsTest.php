@@ -14,6 +14,8 @@ class CrawlingItemsTest extends TestCase
 
         $this->artisan('onejav:crawling-items ' . $this->faker->url);
 
-        Bus::assertDispatched(OnejavCrawlingItems::class);
+        Bus::assertDispatched(OnejavCrawlingItems::class, function ($job) {
+            return $job->queue === 'onejav';
+        });
     }
 }

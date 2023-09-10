@@ -17,4 +17,9 @@ class CrawlerManager
     {
         return $this->provider->crawl($url, $data, $method);
     }
+
+    public function getItems(): mixed
+    {
+        return $this->provider->getItems();
+    }
 }
