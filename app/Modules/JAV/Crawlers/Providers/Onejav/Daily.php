@@ -10,7 +10,6 @@ class Daily extends Items
 {
     private Carbon $date;
 
-
     public function __construct(protected XClient $client)
     {
         parent::__construct($client);

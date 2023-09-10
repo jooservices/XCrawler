@@ -19,8 +19,6 @@ class Items extends AbstractProvider
 
     protected string $url;
 
-    protected int $lastPage = 1;
-
     /**
      * @throws GuzzleException
      */

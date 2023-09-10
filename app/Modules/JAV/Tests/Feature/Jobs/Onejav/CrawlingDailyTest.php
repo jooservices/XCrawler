@@ -3,6 +3,7 @@
 namespace App\Modules\JAV\Tests\Feature\Jobs\Onejav;
 
 use App\Modules\Client\Services\Factory;
+use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavItemCreated;
 use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
 use App\Modules\JAV\Jobs\OnejavCrawlingItems;
@@ -19,7 +20,12 @@ class CrawlingDailyTest extends TestCase
     public function testHandle()
     {
         Onejav::truncate();
-        Event::fake(OnejavItemCreated::class);
+        Event::fake(
+            [
+                OnejavItemCreated::class,
+                OnejavCompleted::class,
+            ]
+        );
 
         $this->instance(
             Client::class,
@@ -55,6 +61,7 @@ class CrawlingDailyTest extends TestCase
         OnejavCrawlingDaily::dispatch();
 
         Event::assertDispatched(OnejavItemCreated::class, 60);
+        Event::assertDispatched(OnejavCompleted::class);
         $this->assertDatabaseCount('onejav', 60, 'mongodb');
     }
 }

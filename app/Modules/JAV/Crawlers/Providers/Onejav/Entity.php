@@ -2,7 +2,7 @@
 
 namespace App\Modules\JAV\Crawlers\Providers\Onejav;
 
-use App\Modules\JAV\Traits\HasProperties;
+use App\Modules\Core\Traits\HasProperties;
 use Carbon\Carbon;
 
 /**

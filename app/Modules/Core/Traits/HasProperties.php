@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\JAV\Traits;
+namespace App\Modules\Core\Traits;
 
 use Illuminate\Support\Collection;
 

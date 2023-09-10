@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 abstract class AbstractProvider implements CrawlerProviderInterface
 {
     protected Collection $items;
+    protected int $lastPage = 1;
 
     public function __construct(protected XClient $client)
     {
@@ -18,6 +19,11 @@ abstract class AbstractProvider implements CrawlerProviderInterface
     public function getItems(): Collection
     {
         return $this->items;
+    }
+
+    public function getLastPage(): int
+    {
+        return $this->lastPage;
     }
 
     abstract protected function isSuccess(XResponse $response): bool;

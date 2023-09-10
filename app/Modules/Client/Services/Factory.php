@@ -6,7 +6,7 @@ use App\Modules\Client\Interfaces\FactoryInterface;
 use App\Modules\Client\Interfaces\MockingInterface;
 use App\Modules\Client\Traits\HasClientMock;
 use App\Modules\Client\Traits\HasLogging;
-use App\Modules\Client\Traits\HasOptions;
+use App\Modules\Core\Traits\HasOptions;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;

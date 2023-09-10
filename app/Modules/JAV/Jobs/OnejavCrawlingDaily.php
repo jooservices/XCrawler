@@ -5,6 +5,7 @@ namespace App\Modules\JAV\Jobs;
 use App\Modules\JAV\Crawlers\Providers\CrawlerManager;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Daily;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
+use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Repositories\Onejav;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -12,6 +13,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Event;
+use Spatie\SlackAlerts\Facades\SlackAlert;
 
 class OnejavCrawlingDaily implements ShouldQueue
 {
@@ -42,13 +45,16 @@ class OnejavCrawlingDaily implements ShouldQueue
     public function handle()
     {
         $repository = app(Onejav::class);
+        $manager = app(CrawlerManager::class);
         $daily = app(Daily::class);
-        $items = app(CrawlerManager::class)
-            ->setProvider($daily)
-            ->crawl($daily->getUrl(), [], 'GET');
+        $manager->setProvider($daily);
+
+        $items = $manager->crawl($daily->getUrl(), [], 'GET');
 
         $items->each(function ($item) use ($repository) {
             $repository->firstOrCreate($item->getProperties());
         });
+
+        Event::dispatch(new OnejavCompleted($items));
     }
 }

@@ -22,4 +22,9 @@ class CrawlerManager
     {
         return $this->provider->getItems();
     }
+
+    public function getLastPage(): int
+    {
+        return $this->provider->getLastPage();
+    }
 }

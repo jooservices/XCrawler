@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Client\Traits;
+namespace App\Modules\Core\Traits;
 
 use App\Modules\Client\Services\Factory;
 use Illuminate\Support\Collection;
