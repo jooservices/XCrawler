@@ -88,8 +88,13 @@ return [
         // Enable tracing for requests without a matching route (404's)
         'missing_routes' => env('SENTRY_TRACE_MISSING_ROUTES_ENABLED', false),
 
-        // Configures if the performance trace should continue after the response has been sent to the user until the application terminates
-        // This is required to capture any spans that are created after the response has been sent like queue jobs dispatched using `dispatch(...)->afterResponse()` for example
+        /**
+        * Configures if the performance trace should continue after the response has been sent to the user
+         *  until the application terminates
+         * This is required to capture any spans that are created
+         *  after the response has been sent like queue jobs dispatched using `dispatch(...)->afterResponse()` for example
+         */
+
         'continue_after_response' => env('SENTRY_TRACE_CONTINUE_AFTER_RESPONSE', true),
 
         // Enable the tracing integrations supplied by Sentry (recommended)
