@@ -5,6 +5,7 @@ namespace App\Modules\JAV\Tests\Feature\Commands\Onejav;
 use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
+
 use function Clue\StreamFilter\fun;
 
 class CrawlingDailyTest extends TestCase
