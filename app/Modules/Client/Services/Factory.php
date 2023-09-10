@@ -22,9 +22,6 @@ class Factory implements FactoryInterface, MockingInterface
 
     protected Client $client;
 
-    /**
-     * @phpstan-ignore-next-line
-     */
     protected array $history = [];
 
     public function __construct()

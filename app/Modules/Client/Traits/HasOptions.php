@@ -43,6 +43,13 @@ trait HasOptions
         return $this;
     }
 
+    public function addOption(string $key, mixed $value): self
+    {
+        $this->options->put($key, $value);
+
+        return $this;
+    }
+
     public function getOption(string $key, mixed $default = null): mixed
     {
         return $this->options->get($key, $default);
