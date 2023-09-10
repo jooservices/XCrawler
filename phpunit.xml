@@ -23,6 +23,7 @@
             <directory suffix=".php">./app</directory>
         </include>
         <exclude>
+            <directory suffix=".php">./app/Console</directory>
             <directory suffix=".php">./app/*/Config</directory>
             <directory suffix=".php">./app/*/Database</directory>
             <directory suffix=".php">./app/*/Events</directory>
