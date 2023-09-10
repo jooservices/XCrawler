@@ -1,0 +1,12 @@
+build:
+  nodes:
+    my-tests:
+      environment:
+        php:
+          version: 8.2
+          compile_options: '--enable-sigchild --without-pear'
+
+          # see https://pecl.php.net/
+          pecl_extensions:
+            - redis
+            - memcached
