@@ -29,7 +29,7 @@ class OnejavCrawlingItems implements ShouldQueue
 
     public function uniqueId(): string
     {
-        return md5(serialize($this->url, $this->payload));
+        return md5(serialize([$this->url, $this->payload]));
     }
 
     /**
