@@ -1,20 +1,18 @@
 <?php
 
-namespace App\Modules\JAV\Console;
+namespace App\Modules\JAV\Console\Onejav;
 
 use App\Modules\JAV\Jobs\OnejavCrawlingItems;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
-class OnejavCrawling extends Command
+class CrawlingItems extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'onejav:crawling {url}';
+    protected $signature = 'onejav:crawling-items {url}';
 
     /**
      * The console command description.

@@ -45,7 +45,6 @@ class OnejavItemsTest extends TestCase
         $response = app(CrawlerManager::class)
             ->setProvider(app(OnejavItems::class))
             ->crawl($url, [], 'GET');
-        dd($response->toArray());
 
         $this->assertInstanceOf(Collection::class, $response);
         $this->assertCount(10, $response);
