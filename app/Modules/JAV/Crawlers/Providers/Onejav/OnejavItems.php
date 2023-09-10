@@ -79,6 +79,8 @@ class OnejavItems extends AbstractProvider
             } elseif (str_contains($size, 'GB')) {
                 $item->size = (float) trim(str_replace('GB', '', $size));
             }
+
+            $item->size = round($item->size, 2);
         }
 
         // Always use href because it'll never change but text will be

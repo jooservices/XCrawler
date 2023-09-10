@@ -8,7 +8,10 @@ use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Traits\HasOptions;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Cache;
 
 class XClient
 {
@@ -47,11 +50,8 @@ class XClient
 
     /**
      * @phpcs:disable
-     * @param string $method
-     * @param string $endpoint
-     * @param array $options
-     * @return XResponseInterface|null
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     *
+     * @throws GuzzleException
      */
     public function request(string $method, string $endpoint, array $options = []): ?XResponseInterface
     {
@@ -59,8 +59,7 @@ class XClient
         $options['headers'] = array_merge(
             $options['headers'] ?? [],
             [
-                'User-Agent' =>
-                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246',
             ]
         );
 
@@ -75,8 +74,14 @@ class XClient
         $xresponse = new XResponse();
 
         try {
-            $response = $this->client->request($method, $endpoint, $options);
-            $xresponse->setResponse($response);
+            $key = md5(serialize([$method, $endpoint, $options]));
+
+            $xresponse = Cache::remember($key, 60 * 60, function () use ($method, $endpoint, $options, $xresponse) {
+                $response = $this->client->request($method, $endpoint, $options);
+                $xresponse->setResponse($response);
+
+                return $xresponse;
+            });
 
             $this->requestLog->update([
                 'status_code' => $xresponse->getStatusCode(),
@@ -85,7 +90,7 @@ class XClient
                 'completed_at' => Carbon::now(),
             ]);
         } catch (\Exception $e) {
-            $data = ['completed_at' => Carbon::now(),];
+            $data = ['completed_at' => Carbon::now()];
 
             if (is_subclass_of($e, RequestException::class)) {
                 $xresponse->setResponse($e->getResponse());
@@ -94,9 +99,11 @@ class XClient
                     'response' => $xresponse->getResponse(),
                     'is_success' => $xresponse->isSuccessful(),
                 ]);
+
             }
             $this->requestLog->update($data);
         } finally {
+
             return $xresponse;
         }
     }
@@ -122,7 +129,7 @@ class XClient
     protected function convertToUTF8(array $array): array
     {
         array_walk_recursive($array, function (&$item) {
-            if (!mb_detect_encoding($item, 'utf-8', true)) {
+            if (! mb_detect_encoding($item, 'utf-8', true)) {
                 $item = utf8_encode($item);
             }
         });

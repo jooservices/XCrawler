@@ -2,6 +2,7 @@
 
 namespace App\Modules\JAV\Providers;
 
+use App\Modules\JAV\Console\OnejavCrawling;
 use Illuminate\Support\ServiceProvider;
 
 class JAVServiceProvider extends ServiceProvider
@@ -35,6 +36,9 @@ class JAVServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(RouteServiceProvider::class);
+        $this->commands([
+            OnejavCrawling::class,
+        ]);
     }
 
     /**
