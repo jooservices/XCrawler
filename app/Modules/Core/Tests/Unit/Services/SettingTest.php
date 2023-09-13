@@ -16,6 +16,7 @@ class SettingTest extends TestCase
         });
 
         $this->assertEquals('Test', $value);
+        $this->assertEquals('Test', \App\Modules\Core\Facades\Setting::remember('home', 'title', fn() => 'Test2'));
         $this->assertEquals('Test', \App\Modules\Core\Facades\Setting::get('home', 'title'));
 
         \App\Modules\Core\Facades\Setting::forget('home', 'title');
@@ -28,5 +29,13 @@ class SettingTest extends TestCase
 
         \App\Modules\Core\Facades\Setting::setArray('home', 'array', ['test' => 'test-value']);
         $this->assertEquals(['test' => 'test-value'], \App\Modules\Core\Facades\Setting::getArray('home', 'array'));
+    }
+
+    public function testSetInt()
+    {
+        Setting::truncate();
+
+        \App\Modules\Core\Facades\Setting::setInt('home', 'int', false);
+        $this->assertEquals(0, \App\Modules\Core\Facades\Setting::getInt('home', 'int'));
     }
 }
