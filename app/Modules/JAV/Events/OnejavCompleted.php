@@ -14,7 +14,7 @@ class OnejavCompleted
      *
      * @return void
      */
-    public function __construct(private readonly Collection $items)
+    public function __construct(public Collection $items)
     {
     }
 }
