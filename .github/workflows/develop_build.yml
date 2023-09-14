@@ -4,9 +4,8 @@ name: XCrawler - Build & Tests
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 on:
   # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
-  pull_request:
+  push:
     branches: [ develop ]
-    types: [ closed ]
 
 jobs:
 
