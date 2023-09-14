@@ -5,12 +5,11 @@ namespace App\Modules\Client\Services;
 use App\Modules\Client\Models\RequestLog;
 use App\Modules\Client\Responses\XResponse;
 use App\Modules\Client\Responses\XResponseInterface;
-use App\Modules\Client\Traits\HasOptions;
+use App\Modules\Core\Traits\HasOptions;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Cache;
 
 class XClient

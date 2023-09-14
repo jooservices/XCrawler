@@ -10,7 +10,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 
-class OnejavItems extends AbstractProvider
+class Items extends AbstractProvider
 {
     public const DEFAULT_DATE_FORMAT = 'Y/m/d';
     public const ONEJAV_URL = 'https://onejav.com';
@@ -19,30 +19,30 @@ class OnejavItems extends AbstractProvider
 
     protected string $url;
 
-    protected int $lastPage = 1;
-
     /**
      * @throws GuzzleException
      */
-    public function crawl(string $url, array $data = [], string $method = 'GET'): ?Collection
+    public function crawl(string $url, array $data = [], string $method = 'GET'): Collection
     {
         $this->url = $url;
         $this->response = $this->client->request($method, $url, $data);
 
         if (! $this->isSuccess($this->response)) {
-            return null;
+            return $this->items;
         }
 
         $dom = new Crawler($this->response->getData());
         $pageNode = $dom->filter('a.pagination-link')->last();
         $this->lastPage = $pageNode->count() === 0 ? 1 : (int) $pageNode->text();
 
-        return collect(
+        $this->items = $this->items->merge(
             $dom->filter('.container .columns')
                 ->each(function ($el) {
                     return $this->parse($el);
                 })
         );
+
+        return $this->items;
     }
 
     protected function isSuccess(?XResponse $response): bool
@@ -50,9 +50,9 @@ class OnejavItems extends AbstractProvider
         return $response !== null && $response->isSuccessful() && $response->getData() !== null;
     }
 
-    private function parse(Crawler $crawler): OnejavItemEntity
+    private function parse(Crawler $crawler): Entity
     {
-        $item = new OnejavItemEntity();
+        $item = new Entity();
 
         if ($crawler->filter('h5.title a')->count()) {
             $item->url = self::ONEJAV_URL . trim($crawler->filter('h5.title a')->attr('href'));

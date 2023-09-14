@@ -2,24 +2,24 @@
 
 namespace App\Modules\JAV\Console\Onejav;
 
-use App\Modules\JAV\Jobs\OnejavCrawlingItems;
+use App\Modules\JAV\Jobs\OnejavCrawlingAll;
 use Illuminate\Console\Command;
 
-class CrawlingItems extends Command
+class CrawlingAll extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'onejav:crawling-items {url}';
+    protected $signature = 'onejav:crawling-all';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Crawling Onejav with specific URL.';
+    protected $description = 'Automate crawling Onejav.';
 
     /**
      * Execute the console command.
@@ -28,7 +28,7 @@ class CrawlingItems extends Command
      */
     public function handle(): void
     {
-        OnejavCrawlingItems::dispatch($this->argument('url'))->onQueue('onejav');
+        OnejavCrawlingAll::dispatch()->onQueue('onejav');
 
         return;
     }

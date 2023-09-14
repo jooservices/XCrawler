@@ -17,4 +17,14 @@ class CrawlerManager
     {
         return $this->provider->crawl($url, $data, $method);
     }
+
+    public function getItems(): mixed
+    {
+        return $this->provider->getItems();
+    }
+
+    public function getLastPage(): int
+    {
+        return $this->provider->getLastPage();
+    }
 }

@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('inspire')->yearly();
+        $schedule->command('onejav:crawling-daily')->daily();
+        $schedule->command('onejav:crawling-all')->everyMinute();
     }
 
     /**

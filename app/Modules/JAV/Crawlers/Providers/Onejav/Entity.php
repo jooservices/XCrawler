@@ -2,7 +2,7 @@
 
 namespace App\Modules\JAV\Crawlers\Providers\Onejav;
 
-use App\Modules\JAV\Traits\HasProperties;
+use App\Modules\Core\Traits\HasProperties;
 use Carbon\Carbon;
 
 /**
@@ -21,7 +21,7 @@ use Carbon\Carbon;
  * @property float $size
  * @property string $torrent
  */
-class OnejavItemEntity
+class Entity
 {
     use HasProperties;
 
