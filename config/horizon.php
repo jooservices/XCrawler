@@ -217,7 +217,7 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
-            'crawler-onejav' => [
+            'onejav' => [
                 'queue' => ['onejav']
             ]
         ],
@@ -226,7 +226,7 @@ return [
             'supervisor-1' => [
                 'maxProcesses' => 3,
             ],
-            'crawler-onejav' => [
+            'onejav' => [
                 'queue' => ['onejav']
             ]
         ],
@@ -235,7 +235,7 @@ return [
             'supervisor-1' => [
                 'maxProcesses' => 3,
             ],
-            'crawler-onejav' => [
+            'onejav' => [
                 'queue' => ['onejav']
             ]
         ],
