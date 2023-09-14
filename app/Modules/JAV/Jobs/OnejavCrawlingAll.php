@@ -29,7 +29,7 @@ class OnejavCrawlingAll implements ShouldQueue
 
     public function uniqueId(): string
     {
-        return (string) Setting::getInt('onejav', 'last_page');
+        return (string) Setting::getInt('onejav', 'new_current_page');
     }
 
     /**
@@ -40,7 +40,7 @@ class OnejavCrawlingAll implements ShouldQueue
     public function handle()
     {
         $repository = app(Onejav::class);
-        app(OnejavService::class)->all()
+        app(OnejavService::class)->new()
             ->each(function ($item) use ($repository) {
                 $repository->firstOrCreate($item->getProperties());
             });

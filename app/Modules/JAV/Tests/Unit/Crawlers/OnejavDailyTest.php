@@ -24,7 +24,7 @@ class OnejavDailyTest extends TestCase
                         ->withArgs(function ($method, $url, $payload) use ($index) {
                             return $method === 'GET'
                             && $url === 'https://onejav.com/2023/09/05'
-                                && $payload['page'] === $index;
+                                && $payload['query']['page'] === $index;
                         })
                         ->andReturn(
                             new Response(

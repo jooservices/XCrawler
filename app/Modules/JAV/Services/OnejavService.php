@@ -9,7 +9,6 @@ use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
 use App\Modules\JAV\Events\OnejavAllCompleted;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;
-use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 
@@ -25,6 +24,7 @@ class OnejavService
 
         return $items;
     }
+
     public function daily(): Collection
     {
         $daily = app(Daily::class);
@@ -38,22 +38,30 @@ class OnejavService
         return $items;
     }
 
-    public function all(): Collection
+    public function new(): Collection
     {
-        $currentPage = Setting::remember('onejav', 'last_page', fn () => 1);
+        $currentPage = Setting::remember('onejav', 'new_current_page', fn () => 1);
+
         $service = app(CrawlerManager::class)->setProvider(app(Items::class));
 
-        $items = $service->crawl(Items::ONEJAV_URL . '/new', ['page' => $currentPage], 'GET');
+        $items = $service->crawl(Items::ONEJAV_URL . '/new', [
+            'query' => [
+                'page' => $currentPage
+            ]
+        ], 'GET');
+
         $lastPage = $service->getLastPage();
+
+        Setting::setInt('onejav', 'new_last_page', (int) $lastPage);
 
         // Reset back to 1
         if ($currentPage >= $lastPage) {
-            Setting::set('onejav', 'last_page', 0);
+            Setting::setInt('onejav', 'new_current_page', 0);
 
             Event::dispatch(new OnejavAllCompleted());
         }
 
-        Setting::increment('onejav', 'last_page');
+        Setting::increment('onejav', 'new_current_page');
 
         return $items;
     }

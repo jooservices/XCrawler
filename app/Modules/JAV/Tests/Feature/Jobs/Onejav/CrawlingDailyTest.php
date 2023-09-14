@@ -35,7 +35,7 @@ class CrawlingDailyTest extends TestCase
                         ->withArgs(function ($method, $url, $payload) use ($index) {
                             return $method === 'GET'
                                 && !empty($url)
-                                && $payload['page'] === $index;
+                                && $payload['query']['page'] === $index;
                         })
                         ->andReturn(
                             new Response(
