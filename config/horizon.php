@@ -194,12 +194,12 @@ return [
             'timeout' => 60,
             'nice' => 0,
         ],
-        'crawler-onejav' => [
+        'onejav' => [
             'connection' => 'redis',
-            'queue' => ['onejav', 'onejav.new', 'onejav.popular'],
+            'queue' => ['onejav'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 2,
+            'maxProcesses' => 1,
             'minProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
@@ -217,11 +217,8 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
-            'crawler-onejav' => [
-                'queue' => explode(
-                    ',',
-                    env('HORIZON_CRAWLER_ONEJAV', 'onejav,onejav.new,onejav.popular')
-                ),
+            'onejav' => [
+                'queue' => ['onejav']
             ]
         ],
 
@@ -229,11 +226,8 @@ return [
             'supervisor-1' => [
                 'maxProcesses' => 3,
             ],
-            'crawler-onejav' => [
-                'queue' => explode(
-                    ',',
-                    env('HORIZON_CRAWLER_ONEJAV', 'onejav,onejav.new,onejav.popular')
-                ),
+            'onejav' => [
+                'queue' => ['onejav']
             ]
         ],
 
@@ -241,11 +235,8 @@ return [
             'supervisor-1' => [
                 'maxProcesses' => 3,
             ],
-            'crawler-onejav' => [
-                'queue' => explode(
-                    ',',
-                    env('HORIZON_CRAWLER_ONEJAV', 'onejav,onejav.new,onejav.popular')
-                ),
+            'onejav' => [
+                'queue' => ['onejav']
             ]
         ],
     ],
