@@ -2,20 +2,50 @@
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="./vendor/phpunit/phpunit/phpunit.xsd"
          bootstrap="vendor/autoload.php"
+         backupStaticAttributes="false"
+
          colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
 >
+
     <testsuites>
-        <testsuite name="Unit">
-            <directory suffix="Test.php">./tests/Unit</directory>
+        <testsuite name="Client">
+            <directory suffix="Test.php">./app/Modules/Client/Tests/Feature</directory>
+            <directory suffix="Test.php">./app/Modules/Client/Tests/Unit</directory>
         </testsuite>
-        <testsuite name="Feature">
-            <directory suffix="Test.php">./tests/Feature</directory>
+        <testsuite name="JAV">
+            <directory suffix="Test.php">./app/Modules/JAV/Tests/Feature</directory>
+            <directory suffix="Test.php">./app/Modules/JAV/Tests/Unit</directory>
         </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
             <directory suffix=".php">./app</directory>
         </include>
+        <exclude>
+            <directory suffix=".php">./app/Console</directory>
+            <directory suffix=".php">./app/Providers</directory>
+            <directory suffix=".php">./app/*/Config</directory>
+            <directory suffix=".php">./app/*/Database</directory>
+            <directory suffix=".php">./app/*/Events</directory>
+            <directory suffix=".php">./app/*/Exceptions</directory>
+            <directory suffix=".php">./app/*/Http/Requests</directory>
+            <directory suffix=".php">./app/*/Http/Resources</directory>
+            <directory suffix=".php">./app/*/Notifications</directory>
+            <directory suffix=".php">./app/*/Providers</directory>
+            <directory suffix=".php">./app/*/Routes</directory>
+            <directory suffix=".php">./app/*/Tests</directory>
+            <directory suffix=".php">./app/*/Resources/views</directory>
+            <directory suffix=".php">./app/Modules/*/Database</directory>
+            <directory suffix=".php">./app/Modules/*/Events</directory>
+            <directory suffix=".php">./app/Modules/*/Routes</directory>
+            <directory suffix=".php">./app/Modules/*/Tests</directory>
+            <directory suffix=".php">./app/Modules/*/Providers</directory>
+        </exclude>
     </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
