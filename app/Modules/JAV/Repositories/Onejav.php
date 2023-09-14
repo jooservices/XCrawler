@@ -28,7 +28,6 @@ class Onejav extends CrudRepository
             return;
         }
 
-
         Event::dispatch(new OnejavItemUpdated($item));
     }
 }
