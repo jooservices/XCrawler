@@ -70,7 +70,7 @@
             "@php vendor/bin/phpcs --standard=./phpcs.xml"
         ],
         "test": [
-            "@php vendor/bin/phpunit --coverage-clover coverage-tests.xml --testsuite=Client"
+            "@php vendor/bin/phpunit --coverage-clover coverage-tests.xml --testsuite=Client,JAV"
         ]
     },
     "extra": {

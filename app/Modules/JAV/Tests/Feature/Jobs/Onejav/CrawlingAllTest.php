@@ -31,6 +31,7 @@ class CrawlingAllTest extends TestCase
                     $mock->shouldReceive('request')
                         ->withArgs(function ($method, $url, $payload) use ($index) {
                             return $method === 'GET'
+                                && !empty($url)
                                 && $payload['page'] === $index;
                         })
                         ->andReturn(
