@@ -11,6 +11,7 @@ use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Str;
 
 class OnejavService
 {
@@ -50,6 +51,7 @@ class OnejavService
 
     public function all(string $prefix = 'new'): Collection
     {
+        $prefix = Str::slug($prefix);
         $currentPage = Setting::remember('onejav', $prefix . '_current_page', fn () => 1);
 
         $service = app(CrawlerManager::class)->setProvider(app(Items::class));
