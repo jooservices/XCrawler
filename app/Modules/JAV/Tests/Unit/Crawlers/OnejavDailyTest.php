@@ -2,16 +2,15 @@
 
 namespace App\Modules\JAV\Tests\Unit\Crawlers;
 
-use App\Modules\Client\Services\Factory;
 use App\Modules\JAV\Crawlers\Providers\CrawlerManager;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Daily;
+use App\Modules\JAV\Tests\TestCase;
 use Carbon\Carbon;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Collection;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\TestCase;
 
 class OnejavDailyTest extends TestCase
 {
@@ -38,15 +37,7 @@ class OnejavDailyTest extends TestCase
             })
         );
 
-        $this->instance(Factory::class, Mockery::mock(Factory::class, function (MockInterface $mock) {
-            $mock->shouldReceive('enableRetries')
-                ->andReturnSelf();
-
-            $mock->shouldReceive('make')
-                ->andReturn(app(Client::class));
-
-            $mock->shouldReceive('enableLogging');
-        }));
+        $this->mockFactory();
 
         $daily = app(Daily::class);
         $daily->setDay(Carbon::create(2023, 9, 5));

@@ -63,4 +63,11 @@ class SettingService
     {
         return (array) $this->get($group, $key, $default);
     }
+
+    public function increment(string $group, string $key, int $value = 1): self
+    {
+        $this->setting->where('group', $group)->where('key', $key)->increment('value', $value);
+
+        return $this;
+    }
 }

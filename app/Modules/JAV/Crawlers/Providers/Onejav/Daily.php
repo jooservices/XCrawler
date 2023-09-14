@@ -23,6 +23,11 @@ class Daily extends Items
         return $this;
     }
 
+    public function getDay(): Carbon
+    {
+        return $this->date;
+    }
+
     public function getUrl(): string
     {
         return self::ONEJAV_URL . '/' . $this->date->format('Y/m/d');

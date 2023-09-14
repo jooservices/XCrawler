@@ -2,6 +2,7 @@
 
 namespace App\Modules\JAV\Jobs;
 
+use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Repositories\Onejav;
 use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Bus\Queueable;
@@ -10,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class OnejavCrawlingItems implements ShouldQueue
+class OnejavCrawlingAll implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
@@ -22,13 +23,13 @@ class OnejavCrawlingItems implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(private string $url, private array $payload = [])
+    public function __construct()
     {
     }
 
     public function uniqueId(): string
     {
-        return md5(serialize([$this->url, $this->payload]));
+        return Setting::getInt('onejav', 'last_page');
     }
 
     /**
@@ -39,7 +40,7 @@ class OnejavCrawlingItems implements ShouldQueue
     public function handle()
     {
         $repository = app(Onejav::class);
-        app(OnejavService::class)->items($this->url, $this->payload)
+        app(OnejavService::class)->all()
             ->each(function ($item) use ($repository) {
                 $repository->firstOrCreate($item->getProperties());
             });

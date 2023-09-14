@@ -7,6 +7,7 @@ use App\Modules\JAV\Crawlers\Providers\Onejav\Daily;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Repositories\Onejav;
+use App\Modules\JAV\Services\OnejavService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -45,16 +46,9 @@ class OnejavCrawlingDaily implements ShouldQueue
     public function handle()
     {
         $repository = app(Onejav::class);
-        $manager = app(CrawlerManager::class);
-        $daily = app(Daily::class);
-        $manager->setProvider($daily);
-
-        $items = $manager->crawl($daily->getUrl(), [], 'GET');
-
-        $items->each(function ($item) use ($repository) {
-            $repository->firstOrCreate($item->getProperties());
-        });
-
-        Event::dispatch(new OnejavCompleted($items));
+        app(OnejavService::class)->daily()
+            ->each(function ($item) use ($repository) {
+                $repository->firstOrCreate($item->getProperties());
+            });
     }
 }

@@ -19,7 +19,7 @@ class CrawlingDaily extends Command
      *
      * @var string
      */
-    protected $description = 'Command description.';
+    protected $description = 'Crawling Onejav daily.';
 
     /**
      * Execute the console command.
