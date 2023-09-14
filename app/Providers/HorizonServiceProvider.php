@@ -17,8 +17,7 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
         parent::boot();
 
         Horizon::auth(function ($request) {
-            return Gate::check('viewHorizon', []) ||
-                app()->environment('local');
+            return true;
         });
 
         // Horizon::routeSmsNotificationsTo('15556667777');
