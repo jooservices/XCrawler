@@ -8,6 +8,7 @@
         "php": "^8.2",
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.19",
+        "laravel/horizon": "^5.20",
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "mongodb/laravel-mongodb": "^3.9",
