@@ -28,7 +28,9 @@ class CrawlingAll extends Command
      */
     public function handle(): void
     {
-        OnejavCrawlingAll::dispatch()->onQueue('onejav');
+        foreach (['new', 'popular'] as $endpoint) {
+            OnejavCrawlingAll::dispatch($endpoint)->onQueue('onejav.' . $endpoint);
+        }
 
         return;
     }
