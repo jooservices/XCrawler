@@ -15,7 +15,6 @@ jobs:
       matrix:
         lint: [ phpstan, phpmd, phpcs ]
 
-    if: github.event.pull_request.merged == true
     runs-on:
       - self-hosted
       - ubuntu
@@ -102,7 +101,6 @@ jobs:
   finalizing_build:
     name: "All Parallel Tests passed"
 
-    if: github.event.pull_request.merged == true
     runs-on:
       - self-hosted
       - ubuntu
@@ -117,7 +115,6 @@ jobs:
       #
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-        if: success() && github.event.pull_request.draft == false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
@@ -125,7 +122,6 @@ jobs:
         if: success()
         run: |
           echo "Build finished"
-
 
   deploy:
     name: Deploy
