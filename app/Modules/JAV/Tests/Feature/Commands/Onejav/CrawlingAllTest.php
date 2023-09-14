@@ -16,7 +16,7 @@ class CrawlingAllTest extends TestCase
             ->assertExitCode(0);
 
         Bus::assertDispatched(OnejavCrawlingAll::class, function ($job) {
-            return in_array($job->queue,  ['onejav.new', 'onejav.popular']);
+            return in_array($job->queue, ['onejav.new', 'onejav.popular']);
         });
     }
 }
