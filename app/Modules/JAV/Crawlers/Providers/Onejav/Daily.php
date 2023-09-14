@@ -36,7 +36,13 @@ class Daily extends Items
     public function crawl(string $url, array $data = [], string $method = 'GET'): Collection
     {
         $page = $data['page'] ?? 1;
-        parent::crawl($url, ['page' => $page], $method);
+        parent::crawl(
+            $url,
+            [
+                'query' => ['page' => $page]
+            ],
+            $method
+        );
 
         if ($this->lastPage > $page) {
             $this->crawl($url, ['page' => $page + 1], $method);

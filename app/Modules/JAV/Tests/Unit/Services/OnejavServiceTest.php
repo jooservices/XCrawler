@@ -65,7 +65,7 @@ class OnejavServiceTest extends TestCase
                         ->withArgs(function ($method, $url, $payload) use ($index) {
                             return $method === 'GET'
                                 && !empty($url)
-                                && $payload['page'] === $index;
+                                && $payload['query']['page'] === $index;
                         })
                         ->andReturn(
                             new Response(
@@ -107,7 +107,7 @@ class OnejavServiceTest extends TestCase
                         ->withArgs(function ($method, $url, $payload) use ($index) {
                             return $method === 'GET'
                                 && !empty($url)
-                                && $payload['page'] === $index;
+                                && $payload['query']['page'] === $index;
                         })
                         ->andReturn(
                             new Response(
@@ -122,18 +122,18 @@ class OnejavServiceTest extends TestCase
 
         $this->mockFactory();
 
-        Setting::set('onejav', 'last_page', 12215);
-        $items = $this->service->all();
+        Setting::set('onejav', 'new_current_page', 12215);
+        $items = $this->service->new();
 
         $this->assertInstanceOf(Collection::class, $items);
         $this->assertEquals(10, $items->count());
-        $this->assertEquals(12216, Setting::get('onejav', 'last_page'));
+        $this->assertEquals(12216, Setting::get('onejav', 'new_current_page'));
 
         // 12216
-        $this->service->all();
-        $this->service->all();
-        $this->service->all();
+        $this->service->new();
+        $this->service->new();
+        $this->service->new();
 
-        $this->assertEquals(1, Setting::get('onejav', 'last_page'));
+        $this->assertEquals(1, Setting::get('onejav', 'new_current_page'));
     }
 }

@@ -19,6 +19,9 @@ class CrawlingAllTest extends TestCase
     public function testHandle()
     {
         Onejav::truncate();
+
+        \App\Modules\Core\Models\Setting::truncate();
+
         Event::fake([
             OnejavCompleted::class,
             OnejavDailyCompleted::class,
@@ -32,7 +35,7 @@ class CrawlingAllTest extends TestCase
                         ->withArgs(function ($method, $url, $payload) use ($index) {
                             return $method === 'GET'
                                 && !empty($url)
-                                && $payload['page'] === $index;
+                                && $payload['query']['page'] === $index;
                         })
                         ->andReturn(
                             new Response(
@@ -48,11 +51,13 @@ class CrawlingAllTest extends TestCase
         );
 
         $this->mockFactory();
-        Setting::set('onejav', 'last_page', 12215);
+
+        Setting::setInt('onejav', 'new_current_page', 12215);
 
         OnejavCrawlingAll::dispatch();
 
         $this->assertDatabaseCount('onejav', 10, 'mongodb');
-        $this->assertEquals(12216, Setting::get('onejav', 'last_page'));
+        // Move to next page
+        $this->assertEquals(12216, Setting::getInt('onejav', 'new_current_page'));
     }
 }
