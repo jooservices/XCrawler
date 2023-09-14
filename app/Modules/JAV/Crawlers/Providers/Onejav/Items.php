@@ -86,7 +86,7 @@ class Items extends AbstractProvider
         // Always use href because it'll never change but text will be
         $item->date = $this->convertStringToDateTime(
             trim($crawler->filter('.subtitle.is-6 a')->attr('href'))
-        )->format(Items::DEFAULT_DATE_FORMAT);
+        );
 
         $item->genres = collect($crawler->filter('.tags .tag')->each(
             function ($genres) {
