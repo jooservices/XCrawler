@@ -54,7 +54,7 @@ class CrawlingAllTest extends TestCase
 
         Setting::setInt('onejav', 'new_current_page', 12215);
 
-        OnejavCrawlingAll::dispatch();
+        OnejavCrawlingAll::dispatch('new');
 
         $this->assertDatabaseCount('onejav', 10, 'mongodb');
         // Move to next page

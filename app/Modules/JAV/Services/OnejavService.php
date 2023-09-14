@@ -40,11 +40,21 @@ class OnejavService
 
     public function new(): Collection
     {
-        $currentPage = Setting::remember('onejav', 'new_current_page', fn () => 1);
+        return $this->all('new');
+    }
+
+    public function popular(): Collection
+    {
+        return $this->all('popular');
+    }
+
+    public function all(string $prefix = 'new'): Collection
+    {
+        $currentPage = Setting::remember('onejav', $prefix . '_current_page', fn () => 1);
 
         $service = app(CrawlerManager::class)->setProvider(app(Items::class));
 
-        $items = $service->crawl(Items::ONEJAV_URL . '/new', [
+        $items = $service->crawl(Items::ONEJAV_URL . '/' . $prefix, [
             'query' => [
                 'page' => $currentPage
             ]
@@ -52,16 +62,16 @@ class OnejavService
 
         $lastPage = $service->getLastPage();
 
-        Setting::setInt('onejav', 'new_last_page', (int) $lastPage);
+        Setting::setInt('onejav', $prefix . '_last_page', (int) $lastPage);
 
         // Reset back to 1
         if ($currentPage >= $lastPage) {
-            Setting::setInt('onejav', 'new_current_page', 0);
+            Setting::setInt('onejav', $prefix . '_current_page', 0);
 
             Event::dispatch(new OnejavAllCompleted());
         }
 
-        Setting::increment('onejav', 'new_current_page');
+        Setting::increment('onejav', $prefix . '_current_page');
 
         return $items;
     }
