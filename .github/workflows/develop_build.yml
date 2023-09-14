@@ -122,6 +122,37 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+      - name: "Finalizing Tasks"
+        if: success()
+        run: |
+          echo "Build finished"
+
+
+  deploy:
+    name: Deploy
+    runs-on:
+      - self-hosted
+      - ubuntu
+    needs: [ finalizing_build ]
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }} #hostname of server
+          username: ${{ secrets.USERNAME }} #username login to server
+          password: ${{ secrets.PASSWORD }} #password login to server
+          port: ${{ secrets.PORT }} #port of server - often port is 22
+          script: | # run with multiple script
+            cd ~
+            ./xcrawler_deploy.sh
+
+  completed:
+    name: Completed
+    runs-on:
+      - self-hosted
+      - ubuntu
+    needs: [ deploy ]
+    steps:
       - name: Slack Notification
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
@@ -145,7 +176,7 @@ jobs:
                       "type": "header",
                       "text": {
                         "type": "plain_text",
-                        "text": "PR passed",
+                        "text": "Deployed",
                         "emoji": true
                       }
                     },
@@ -188,9 +219,3 @@ jobs:
                 }
               ]
             }
-
-
-      - name: "Finalizing Tasks"
-        if: success()
-        run: |
-          echo "Build finished"
