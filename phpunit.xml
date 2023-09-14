@@ -17,6 +17,10 @@
             <directory suffix="Test.php">./app/Modules/Client/Tests/Feature</directory>
             <directory suffix="Test.php">./app/Modules/Client/Tests/Unit</directory>
         </testsuite>
+        <testsuite name="JAV">
+            <directory suffix="Test.php">./app/Modules/JAV/Tests/Feature</directory>
+            <directory suffix="Test.php">./app/Modules/JAV/Tests/Unit</directory>
+        </testsuite>
     </testsuites>
     <coverage processUncoveredFiles="true">
         <include>
@@ -24,6 +28,7 @@
         </include>
         <exclude>
             <directory suffix=".php">./app/Console</directory>
+            <directory suffix=".php">./app/Providers</directory>
             <directory suffix=".php">./app/*/Config</directory>
             <directory suffix=".php">./app/*/Database</directory>
             <directory suffix=".php">./app/*/Events</directory>
