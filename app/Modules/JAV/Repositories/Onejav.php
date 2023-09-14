@@ -15,9 +15,9 @@ class Onejav extends CrudRepository
         $this->setModel(app(OnejavModel::class));
     }
 
-    public function firstOrCreate(array $attributes)
+    public function updateOrCreate(array $attributes)
     {
-        $item = OnejavModel::firstOrCreate([
+        $item = OnejavModel::updateOrCreate([
             'url' => $attributes['url'],
             'dvd_id' => $attributes['dvd_id']
         ], $attributes);
