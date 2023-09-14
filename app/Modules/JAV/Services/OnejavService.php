@@ -51,8 +51,8 @@ class OnejavService
 
     public function all(string $prefix = 'new'): Collection
     {
-        $prefix = Str::slug($prefix);
-        $currentPage = Setting::remember('onejav', $prefix . '_current_page', fn () => 1);
+        $slug = Str::slug($prefix);
+        $currentPage = Setting::remember('onejav', $slug . '_current_page', fn () => 1);
 
         $service = app(CrawlerManager::class)->setProvider(app(Items::class));
 
@@ -64,16 +64,16 @@ class OnejavService
 
         $lastPage = $service->getLastPage();
 
-        Setting::setInt('onejav', $prefix . '_last_page', (int) $lastPage);
+        Setting::setInt('onejav', $slug . '_last_page', (int) $lastPage);
 
         // Reset back to 1
         if ($currentPage >= $lastPage) {
-            Setting::setInt('onejav', $prefix . '_current_page', 0);
+            Setting::setInt('onejav', $slug . '_current_page', 0);
 
             Event::dispatch(new OnejavAllCompleted());
         }
 
-        Setting::increment('onejav', $prefix . '_current_page');
+        Setting::increment('onejav', $slug . '_current_page');
 
         return $items;
     }
