@@ -11,6 +11,7 @@ class MoviePerformerFactory extends Factory
      * The name of the factory's corresponding model.
      *
      * @var string
+     * @phpstan-ignore-next-line
      */
     protected $model = MoviePerformer::class;
 

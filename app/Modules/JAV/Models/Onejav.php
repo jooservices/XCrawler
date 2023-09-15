@@ -11,7 +11,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $dvd_id
  * @property array $genres
  * @property array $performers
- * @property string torrent
+ * @property string $torrent
  * @property array $gallery
  *
  */

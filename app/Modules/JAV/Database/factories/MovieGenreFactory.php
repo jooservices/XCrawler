@@ -11,6 +11,7 @@ class MovieGenreFactory extends Factory
      * The name of the factory's corresponding model.
      *
      * @var string
+     * @phpstan-ignore-next-line
      */
     protected $model = MovieGenre::class;
 
@@ -19,7 +20,7 @@ class MovieGenreFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
         return [
             //
