@@ -44,7 +44,7 @@ class OnejavCrawlingAll implements ShouldQueue
 
         app(OnejavService::class)->all($endpoint)
             ->each(function ($item) use ($repository) {
-                $repository->firstOrCreate($item->getProperties());
+                $repository->updateOrCreate($item->getProperties());
             });
     }
 }

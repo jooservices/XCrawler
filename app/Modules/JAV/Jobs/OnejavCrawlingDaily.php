@@ -48,7 +48,7 @@ class OnejavCrawlingDaily implements ShouldQueue
         $repository = app(Onejav::class);
         app(OnejavService::class)->daily()
             ->each(function ($item) use ($repository) {
-                $repository->firstOrCreate($item->getProperties());
+                $repository->updateOrCreate($item->getProperties());
             });
     }
 }

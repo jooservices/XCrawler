@@ -6,7 +6,6 @@ use App\Modules\Core\Repositories\CrudRepository;
 use App\Modules\JAV\Events\OnejavItemCreated;
 use App\Modules\JAV\Events\OnejavItemUpdated;
 use App\Modules\JAV\Models\Onejav as OnejavModel;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Event;
 
 class Onejav extends CrudRepository
@@ -16,12 +15,12 @@ class Onejav extends CrudRepository
         $this->setModel(app(OnejavModel::class));
     }
 
-    public function firstOrCreate(array $attributes)
+    public function updateOrCreate(array $attributes)
     {
-        $item = OnejavModel::firstOrCreate([
+        $item = OnejavModel::updateOrCreate([
             'url' => $attributes['url'],
             'dvd_id' => $attributes['dvd_id']
-        ], Arr::only($attributes, $this->getColumns()));
+        ], $attributes);
 
         if ($item->wasRecentlyCreated) {
             Event::dispatch(new OnejavItemCreated($item));

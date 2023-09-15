@@ -27,7 +27,7 @@ class Onejav extends Model
         'cover' => 'string',
         'dvd_id' => 'string',
         'size' => 'float',
-        'date' => 'date:Y-m-d',
+        'date' => 'date',
         'genres' => 'array',
         'description' => 'string',
         'performers' => 'array',

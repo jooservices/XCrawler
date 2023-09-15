@@ -41,7 +41,7 @@ class OnejavCrawlingItems implements ShouldQueue
         $repository = app(Onejav::class);
         app(OnejavService::class)->items($this->url, $this->payload)
             ->each(function ($item) use ($repository) {
-                $repository->firstOrCreate($item->getProperties());
+                $repository->updateOrCreate($item->getProperties());
             });
     }
 }
