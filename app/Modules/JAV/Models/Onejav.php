@@ -6,6 +6,15 @@ use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
 use App\Modules\JAV\Services\Movie\Traits\HasMovieObserver;
 use Jenssegers\Mongodb\Eloquent\Model;
 
+/**
+* @property string $url
+ * @property string $dvd_id
+ * @property array $genres
+ * @property array $performers
+ * @property string torrent
+ * @property array $gallery
+ *
+ */
 class Onejav extends Model implements MovieEntityInterface
 {
     use HasMovieObserver;
