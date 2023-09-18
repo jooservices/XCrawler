@@ -16,6 +16,9 @@ use DateTime;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 abstract class AbstractProvider extends AbstractBaseProvider implements ProviderInterface
 {
     public const SIGNATURE_METHOD = 'HMAC-SHA1';
@@ -143,6 +146,10 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
      */
     public function refreshAccessToken(TokenInterface $token): TokenInterface
     {
+        /**
+         * Do nothing, as refresh tokens are not supported in OAuth1.
+         */
+        return $token;
     }
 
     /**

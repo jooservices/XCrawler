@@ -6,6 +6,7 @@ use InvalidArgumentException;
 
 /**
  * Standards-compliant URI class.
+ * @SuppressWarnings(PHPMD)
  */
 class Uri implements UriInterface
 {

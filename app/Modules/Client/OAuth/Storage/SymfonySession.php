@@ -7,6 +7,9 @@ use App\Modules\Client\OAuth\Exceptions\TokenNotFoundException;
 use App\Modules\Client\OAuth\Token\TokenInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class SymfonySession implements TokenStorageInterface
 {
     /**

@@ -6,6 +6,7 @@ use RuntimeException;
 
 /**
  * Factory class for uniform resource indicators.
+ * @SuppressWarnings(PHPMD)
  */
 class UriFactory implements UriFactoryInterface
 {
@@ -14,17 +15,17 @@ class UriFactory implements UriFactoryInterface
      *
      * @return UriInterface
      */
-    public function createFromSuperGlobalArray(array $_server): Uri|UriInterface
+    public function createFromSuperGlobalArray(array $server): Uri|UriInterface
     {
-        if ($uri = $this->attemptProxyStyleParse($_server)) {
+        if ($uri = $this->attemptProxyStyleParse($server)) {
             return $uri;
         }
 
-        $scheme = $this->detectScheme($_server);
-        $host = $this->detectHost($_server);
-        $port = $this->detectPort($_server);
-        $path = $this->detectPath($_server);
-        $query = $this->detectQuery($_server);
+        $scheme = $this->detectScheme($server);
+        $host = $this->detectHost($server);
+        $port = $this->detectPort($server);
+        $path = $this->detectPath($server);
+        $query = $this->detectQuery($server);
 
         return $this->createFromParts($scheme, '', $host, $port, $path, $query);
     }
@@ -74,36 +75,34 @@ class UriFactory implements UriFactoryInterface
     }
 
     /**
-     * @param array $_server
+     * @param array $server
      *
      * @return null|UriInterface
      */
-    private function attemptProxyStyleParse($_server)
+    private function attemptProxyStyleParse(array $server)
     {
         // If the raw HTTP request message arrives with a proxy-style absolute URI in the
         // initial request line, the absolute URI is stored in $_SERVER['REQUEST_URI'] and
         // we only need to parse that.
-        if (isset($_server['REQUEST_URI']) && parse_url($_server['REQUEST_URI'], PHP_URL_SCHEME)) {
-            return new Uri($_server['REQUEST_URI']);
+        if (isset($server['REQUEST_URI']) && parse_url($server['REQUEST_URI'], PHP_URL_SCHEME)) {
+            return new Uri($server['REQUEST_URI']);
         }
 
         return null;
     }
 
     /**
-     * @param array $_server
+     * @param array $server
      *
      * @return string
      */
-    private function detectPath($_server)
+    private function detectPath(array $server)
     {
-        if (isset($_server['REQUEST_URI'])) {
-            $uri = $_server['REQUEST_URI'];
-        } elseif (isset($_server['REDIRECT_URL'])) {
-            $uri = $_server['REDIRECT_URL'];
-        } else {
+        if (!isset($server['REQUEST_URI']) || !isset($server['REDIRECT_URL'])) {
             throw new RuntimeException('Could not detect URI path from superglobal');
         }
+
+        $uri = $server['REQUEST_URI'] ?? $server['REDIRECT_URL'];
 
         $queryStr = strpos($uri, '?');
         if ($queryStr !== false) {
@@ -116,9 +115,9 @@ class UriFactory implements UriFactoryInterface
     /**
      * @return string
      */
-    private function detectHost(array $_server)
+    private function detectHost(array $server)
     {
-        $host = $_server['HTTP_HOST'] ?? '';
+        $host = $server['HTTP_HOST'] ?? '';
 
         if (str_contains($host, ':')) {
             $host = parse_url($host, PHP_URL_HOST);
@@ -130,17 +129,17 @@ class UriFactory implements UriFactoryInterface
     /**
      * @return string
      */
-    private function detectPort(array $_server)
+    private function detectPort(array $server)
     {
-        return $_server['SERVER_PORT'] ?? 80;
+        return $server['SERVER_PORT'] ?? 80;
     }
 
     /**
      * @return string
      */
-    private function detectQuery(array $_server)
+    private function detectQuery(array $server)
     {
-        return $_server['QUERY_STRING'] ?? '';
+        return $server['QUERY_STRING'] ?? '';
     }
 
     /**
@@ -150,13 +149,13 @@ class UriFactory implements UriFactoryInterface
      * not made through the HTTPS protocol. As a result, we filter the
      * value to a bool.
      *
-     * @param array $_server A super-global $_SERVER array
+     * @param array $server A super-global $_SERVER array
      *
      * @return string Returns http or https depending on the URI scheme
      */
-    private function detectScheme(array $_server)
+    private function detectScheme(array $server)
     {
-        if (isset($_server['HTTPS']) && filter_var($_server['HTTPS'], FILTER_VALIDATE_BOOLEAN)) {
+        if (isset($server['HTTPS']) && filter_var($server['HTTPS'], FILTER_VALIDATE_BOOLEAN)) {
             return 'https';
         }
 

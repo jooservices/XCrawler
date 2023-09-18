@@ -25,9 +25,10 @@ class Onejav extends CrudRepository
 
         if ($item->wasRecentlyCreated) {
             Event::dispatch(new OnejavItemCreated($item));
-        } else {
-            Event::dispatch(new OnejavItemUpdated($item));
+            return $item;
         }
+
+        Event::dispatch(new OnejavItemUpdated($item));
 
         return $item;
     }

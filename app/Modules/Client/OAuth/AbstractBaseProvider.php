@@ -39,30 +39,32 @@ abstract class AbstractBaseProvider implements ProviderInterface
     protected function determineRequestUriFromPath($path, ?UriInterface $baseApiUri = null): UriInterface
     {
         if ($path instanceof UriInterface) {
-            $uri = $path;
-        } elseif (stripos($path, 'http://') === 0 || stripos($path, 'https://') === 0) {
-            $uri = new Uri($path);
-        } else {
-            if ($baseApiUri === null) {
-                throw new Exception(
-                    'An absolute URI must be passed to ServiceInterface::request as no baseApiUri is set.'
-                );
-            }
-
-            $uri = clone $baseApiUri;
-            if (str_contains($path, '?')) {
-                $parts = explode('?', $path, 2);
-                $path = $parts[0];
-                $query = $parts[1];
-                $uri->setQuery($query);
-            }
-
-            if ($path[0] === '/') {
-                $path = substr($path, 1);
-            }
-
-            $uri->setPath($uri->getPath() . $path);
+            return $path;
         }
+
+        if (stripos($path, 'http://') === 0 || stripos($path, 'https://') === 0) {
+            return new Uri($path);
+        }
+
+        if ($baseApiUri === null) {
+            throw new Exception(
+                'An absolute URI must be passed to ServiceInterface::request as no baseApiUri is set.'
+            );
+        }
+
+        $uri = clone $baseApiUri;
+        if (str_contains($path, '?')) {
+            $parts = explode('?', $path, 2);
+            $path = $parts[0];
+            $query = $parts[1];
+            $uri->setQuery($query);
+        }
+
+        if ($path[0] === '/') {
+            $path = substr($path, 1);
+        }
+
+        $uri->setPath($uri->getPath() . $path);
 
         return $uri;
     }

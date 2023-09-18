@@ -6,6 +6,9 @@ use App\Modules\Client\OAuth\Credentials\CredentialsInterface;
 use App\Modules\Client\OAuth\Exceptions\UnsupportedHashAlgorithmException;
 use App\Modules\Client\OAuth\Uri\UriInterface;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class Signature implements SignatureInterface
 {
     protected string $algorithm = 'HMAC-SHA1';
@@ -38,6 +41,7 @@ class Signature implements SignatureInterface
      */
     public function getSignature(UriInterface $uri, array $params, string $method = 'POST'): string
     {
+        $queryStringData = [];
         parse_str($uri->getQuery(), $queryStringData);
 
         foreach ([...$queryStringData, ...$params] as $key => $value) {

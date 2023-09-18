@@ -12,7 +12,7 @@ interface UriFactoryInterface
      *
      * @return UriInterface
      */
-    public function createFromSuperGlobalArray(array $_server): UriInterface;
+    public function createFromSuperGlobalArray(array $server): UriInterface;
 
     /**
      * Creates a URI from an absolute URI.

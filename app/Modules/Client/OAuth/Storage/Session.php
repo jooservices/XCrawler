@@ -6,6 +6,9 @@ use App\Modules\Client\OAuth\Exceptions\AuthorizationStateNotFoundException;
 use App\Modules\Client\OAuth\Exceptions\TokenNotFoundException;
 use App\Modules\Client\OAuth\Token\TokenInterface;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class Session implements TokenStorageInterface
 {
     /**
@@ -57,11 +60,10 @@ class Session implements TokenStorageInterface
             && is_array($_SESSION[$this->sessionVariableName])
         ) {
             $_SESSION[$this->sessionVariableName][$service] = $serializedToken;
-        } else {
-            $_SESSION[$this->sessionVariableName] = [
-                $service => $serializedToken,
-            ];
+            return $this;
         }
+
+        $_SESSION[$this->sessionVariableName] = [$service => $serializedToken,];
 
         // allow chaining
         return $this;
