@@ -23,7 +23,7 @@ class OnejavDailyTest extends TestCase
                     $mock->shouldReceive('request')
                         ->withArgs(function ($method, $url, $payload) use ($index) {
                             return $method === 'GET'
-                            && $url === 'https://onejav.com/2023/09/05'
+                                && $url === 'https://onejav.com/2023/09/05'
                                 && $payload['query']['page'] === $index;
                         })
                         ->andReturn(

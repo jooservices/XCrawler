@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('flickr')->group(function() {
+Route::prefix('flickr')->group(function () {
     Route::get('/', 'FlickrController@index');
 });

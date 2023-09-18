@@ -28,16 +28,6 @@ class CoreServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->register(RouteServiceProvider::class);
-    }
-
-    /**
      * Register config.
      *
      * @return void
@@ -51,5 +41,15 @@ class CoreServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php'),
             $this->moduleNameLower
         );
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->register(RouteServiceProvider::class);
     }
 }

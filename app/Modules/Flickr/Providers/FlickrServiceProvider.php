@@ -2,8 +2,11 @@
 
 namespace App\Modules\Flickr\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use App\Modules\Flickr\Console\FlickrContacts;
+use App\Modules\Flickr\Console\FlickrPeoplePhotos;
+use Config;
 use Illuminate\Database\Eloquent\Factory;
+use Illuminate\Support\ServiceProvider;
 
 class FlickrServiceProvider extends ServiceProvider
 {
@@ -31,13 +34,21 @@ class FlickrServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the service provider.
+     * Register translations.
      *
      * @return void
      */
-    public function register()
+    public function registerTranslations()
     {
-        $this->app->register(RouteServiceProvider::class);
+        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
+
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
+            $this->loadJsonTranslationsFrom($langPath, $this->moduleNameLower);
+        } else {
+            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
+            $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
+        }
     }
 
     /**
@@ -51,7 +62,8 @@ class FlickrServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
         ], 'config');
         $this->mergeConfigFrom(
-            module_path($this->moduleName, 'Config/config.php'), $this->moduleNameLower
+            module_path($this->moduleName, 'Config/config.php'),
+            $this->moduleNameLower
         );
     }
 
@@ -73,22 +85,29 @@ class FlickrServiceProvider extends ServiceProvider
         $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }
 
+    private function getPublishableViewPaths(): array
+    {
+        $paths = [];
+        foreach (Config::get('view.paths') as $path) {
+            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
+                $paths[] = $path . '/modules/' . $this->moduleNameLower;
+            }
+        }
+        return $paths;
+    }
+
     /**
-     * Register translations.
+     * Register the service provider.
      *
      * @return void
      */
-    public function registerTranslations()
+    public function register()
     {
-        $langPath = resource_path('lang/modules/' . $this->moduleNameLower);
-
-        if (is_dir($langPath)) {
-            $this->loadTranslationsFrom($langPath, $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom($langPath, $this->moduleNameLower);
-        } else {
-            $this->loadTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
-            $this->loadJsonTranslationsFrom(module_path($this->moduleName, 'Resources/lang'), $this->moduleNameLower);
-        }
+        $this->app->register(RouteServiceProvider::class);
+        $this->commands([
+            FlickrContacts::class,
+            FlickrPeoplePhotos::class,
+        ]);
     }
 
     /**
@@ -99,16 +118,5 @@ class FlickrServiceProvider extends ServiceProvider
     public function provides()
     {
         return [];
-    }
-
-    private function getPublishableViewPaths(): array
-    {
-        $paths = [];
-        foreach (\Config::get('view.paths') as $path) {
-            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
-                $paths[] = $path . '/modules/' . $this->moduleNameLower;
-            }
-        }
-        return $paths;
     }
 }

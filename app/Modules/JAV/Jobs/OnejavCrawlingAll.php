@@ -35,7 +35,7 @@ class OnejavCrawlingAll implements ShouldQueue
 
     public function uniqueId(): string
     {
-        return (string) Setting::getInt('onejav', $this->endpoint . '_current_page');
+        return (string)Setting::getInt('onejav', $this->endpoint . '_current_page');
     }
 
     /**

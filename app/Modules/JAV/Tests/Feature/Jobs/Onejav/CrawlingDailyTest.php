@@ -6,7 +6,6 @@ use App\Modules\Client\Services\Factory;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavItemCreated;
 use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
-use App\Modules\JAV\Models\MovieGenre;
 use App\Modules\JAV\Models\Onejav;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
@@ -58,9 +57,6 @@ class CrawlingDailyTest extends TestCase
             $mock->shouldReceive('enableLogging');
         }));
 
-        MovieGenre::create([
-            'name' => 'Big Tits'
-        ]);
         OnejavCrawlingDaily::dispatch();
 
         Event::assertDispatched(OnejavItemCreated::class, 60);

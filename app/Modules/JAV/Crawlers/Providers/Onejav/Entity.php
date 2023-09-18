@@ -6,7 +6,7 @@ use App\Modules\Core\Traits\HasProperties;
 use Carbon\Carbon;
 
 /**
-* @property string|null $url
+ * @property string|null $url
  * @property string|null $cover
  * @property string|null $title
  * @property string|null $code

@@ -24,6 +24,7 @@ class OnejavServiceTest extends TestCase
 
         $this->service = app(OnejavService::class);
     }
+
     public function testGetItems()
     {
         Onejav::truncate();
