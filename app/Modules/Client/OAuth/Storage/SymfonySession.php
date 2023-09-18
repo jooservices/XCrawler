@@ -19,6 +19,9 @@ class SymfonySession implements TokenStorageInterface
      */
     public function __construct(
         private Session $session,
+        /**
+         * @phpstan-ignore-next-line
+         */
         private bool $startSession = true,
         private string $sessionVariableName = 'xcrawler_oauth_token',
         private string $stateVariableName = 'xcrawler_oauth_state'

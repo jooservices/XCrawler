@@ -46,7 +46,7 @@ class UriFactory implements UriFactoryInterface
      * @param string $scheme
      * @param string $userInfo
      * @param string $host
-     * @param string $port
+     * @param int $port
      * @param string $path
      * @param string $query
      * @param string $fragment
@@ -98,7 +98,7 @@ class UriFactory implements UriFactoryInterface
      */
     private function detectPath(array $server)
     {
-        if (!isset($server['REQUEST_URI']) || !isset($server['REDIRECT_URL'])) {
+        if (!isset($server['REQUEST_URI']) && !isset($server['REDIRECT_URL'])) {
             throw new RuntimeException('Could not detect URI path from superglobal');
         }
 

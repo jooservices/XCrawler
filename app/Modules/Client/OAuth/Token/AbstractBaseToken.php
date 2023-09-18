@@ -67,15 +67,17 @@ abstract class AbstractBaseToken implements TokenInterface
      */
     public function setLifetime($lifetime): void
     {
+        $this->endOfLife = static::EOL_UNKNOWN;
+
         if ($lifetime === 0 || static::EOL_NEVER_EXPIRES === $lifetime) {
             $this->endOfLife = static::EOL_NEVER_EXPIRES;
             return;
-        } elseif ($lifetime !== null) {
+        }
+
+        if ($lifetime !== null) {
             $this->endOfLife = (int)$lifetime + time();
             return;
         }
-
-        $this->endOfLife = static::EOL_UNKNOWN;
     }
 
     public function setRefreshToken(string $refreshToken): void

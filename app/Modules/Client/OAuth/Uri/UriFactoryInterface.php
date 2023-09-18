@@ -29,7 +29,7 @@ interface UriFactoryInterface
      * @param string $scheme
      * @param string $userInfo
      * @param string $host
-     * @param string $port
+     * @param int $port
      * @param string $path
      * @param string $query
      * @param string $fragment

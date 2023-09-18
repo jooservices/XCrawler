@@ -7,7 +7,7 @@ use App\Modules\Client\OAuth\OAuth1\Token\Token;
 
 class ProviderFactory
 {
-    public function make(ProviderInterface $provider): ProviderInterface
+    public function make(ProviderInterface $provider): \App\Modules\Client\OAuth\OAuth1\Providers\ProviderInterface
     {
         $integration = Integration::where('service', $provider->service())->first();
 

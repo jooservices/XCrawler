@@ -11,7 +11,11 @@ class BaseAdapter implements AdapterInterface
 
     public function __construct()
     {
-        $this->provider = app(ProviderFactory::class)->make(app(Flickr::class));
+        /**
+         * @phpstan-ignore-next-line
+         */
+        $this->provider = app(ProviderFactory::class)
+            ->make(app(Flickr::class));
     }
 
     protected function isSuccessfull(array $response): bool
