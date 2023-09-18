@@ -13,10 +13,10 @@ class TestCase extends \Tests\TestCase
     {
         parent::setUp();
 
-        $this->mockContacts();
+        $this->mockFlickr();
     }
 
-    private function mockContacts()
+    private function mockFlickr()
     {
         $this->instance(
             Client::class,
@@ -59,6 +59,25 @@ class TestCase extends \Tests\TestCase
                             $this->getFixtures('flickr_people_photos.json')
                         )
                     );
+                for ($index = 1; $index <= 2; $index++) {
+                    $mock->shouldReceive('request')
+                        ->withArgs(function ($method, $url, $options) use ($index) {
+                            return $method === 'POST'
+                                && str_contains($url, 'flickr.people.getPhotos')
+                                && $options['form_params']['per_page'] === 500
+                                && $options['form_params']['page'] === $index
+                                && $options['form_params']['user_id'] === '73115043@N07';
+                        })
+                        ->andReturn(
+                            new Response(
+                                200,
+                                [
+                                    'Content-Type' => 'application/json; charset=utf-8',
+                                ],
+                                $this->getFixtures('flickr_people_photos_' . $index . '.json')
+                            )
+                        );
+                }
             })
         );
 

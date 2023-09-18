@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Console;
 
 use Illuminate\Console\Command;
+use App\Modules\Flickr\Jobs\FlickrContacts as FlickrContactsJob;
 
 class FlickrContacts extends Command
 {
@@ -25,8 +26,8 @@ class FlickrContacts extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(): void
     {
-        \App\Modules\Flickr\Jobs\FlickrContacts::dispatch()->onQueue('flickr');
+        FlickrContactsJob::dispatch()->onQueue('flickr');
     }
 }

@@ -41,6 +41,7 @@
             <directory suffix=".php">./app/*/Tests</directory>
             <directory suffix=".php">./app/*/Resources/views</directory>
             <directory suffix=".php">./app/Modules/*/Database</directory>
+            <directory suffix=".php">./app/Modules/*/Models</directory>
             <directory suffix=".php">./app/Modules/*/Events</directory>
             <directory suffix=".php">./app/Modules/*/Routes</directory>
             <directory suffix=".php">./app/Modules/*/Tests</directory>

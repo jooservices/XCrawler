@@ -7,10 +7,6 @@ use App\Modules\JAV\Services\Movie\MovieService;
 
 class MovieObserver
 {
-    public function __construct()
-    {
-    }
-
     /**
      * Handle created event.
      *

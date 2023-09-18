@@ -27,7 +27,6 @@ class MovieService
         $now = Carbon::now();
         MovieGenre::insert(
             collect($genres)->map(function ($genre) use ($now) {
-
                 return [
                     'uuid' => Str::orderedUuid(),
                     'name' => $genre,

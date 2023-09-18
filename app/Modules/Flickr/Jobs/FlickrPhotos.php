@@ -8,6 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use App\Modules\Flickr\Models\FlickrPhotos as FlickrPhotosModel;
+use App\Modules\Flickr\Models\FlickrContacts as FlickrContactsModel;
 
 class FlickrPhotos implements ShouldQueue
 {
@@ -38,7 +40,7 @@ class FlickrPhotos implements ShouldQueue
             'user_id' => $this->nsid,
             'page' => $this->page
         ])->each(function ($photo) {
-            \App\Modules\Flickr\Models\FlickrPhotos::updateOrCreate(
+            FlickrPhotosModel::updateOrCreate(
                 [
                     'owner' => $photo['owner'],
                     'id' => $photo['id']
@@ -48,9 +50,16 @@ class FlickrPhotos implements ShouldQueue
         });
 
         if ($this->page === $peopleService->totalPages()) {
+            FlickrContactsModel::where('nsid', $this->nsid)->update([
+                'state_code' => 'COMPLETED'
+            ]);
             return;
         }
 
-        self::dispatch($this->page + 1);
+        FlickrContactsModel::where('nsid', $this->nsid)->update([
+            'state_code' => 'RECURSIVE'
+        ]);
+
+        self::dispatch($this->nsid, $this->page + 1);
     }
 }

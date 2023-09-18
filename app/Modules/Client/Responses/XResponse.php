@@ -90,7 +90,7 @@ class XResponse implements XResponseInterface
             return null;
         }
 
-        if (str_contains($this->headers['Content-Type'][0], 'application/json') === true) {
+        if (str_contains($this->headers['Content-Type'][0] ?? null, 'application/json') === true) {
             return json_decode($this->body, true);
         }
 

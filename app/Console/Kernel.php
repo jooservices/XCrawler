@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
         /**
          * Flickr
          */
-        $schedule->command('flickr:contacts')->daily();
+        $schedule->command('flickr:contacts')->weekly();
     }
 
     /**
