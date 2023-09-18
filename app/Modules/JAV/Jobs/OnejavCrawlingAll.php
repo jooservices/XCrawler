@@ -18,6 +18,12 @@ class OnejavCrawlingAll implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    public $tries = 10;
+
+    public $timeout = 120;
+
+    public $retryAfter = 150;
+
     /**
      * Create a new job instance.
      *
