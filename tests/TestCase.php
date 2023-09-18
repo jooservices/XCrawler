@@ -14,6 +14,7 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
     use WithFaker;
+    use RefreshDatabase;
 
     protected function mockFactory()
     {
@@ -27,5 +28,4 @@ abstract class TestCase extends BaseTestCase
             $mock->shouldReceive('enableLogging');
         }));
     }
-    use RefreshDatabase;
 }
