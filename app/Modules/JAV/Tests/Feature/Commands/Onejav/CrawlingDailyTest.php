@@ -6,8 +6,6 @@ use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
 use Illuminate\Support\Facades\Bus;
 use Tests\TestCase;
 
-use function Clue\StreamFilter\fun;
-
 class CrawlingDailyTest extends TestCase
 {
     public function testCommand()

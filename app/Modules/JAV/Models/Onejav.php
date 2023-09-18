@@ -2,10 +2,23 @@
 
 namespace App\Modules\JAV\Models;
 
+use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
+use App\Modules\JAV\Services\Movie\Traits\HasMovieObserver;
 use Jenssegers\Mongodb\Eloquent\Model;
 
-class Onejav extends Model
+/**
+* @property string $url
+ * @property string $dvd_id
+ * @property array $genres
+ * @property array $performers
+ * @property string $torrent
+ * @property array $gallery
+ *
+ */
+class Onejav extends Model implements MovieEntityInterface
 {
+    use HasMovieObserver;
+
     protected $connection = 'mongodb';
     protected $collection = 'onejav';
 
@@ -34,4 +47,29 @@ class Onejav extends Model
         'torrent' => 'string',
         'gallery' => 'array'
     ];
+
+    public function getDvdId(): string
+    {
+        return (string)$this->dvd_id;
+    }
+
+    public function getGenres(): array
+    {
+        return (array)$this->genres;
+    }
+
+    public function getPerformers(): array
+    {
+        return (array)$this->performers;
+    }
+
+    public function getUrl(): string
+    {
+        return (string)$this->url;
+    }
+
+    public function getGallery(): array
+    {
+        return (array)$this->gallery;
+    }
 }
