@@ -97,13 +97,13 @@ class XClient
                 'is_success' => false,
             ];
 
-//            if (is_subclass_of($e, RequestException::class) && $e->hasResponse()) {
-//                $xresponse->setResponse($e->getResponse());
-//                $data = array_merge($data, [
-//                    'status_code' => $xresponse->getStatusCode(),
-//                    'response' => $xresponse->getResponse(),
-//                ]);
-//            }
+            if (is_subclass_of($e, RequestException::class) && $e->hasResponse()) {
+                $xresponse->setResponse($e->getResponse());
+                $data = array_merge($data, [
+                    'status_code' => $xresponse->getStatusCode(),
+                    'response' => $xresponse->getResponse(),
+                ]);
+            }
 
             $this->requestLog->update($data);
         } finally {
