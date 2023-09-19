@@ -124,6 +124,10 @@ class Flickr extends AbstractProvider
             ]
         );
 
+        if ($response === null) {
+            throw new \Exception('Response is NULL');
+        }
+
         return $response;
     }
 

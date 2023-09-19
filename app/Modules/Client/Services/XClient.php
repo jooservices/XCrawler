@@ -91,16 +91,21 @@ class XClient
                 'completed_at' => Carbon::now(),
             ]);
         } catch (Exception $e) {
-            $data = ['completed_at' => Carbon::now()];
+            $data = [
+                'completed_at' => Carbon::now(),
+                'is_success' => false,
+            ];
 
             if (is_subclass_of($e, RequestException::class)) {
                 $xresponse->setResponse($e->getResponse());
                 $data = array_merge($data, [
                     'status_code' => $xresponse->getStatusCode(),
                     'response' => $xresponse->getResponse(),
-                    'is_success' => $xresponse->isSuccessful(),
                 ]);
-
+            } else {
+                $data = array_merge($data, [
+                    'response' => $e->getMessage(),
+                ]);
             }
             $this->requestLog->update($data);
         } finally {
