@@ -53,7 +53,7 @@ class XClient
      *
      * @throws GuzzleException
      */
-    public function request(string $method, string $endpoint, array $options = []): ?XResponseInterface
+    public function request(string $method, string $endpoint, array $options = []): XResponseInterface
     {
         $method = strtoupper($method);
         $options['headers'] = array_merge(
@@ -93,20 +93,18 @@ class XClient
         } catch (Exception $e) {
             $data = [
                 'completed_at' => Carbon::now(),
+                'response' => $e->getMessage(),
                 'is_success' => false,
             ];
 
-            if (is_subclass_of($e, RequestException::class)) {
+            if (is_subclass_of($e, RequestException::class) && $e->hasResponse()) {
                 $xresponse->setResponse($e->getResponse());
                 $data = array_merge($data, [
                     'status_code' => $xresponse->getStatusCode(),
-                    'response' => $xresponse->getResponse(),
-                ]);
-            } else {
-                $data = array_merge($data, [
-                    'response' => $e->getMessage(),
+                    'response' => $xresponse->getResponse()->getBody(),
                 ]);
             }
+
             $this->requestLog->update($data);
         } finally {
 

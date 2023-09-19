@@ -18,6 +18,12 @@ class FlickrPhotos implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    public $tries = 10;
+
+    public $timeout = 60;
+
+    public $retryAfter = 120;
+
     /**
      * Create a new job instance.
      *
@@ -25,7 +31,6 @@ class FlickrPhotos implements ShouldQueue
      */
     public function __construct(public string $nsid, public int $page = 1)
     {
-        //
     }
 
     /**
@@ -49,7 +54,7 @@ class FlickrPhotos implements ShouldQueue
             );
         });
 
-        if ($this->page === $peopleService->totalPages()) {
+        if ($this->page === $peopleService->totalPages() || $peopleService->totalPages() <= 1) {
             FlickrContactsModel::where('nsid', $this->nsid)->update([
                 'state_code' => 'COMPLETED'
             ]);

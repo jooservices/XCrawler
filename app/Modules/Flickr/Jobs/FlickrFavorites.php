@@ -18,6 +18,12 @@ class FlickrFavorites implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    public $tries = 10;
+
+    public $timeout = 60;
+
+    public $retryAfter = 120;
+
     /**
      * Create a new job instance.
      *
@@ -25,7 +31,6 @@ class FlickrFavorites implements ShouldQueue
      */
     public function __construct(public string $nsid, public int $page = 1)
     {
-        //
     }
 
     /**
@@ -53,7 +58,7 @@ class FlickrFavorites implements ShouldQueue
             ]);
         });
 
-        if ($this->page === $adapter->totalPages()) {
+        if ($this->page === $adapter->totalPages() || $adapter->totalPages() <= 1) {
             FlickrContactsModel::where('nsid', $this->nsid)->update([
                 'favorites_state_code' => 'COMPLETED'
             ]);
