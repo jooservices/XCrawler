@@ -182,7 +182,7 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default','onejav'],
+            'queue' => ['default','onejav','flickr'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 10,
@@ -207,7 +207,7 @@ return [
             'tries' => 1,
             'timeout' => 60,
             'nice' => 0,
-        ]
+        ],
     ],
 
     'environments' => [
