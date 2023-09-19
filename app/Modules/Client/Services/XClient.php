@@ -7,8 +7,10 @@ use App\Modules\Client\Responses\XResponse;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Core\Traits\HasOptions;
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Cache;
 
 class XClient
@@ -51,7 +53,7 @@ class XClient
      *
      * @throws GuzzleException
      */
-    public function request(string $method, string $endpoint, array $options = []): ?XResponseInterface
+    public function request(string $method, string $endpoint, array $options = []): XResponseInterface
     {
         $method = strtoupper($method);
         $options['headers'] = array_merge(
@@ -71,24 +73,43 @@ class XClient
 
         $xresponse = new XResponse();
 
+        try {
 
-        $key = md5(serialize([$method, $endpoint, $options]));
+            $key = md5(serialize([$method, $endpoint, $options]));
 
-        $xresponse = Cache::remember($key, 60 * 60, function () use ($method, $endpoint, $options, $xresponse) {
-            $response = $this->client->request($method, $endpoint, $options);
-            $xresponse->setResponse($response);
+            $xresponse = Cache::remember($key, 60 * 60, function () use ($method, $endpoint, $options, $xresponse) {
+                $response = $this->client->request($method, $endpoint, $options);
+                $xresponse->setResponse($response);
+
+                return $xresponse;
+            });
+
+            $this->requestLog->update([
+                'status_code' => $xresponse->getStatusCode(),
+                'response' => $xresponse->getResponse(),
+                'is_success' => $xresponse->isSuccessful(),
+                'completed_at' => Carbon::now(),
+            ]);
+        } catch (Exception $e) {
+            $data = [
+                'completed_at' => Carbon::now(),
+                'response' => $e->getMessage(),
+                'is_success' => false,
+            ];
+
+            if (is_subclass_of($e, RequestException::class) && $e->hasResponse()) {
+                $xresponse->setResponse($e->getResponse());
+                $data = array_merge($data, [
+                    'status_code' => $xresponse->getStatusCode(),
+                    'response' => $xresponse->getResponse(),
+                ]);
+            }
+
+            $this->requestLog->update($data);
+        } finally {
 
             return $xresponse;
-        });
-
-        $this->requestLog->update([
-            'status_code' => $xresponse->getStatusCode(),
-            'response' => $xresponse->getResponse(),
-            'is_success' => $xresponse->isSuccessful(),
-            'completed_at' => Carbon::now(),
-        ]);
-
-        return $xresponse;
+        }
     }
 
     private function buildPayload(string $method, array $payload): array

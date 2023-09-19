@@ -16,6 +16,12 @@ class FlickrContacts implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
+    public $tries = 10;
+
+    public $timeout = 60;
+
+    public $retryAfter = 120;
+
     /**
      * Create a new job instance.
      *
@@ -23,7 +29,6 @@ class FlickrContacts implements ShouldQueue
      */
     public function __construct(public int $page = 1)
     {
-        //
     }
 
     /**
