@@ -101,7 +101,7 @@ class XClient
                 $xresponse->setResponse($e->getResponse());
                 $data = array_merge($data, [
                     'status_code' => $xresponse->getStatusCode(),
-                    'response' => $xresponse->getResponse(),
+                    'response' => $xresponse->getResponse()->getBody(),
                 ]);
             }
 
