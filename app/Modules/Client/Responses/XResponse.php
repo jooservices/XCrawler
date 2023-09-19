@@ -20,22 +20,15 @@ class XResponse implements XResponseInterface
 
     private ResponseInterface $response;
 
-    public function isSuccessful(): bool
-    {
-        return isset($this->response)
-            && $this->response->getStatusCode() >= 200
-            && $this->response->getStatusCode() < 300;
-    }
-
     public function getResponse(): ?string
     {
-        if (! $this->body) {
+        if (!$this->body) {
             return null;
         }
 
         $response = $this->body;
 
-        if (! mb_detect_encoding($response, 'utf-8', true)) {
+        if (!mb_detect_encoding($response, 'utf-8', true)) {
             $response = utf8_encode($response);
         }
 
@@ -43,7 +36,7 @@ class XResponse implements XResponseInterface
         $response = iconv('UTF-8', 'UTF-8//TRANSLIT', (string)$response); // or even
         $response = iconv('UTF-8', 'UTF-8//TRANSLIT//IGNORE', (string)$response); // not sure how this behaves
 
-        return (string) $response;
+        return (string)$response;
     }
 
     public function setResponse(ResponseInterface $response): self
@@ -57,6 +50,13 @@ class XResponse implements XResponseInterface
         $this->reason = $this->response->getReasonPhrase();
 
         return $this;
+    }
+
+    public function isSuccessful(): bool
+    {
+        return isset($this->response)
+            && $this->response->getStatusCode() >= 200
+            && $this->response->getStatusCode() < 300;
     }
 
     public function getStatusCode(): int
@@ -86,11 +86,11 @@ class XResponse implements XResponseInterface
 
     public function getData(): mixed
     {
-        if (! isset($this->body)) {
+        if (!isset($this->body)) {
             return null;
         }
 
-        if (in_array('application/json', $this->headers['Content-Type'] ?? [])) {
+        if (str_contains($this->headers['Content-Type'][0] ?? null, 'application/json') === true) {
             return json_decode($this->body, true);
         }
 

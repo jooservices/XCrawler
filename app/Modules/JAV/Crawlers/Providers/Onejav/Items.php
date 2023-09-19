@@ -27,13 +27,13 @@ class Items extends AbstractProvider
         $this->url = $url;
         $this->response = $this->client->request($method, $url, $data);
 
-        if (! $this->isSuccess($this->response)) {
+        if (!$this->isSuccess($this->response)) {
             return $this->items;
         }
 
         $dom = new Crawler($this->response->getData());
         $pageNode = $dom->filter('a.pagination-link')->last();
-        $this->lastPage = $pageNode->count() === 0 ? 1 : (int) $pageNode->text();
+        $this->lastPage = $pageNode->count() === 0 ? 1 : (int)$pageNode->text();
 
         $this->items = $this->items->merge(
             $dom->filter('.container .columns')
@@ -74,10 +74,10 @@ class Items extends AbstractProvider
             $size = trim($crawler->filter('h5 span')->text(null, false));
 
             if (str_contains($size, 'MB')) {
-                $item->size = (float) trim(str_replace('MB', '', $size));
+                $item->size = (float)trim(str_replace('MB', '', $size));
                 $item->size /= 1024;
             } elseif (str_contains($size, 'GB')) {
-                $item->size = (float) trim(str_replace('GB', '', $size));
+                $item->size = (float)trim(str_replace('GB', '', $size));
             }
 
             $item->size = round($item->size, 2);

@@ -5,8 +5,8 @@ namespace App\Modules\JAV\Tests\Feature\Jobs\Onejav;
 use App\Modules\Client\Services\Factory;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavItemCreated;
+use App\Modules\JAV\Events\OnejavItemUpdated;
 use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
-use App\Modules\JAV\Models\MovieGenre;
 use App\Modules\JAV\Models\Onejav;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
@@ -24,6 +24,7 @@ class CrawlingDailyTest extends TestCase
             [
                 OnejavItemCreated::class,
                 OnejavCompleted::class,
+                OnejavItemUpdated::class,
             ]
         );
 
@@ -58,13 +59,18 @@ class CrawlingDailyTest extends TestCase
             $mock->shouldReceive('enableLogging');
         }));
 
-        MovieGenre::create([
-            'name' => 'Big Tits'
+        Onejav::create([
+            'url' => 'https://onejav.com/torrent/stars908',
+            'dvd_id' => 'STARS-908',
         ]);
+
         OnejavCrawlingDaily::dispatch();
 
-        Event::assertDispatched(OnejavItemCreated::class, 60);
+        Event::assertDispatched(OnejavItemCreated::class, 59);
         Event::assertDispatched(OnejavCompleted::class);
+        Event::assertDispatched(OnejavItemUpdated::class, function ($event) {
+            return $event->model->url === 'https://onejav.com/torrent/stars908';
+        });
         $this->assertDatabaseCount('onejav', 60, 'mongodb');
     }
 }

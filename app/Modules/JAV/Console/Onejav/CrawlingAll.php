@@ -29,7 +29,7 @@ class CrawlingAll extends Command
      */
     public function handle(): void
     {
-        $subpages = Setting::remember('onejav', 'subpages', fn () => ['new', 'popular']);
+        $subpages = Setting::remember('onejav', 'subpages', fn() => ['new', 'popular']);
         foreach ($subpages as $page) {
             OnejavCrawlingAll::dispatch($page)->onQueue('onejav');
         }
