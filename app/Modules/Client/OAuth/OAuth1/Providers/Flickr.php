@@ -2,6 +2,7 @@
 
 namespace App\Modules\Client\OAuth\OAuth1\Providers;
 
+use App\Modules\Client\OAuth\Exceptions\TokenResponseException;
 use App\Modules\Client\OAuth\OAuth1\Token\Token;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface;
 use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
@@ -58,13 +59,16 @@ class Flickr extends AbstractProvider
         return $this->parseAccessTokenResponse($responseBody);
     }
 
-    protected function parseAccessTokenResponse($responseBody): TokenInterface
+    protected function parseAccessTokenResponse(string $responseBody): TokenInterface
     {
         parse_str($responseBody, $data);
+
         if (!is_array($data)) {
-            //throw new TokenResponseException('Unable to parse response.');
-        } elseif (isset($data['error'])) {
-            //throw new TokenResponseException('Error in retrieving token: "'.$data['error'].'"');
+            throw new TokenResponseException('Unable to parse response.');
+        }
+
+        if (isset($data['error'])) {
+            throw new TokenResponseException('Error in retrieving token: "' . $data['error'] . '"');
         }
 
         $token = app(Token::class);

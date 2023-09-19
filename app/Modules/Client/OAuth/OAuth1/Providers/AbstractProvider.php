@@ -5,6 +5,7 @@ namespace App\Modules\Client\OAuth\OAuth1\Providers;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\AbstractBaseProvider;
 use App\Modules\Client\OAuth\Events\RetrievedRequestToken;
+use App\Modules\Client\OAuth\Exceptions\TokenResponseException;
 use App\Modules\Client\OAuth\OAuth1\Signature\Signature;
 use App\Modules\Client\OAuth\OAuth1\Signature\SignatureInterface;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface;
@@ -131,6 +132,10 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
                 'headers' => array_merge($authorizationHeader, $this->getExtraOAuthHeaders())
             ]
         );
+
+        if (!$responseBody->isSuccessful()) {
+            throw  new TokenResponseException($responseBody->getBody());
+        }
 
         $token = $this->parseAccessTokenResponse($responseBody->getBody());
 

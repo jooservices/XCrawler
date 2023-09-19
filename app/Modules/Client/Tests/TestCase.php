@@ -46,6 +46,34 @@ class TestCase extends \Tests\TestCase
                 }
 
                 $this->mockFlickrPeople($mock);
+
+                $mock->shouldReceive('request')
+                    ->withArgs(function ($method, $url, $options) {
+                        return $method === 'POST'
+                            && $url === 'https://www.flickr.com/services/oauth/request_token';
+                    })
+                    ->andReturn(
+                        new Response(
+                            200,
+                            [
+                            ],
+                            $this->getFixtures('flickr_request_token')
+                        )
+                    );
+
+                $mock->shouldReceive('request')
+                    ->withArgs(function ($method, $url, $options) {
+                        return $method === 'POST'
+                            && $url === 'https://www.flickr.com/services/oauth/access_token';
+                    })
+                    ->andReturn(
+                        new Response(
+                            200,
+                            [
+                            ],
+                            $this->getFixtures('flickr_access_token')
+                        )
+                    );
             })
         );
 
