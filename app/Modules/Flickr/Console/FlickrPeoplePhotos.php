@@ -32,6 +32,14 @@ class FlickrPeoplePhotos extends Command
             ->orWhere('state_code', '!=', 'COMPLETED')
             ->first();
 
+        if (!$contact) {
+            \App\Modules\Flickr\Models\FlickrContacts::update([
+                'state_code' => null
+            ]);
+
+            return;
+        }
+
         $contact->update([
             'state_code' => 'IN_PROGRESS'
         ]);

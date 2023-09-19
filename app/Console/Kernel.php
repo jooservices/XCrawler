@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
          * Flickr
          */
         $schedule->command('flickr:contacts')->weekly();
+        $schedule->command('flickr:people-photos')->everyMinute();
     }
 
     /**
