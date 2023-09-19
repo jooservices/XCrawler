@@ -2,10 +2,9 @@
 
 namespace App\Modules\Flickr\Providers;
 
+use App\Modules\Flickr\Console\FlickrContactFavorites;
 use App\Modules\Flickr\Console\FlickrContacts;
 use App\Modules\Flickr\Console\FlickrPeoplePhotos;
-use Config;
-use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Support\ServiceProvider;
 
 class FlickrServiceProvider extends ServiceProvider
@@ -58,6 +57,7 @@ class FlickrServiceProvider extends ServiceProvider
         $this->commands([
             FlickrContacts::class,
             FlickrPeoplePhotos::class,
+            FlickrContactFavorites::class
         ]);
     }
 
