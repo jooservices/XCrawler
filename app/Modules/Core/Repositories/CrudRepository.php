@@ -10,13 +10,6 @@ class CrudRepository
 {
     protected Model $model;
 
-    public function setModel(Model $model): self
-    {
-        $this->model = $model;
-
-        return $this;
-    }
-
     public function create(array $attributes): Model
     {
         return $this->getModel()->create(Arr::only($attributes, $this->getColumns()));
@@ -25,6 +18,13 @@ class CrudRepository
     public function getModel(): Model
     {
         return $this->model;
+    }
+
+    public function setModel(Model $model): self
+    {
+        $this->model = $model;
+
+        return $this;
     }
 
     protected function getColumns()

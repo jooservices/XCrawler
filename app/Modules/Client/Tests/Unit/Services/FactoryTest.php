@@ -3,6 +3,7 @@
 namespace App\Modules\Client\Tests\Unit\Services;
 
 use App\Modules\Client\Services\Factory;
+use Exception;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Request;
@@ -22,14 +23,14 @@ class FactoryTest extends TestCase
 
     public function testAddMockResponseWithoutMocking(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
 
         $this->factory->addMockResponse();
     }
 
     public function testAddMockRequestExceptionWithoutMocking(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(Exception::class);
 
         $this->factory->addMockRequestException(
             'Error Communicating with Server',

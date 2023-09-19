@@ -31,21 +31,6 @@ class JAVServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->register(RouteServiceProvider::class);
-        $this->commands([
-            CrawlingItems::class,
-            CrawlingDaily::class,
-            CrawlingAll::class,
-        ]);
-    }
-
-    /**
      * Register config.
      *
      * @return void
@@ -59,5 +44,20 @@ class JAVServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php'),
             $this->moduleNameLower
         );
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->register(RouteServiceProvider::class);
+        $this->commands([
+            CrawlingItems::class,
+            CrawlingDaily::class,
+            CrawlingAll::class,
+        ]);
     }
 }

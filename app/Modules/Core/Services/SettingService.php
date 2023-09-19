@@ -14,7 +14,7 @@ class SettingService
     {
         if (
             $this->setting->newQuery()
-            ->group($group)->key($key)->exists()
+                ->group($group)->key($key)->exists()
         ) {
             return $this->setting->where('group', $group)->where('key', $key)->first()?->value;
         }
@@ -42,11 +42,6 @@ class SettingService
         return $this->set($group, $key, $value);
     }
 
-    public function get(string $group, string $key, $default = null)
-    {
-        return $this->setting->where('group', $group)->where('key', $key)->first()?->value ?? $default;
-    }
-
     public function forget(string $group, string $key): self
     {
         $this->setting->where('group', $group)->where('key', $key)->forceDelete();
@@ -56,12 +51,17 @@ class SettingService
 
     public function getInt(string $group, string $key, $default = null): int
     {
-        return (int) $this->get($group, $key, $default);
+        return (int)$this->get($group, $key, $default);
+    }
+
+    public function get(string $group, string $key, $default = null)
+    {
+        return $this->setting->where('group', $group)->where('key', $key)->first()?->value ?? $default;
     }
 
     public function getArray(string $group, string $key, $default = null): array
     {
-        return (array) $this->get($group, $key, $default);
+        return (array)$this->get($group, $key, $default);
     }
 
     public function increment(string $group, string $key, int $value = 1): self

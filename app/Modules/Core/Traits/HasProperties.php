@@ -23,24 +23,24 @@ trait HasProperties
         $this->setProperty($name, $value);
     }
 
-    public function setProperty(string $key, mixed $value): void
-    {
-        $this->properties->put($key, $value);
-    }
-
     public function getProperty(string $key, mixed $default = null): mixed
     {
         return $this->properties->get($key, $default);
     }
 
-    public function setProperties(array $properties): void
+    public function setProperty(string $key, mixed $value): void
     {
-        $this->properties->merge($properties);
+        $this->properties->put($key, $value);
     }
 
     public function getProperties(): array
     {
         return $this->properties->toArray();
+    }
+
+    public function setProperties(array $properties): void
+    {
+        $this->properties->merge($properties);
     }
 
     public function hasProperty(string $key): bool

@@ -2,6 +2,10 @@
 
 namespace App\Modules\Client\Providers;
 
+use App\Modules\Client\Console\Integration;
+use App\Modules\Client\OAuth\Storage\Memory;
+use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
+use Exception;
 use Illuminate\Support\ServiceProvider;
 
 class ClientServiceProvider extends ServiceProvider
@@ -28,16 +32,6 @@ class ClientServiceProvider extends ServiceProvider
     }
 
     /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        $this->app->register(RouteServiceProvider::class);
-    }
-
-    /**
      * Register config.
      *
      * @return void
@@ -51,5 +45,27 @@ class ClientServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php'),
             $this->moduleNameLower
         );
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->app->register(RouteServiceProvider::class);
+        $this->app->bind(TokenStorageInterface::class, function () {
+            switch (config('core.oauth.storage', 'memory')) {
+                case 'memory':
+                    return new Memory();
+                default:
+                    throw new Exception('Invalid storage type');
+            }
+        });
+
+        $this->commands([
+            Integration::class
+        ]);
     }
 }

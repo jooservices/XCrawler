@@ -7,6 +7,7 @@ use App\Modules\Client\Responses\XResponse;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Core\Traits\HasOptions;
 use Carbon\Carbon;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
@@ -73,6 +74,7 @@ class XClient
         $xresponse = new XResponse();
 
         try {
+
             $key = md5(serialize([$method, $endpoint, $options]));
 
             $xresponse = Cache::remember($key, 60 * 60, function () use ($method, $endpoint, $options, $xresponse) {
@@ -88,7 +90,7 @@ class XClient
                 'is_success' => $xresponse->isSuccessful(),
                 'completed_at' => Carbon::now(),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $data = ['completed_at' => Carbon::now()];
 
             if (is_subclass_of($e, RequestException::class)) {
@@ -128,7 +130,7 @@ class XClient
     protected function convertToUTF8(array $array): array
     {
         array_walk_recursive($array, function (&$item) {
-            if (! mb_detect_encoding($item, 'utf-8', true)) {
+            if (!mb_detect_encoding($item, 'utf-8', true)) {
                 $item = utf8_encode($item);
             }
         });
