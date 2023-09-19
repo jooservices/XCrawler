@@ -7,8 +7,6 @@ use App\Modules\Client\Tests\TestCase;
 
 class IntegrationTest extends TestCase
 {
-
-
     public function testFlickrIntegration()
     {
         Integration::truncate();
