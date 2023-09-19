@@ -54,7 +54,7 @@ class FlickrPhotos implements ShouldQueue
             );
         });
 
-        if ($this->page === $peopleService->totalPages()) {
+        if ($this->page === $peopleService->totalPages() || $peopleService->totalPages() === 1) {
             FlickrContactsModel::where('nsid', $this->nsid)->update([
                 'state_code' => 'COMPLETED'
             ]);
