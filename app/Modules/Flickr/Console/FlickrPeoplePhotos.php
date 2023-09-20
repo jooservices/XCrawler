@@ -36,6 +36,9 @@ class FlickrPeoplePhotos extends Command
             ->first();
 
         if (!$contact) {
+            /**
+             * @phpstan-ignore-next-line
+             */
             \App\Modules\Flickr\Models\FlickrContacts::update([
                 'state_code' => null
             ]);

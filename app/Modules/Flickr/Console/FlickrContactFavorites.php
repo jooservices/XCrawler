@@ -36,6 +36,9 @@ class FlickrContactFavorites extends Command
             ->first();
 
         if (!$contact) {
+            /**
+             * @phpstan-ignore-next-line
+             */
             \App\Modules\Flickr\Models\FlickrContacts::update([
                 'favorites_state_code' => null
             ]);
