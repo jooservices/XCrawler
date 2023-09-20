@@ -45,4 +45,26 @@ class ContactRepository extends CrudRepository
 
         return $items;
     }
+
+    public function getContactForFavorites(int $limit = 1): Collection
+    {
+        $items = $this->getModel()->newQuery()
+            ->whereNull('favorites_state_code')
+            ->orWhere(function ($query) {
+                return $query->where('favorites_state_code', '!=', States::STATE_IN_PROGRESS)
+                    ->where('favorites_state_code', '!=', States::STATE_COMPLETED);
+            })
+            ->limit($limit)
+            ->get();
+
+        if ($this->getModel()->newQuery()->count() > 1 && $items->isEmpty()) {
+            FlickrContacts::query()->update([
+                'favorites_state_code' => null
+            ]);
+
+            return $this->getContactForFavorites($limit);
+        }
+
+        return $items;
+    }
 }

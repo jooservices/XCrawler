@@ -2,9 +2,9 @@
 
 namespace App\Modules\Flickr\Console;
 
-use App\Modules\Core\Models\Traits\HasStates;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\FlickrFavorites;
+use App\Modules\Flickr\Repositories\ContactRepository;
 use Illuminate\Console\Command;
 
 class FlickrContactFavorites extends Command
@@ -30,28 +30,13 @@ class FlickrContactFavorites extends Command
      */
     public function handle(): void
     {
-        $contact = \App\Modules\Flickr\Models\FlickrContacts::whereNull('favorites_state_code')
-            ->orWhere(function ($query) {
-                return $query->where('favorites_state_code', '!=', 'IN_PROGRESS')
-                    ->where('favorites_state_code', '!=', 'COMPLETED');
-            })
-            ->first();
-
-        if (!$contact) {
-            /**
-             * @phpstan-ignore-next-line
-             */
-            \App\Modules\Flickr\Models\FlickrContacts::update([
-                'favorites_state_code' => null
-            ]);
-
-            return;
-        }
-
-        $contact->updateState(States::STATE_IN_PROGRESS);
+        /**
+         * @var \App\Modules\Flickr\Models\FlickrContacts $contact
+         */
+        $contact = app(ContactRepository::class)->getContactForFavorites()->first();
 
         $contact->update([
-            'favorites_state_code' => 'IN_PROGRESS'
+            'favorites_state_code' => States::STATE_IN_PROGRESS
         ]);
 
         FlickrFavorites::dispatch($contact->nsid)->onQueue('flickr');
