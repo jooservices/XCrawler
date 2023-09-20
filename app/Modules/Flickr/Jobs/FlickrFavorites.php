@@ -58,7 +58,7 @@ class FlickrFavorites implements ShouldQueue
             ]);
         });
 
-        if ($this->page === $adapter->totalPages() || $adapter->totalPages() <= 1) {
+        if ($adapter->endOfList()) {
             FlickrContactsModel::where('nsid', $this->nsid)->update([
                 'favorites_state_code' => 'COMPLETED'
             ]);

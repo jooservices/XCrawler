@@ -3,8 +3,8 @@
 namespace App\Modules\Flickr\Tests\Feature\Commands;
 
 use App\Modules\Client\Tests\TestCase;
-use App\Modules\Flickr\Jobs\FlickrContacts;
 use App\Modules\Flickr\Jobs\FlickrPhotos;
+use App\Modules\Flickr\Models\FlickrContacts;
 use Illuminate\Support\Facades\Bus;
 
 class FlickrPeoplePhotosTest extends TestCase
@@ -12,7 +12,7 @@ class FlickrPeoplePhotosTest extends TestCase
     public function testCommand()
     {
         Bus::fake();
-        $contact = \App\Modules\Flickr\Models\FlickrContacts::create([
+        $contact = FlickrContacts::create([
             'nsid' => '73115043@N07',
         ]);
 
@@ -25,7 +25,7 @@ class FlickrPeoplePhotosTest extends TestCase
 
     public function testCommandFully()
     {
-        $contact = \App\Modules\Flickr\Models\FlickrContacts::create([
+        $contact = FlickrContacts::create([
             'nsid' => '73115043@N07',
         ]);
 

@@ -99,9 +99,10 @@ class XClient
 
             if (is_subclass_of($e, RequestException::class) && $e->hasResponse()) {
                 $xresponse->setResponse($e->getResponse());
+
                 $data = array_merge($data, [
                     'status_code' => $xresponse->getStatusCode(),
-                    'response' => $xresponse->getResponse()->getBody(),
+                    'response' => $xresponse->getBody()
                 ]);
             }
 

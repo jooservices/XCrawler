@@ -44,11 +44,6 @@ class OnejavService
         return $this->all('new');
     }
 
-    public function popular(): Collection
-    {
-        return $this->all('popular');
-    }
-
     public function all(string $prefix = 'new'): Collection
     {
         $slug = Str::slug($prefix);
@@ -76,5 +71,10 @@ class OnejavService
         Setting::increment('onejav', $slug . '_current_page');
 
         return $items;
+    }
+
+    public function popular(): Collection
+    {
+        return $this->all('popular');
     }
 }

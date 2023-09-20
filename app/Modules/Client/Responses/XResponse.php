@@ -8,7 +8,7 @@ class XResponse implements XResponseInterface
 {
     public bool $successful = false;
 
-    private int $statusCode = 200;
+    private ?int $statusCode = null;
 
     private array $headers = [];
 

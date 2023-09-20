@@ -19,9 +19,9 @@ class IntegrationTest extends TestCase
         $this->assertDatabaseHas(
             'integrations',
             [
-            'service' => 'flickr',
-            'token_secret' =>  'test-secret',
-            'token' => 'test-599ea1b1486d58e9'
+                'service' => 'flickr',
+                'token_secret' => 'test-secret',
+                'token' => 'test-599ea1b1486d58e9'
             ],
             'mongodb'
         );

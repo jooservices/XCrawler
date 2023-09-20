@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Services\FlickrService;
+use App\Modules\Flickr\Repositories\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -39,23 +40,10 @@ class FlickrContacts implements ShouldQueue
     public function handle(FlickrService $flickrService)
     {
         $contactsService = $flickrService->contacts;
-        $contactsService->getList(['page' => $this->page])->each(function ($contact) {
-            \App\Modules\Flickr\Models\FlickrContacts::updateOrCreate(
-                [
-                    'nsid' => $contact['nsid']
-                ],
-                [
-                    'nsid' => $contact['nsid'],
-                    'username' => $contact['username'],
-                    'realname' => $contact['realname'],
-                    'friend' => $contact['friend'],
-                    'family' => $contact['family'],
-                    'ignored' => $contact['ignored'],
-                    'iconserver' => $contact['iconserver'],
-                    'iconfarm' => $contact['iconfarm'],
-                    'path_alias' => $contact['path_alias'],
-                ]
-            );
+        $repository = app(ContactRepository::class);
+
+        $contactsService->getList(['page' => $this->page])->each(function ($contact) use ($repository) {
+            $repository->create($contact);
         });
 
         if ($this->page === $contactsService->totalPages()) {
