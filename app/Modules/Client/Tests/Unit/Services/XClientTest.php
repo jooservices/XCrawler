@@ -4,6 +4,7 @@ namespace App\Modules\Client\Tests\Unit\Services;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\Client\Services\XClient;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
@@ -124,7 +125,7 @@ class XClientTest extends TestCase
             Client::class,
             Mockery::mock(Client::class, function (MockInterface $mock) {
                 $mock->shouldReceive('request')
-                    ->andThrow(new \Exception('Fatal Error'));
+                    ->andThrow(new Exception('Fatal Error'));
             })
         );
 
