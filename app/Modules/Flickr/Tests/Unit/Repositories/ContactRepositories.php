@@ -27,6 +27,6 @@ class ContactRepositories extends TestCase
             'state_code' => States::STATE_COMPLETED
         ]);
 
-        $this->assertCount(3,$service->getContactsForPhotos(3));
+        $this->assertCount(3, $service->getContactsForPhotos(3));
     }
 }
