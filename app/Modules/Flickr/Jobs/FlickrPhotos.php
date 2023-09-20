@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Services\FlickrService;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Models\FlickrContacts as FlickrContactsModel;
 use App\Modules\Flickr\Models\FlickrPhotos as FlickrPhotosModel;
 use Illuminate\Bus\Queueable;
@@ -56,13 +57,13 @@ class FlickrPhotos implements ShouldQueue
 
         if ($peopleService->endOfList()) {
             FlickrContactsModel::where('nsid', $this->nsid)->update([
-                'state_code' => 'COMPLETED'
+                'state_code' => States::STATE_COMPLETED
             ]);
             return;
         }
 
         FlickrContactsModel::where('nsid', $this->nsid)->update([
-            'state_code' => 'RECURSIVE'
+            'state_code' => States::STATE_RECURRING
         ]);
 
         self::dispatch($this->nsid, $this->page + 1);
