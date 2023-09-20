@@ -2,6 +2,8 @@
 
 namespace App\Modules\Flickr\Console;
 
+use App\Modules\Core\Models\Traits\HasStates;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\FlickrFavorites;
 use Illuminate\Console\Command;
 
@@ -45,6 +47,8 @@ class FlickrContactFavorites extends Command
 
             return;
         }
+
+        $contact->updateState(States::STATE_IN_PROGRESS);
 
         $contact->update([
             'favorites_state_code' => 'IN_PROGRESS'

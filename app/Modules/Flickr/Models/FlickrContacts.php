@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Models;
 
+use App\Modules\Core\Models\Traits\HasStates;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
@@ -9,6 +10,8 @@ use Jenssegers\Mongodb\Eloquent\Model;
  */
 class FlickrContacts extends Model
 {
+    use HasStates;
+
     protected $guarded = [];
 
     protected $connection = 'mongodb';
