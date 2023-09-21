@@ -10,6 +10,7 @@ use App\Modules\Client\OAuth\Uri\Uri;
 use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Services\XClient;
+use App\Modules\Core\Facades\Setting;
 
 class Flickr extends AbstractProvider
 {
@@ -123,6 +124,8 @@ class Flickr extends AbstractProvider
                 'headers' => array_merge($authorizationHeader, $extraHeaders)
             ]
         );
+
+        Setting::increment('oauth', 'flickr_request_count');
 
         return $response;
     }

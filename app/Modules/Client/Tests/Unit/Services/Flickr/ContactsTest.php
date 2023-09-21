@@ -4,11 +4,14 @@ namespace App\Modules\Client\Tests\Unit\Services\Flickr;
 
 use App\Modules\Client\Services\FlickrService;
 use App\Modules\Client\Tests\TestCase;
+use App\Modules\Core\Facades\Setting;
 
 class ContactsTest extends TestCase
 {
     public function testGetList()
     {
+        \App\Modules\Core\Models\Setting::truncate();
+
         $service = app(FlickrService::class)->contacts;
         $items = $service->getList();
 
@@ -23,6 +26,8 @@ class ContactsTest extends TestCase
         $this->assertEquals(2, $service->currentPage());
         $this->assertEquals(2, $service->totalPages());
         $this->assertTrue($service->endOfList());
+
+        $this->assertEquals(2, Setting::get('oauth', 'flickr_request_count'));
     }
 
     public function testGetListWithException()
