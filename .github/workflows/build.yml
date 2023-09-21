@@ -43,6 +43,9 @@ jobs:
 
   tests:
     name: Execute UnitTest
+    strategy:
+      matrix:
+        lint: [ Client, JAV, Flickr ]
 
     runs-on:
       - self-hosted
@@ -89,14 +92,15 @@ jobs:
 
       - name: Execute tests (Unit and Feature tests) via PHPUnit
         if: success()
-        run: composer test
+        run: |
+          ./vendor/bin/phpunit --coverage-clover coverage-tests-${{ matrix.lint }}.xml --testsuite=${{ matrix.lint }}
 
-#      - name: Coverage
-#        uses: actions/upload-artifact@v3
-#        if: success()
-#        with:
-#          name: coverage-reports
-#          path: coverage-tests.xml
+      - name: Coverage
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: coverage-reports
+          path: coverage-tests-${{ matrix.lint }}.xml
 
   finalizing_build:
     name: "All Parallel Tests passed"
@@ -106,17 +110,18 @@ jobs:
     needs: [ tests ]
 
     steps:
-      #      - name: Download build from artifact
-      #        uses: actions/download-artifact@v2
-      #        with:
-      #          name: coverage-reports
-      #          path: ./reports
-      #
+      - name: Download build from artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: coverage-reports
+          path: ./reports
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         if: success() && github.event.pull_request.draft == false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./reports
 
       - name: Slack Notification
         id: slack
@@ -184,7 +189,6 @@ jobs:
                 }
               ]
             }
-
 
       - name: "Finalizing Tasks"
         if: success()
