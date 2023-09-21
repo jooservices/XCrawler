@@ -1,12 +1,19 @@
 <?php
 
-namespace App\Modules\Client\Tests\Unit\Services;
+namespace App\Modules\Client\Tests\Unit\Services\Flickr;
 
 use App\Modules\Client\Services\FlickrService;
 use App\Modules\Client\Tests\TestCase;
 
 class FlickrServiceTest extends TestCase
 {
+    public function testGetPropertyException()
+    {
+        $this->expectExceptionMessage('Adapter not found');
+        $this->expectException(\Exception::class);
+        app(FlickrService::class)->foo;
+    }
+
     public function testContacts()
     {
         $service = app(FlickrService::class)->contacts;

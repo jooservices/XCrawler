@@ -2,21 +2,13 @@
 
 namespace App\Modules\JAV\Jobs;
 
+use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\JAV\Repositories\Onejav;
 use App\Modules\JAV\Services\OnejavService;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
-class OnejavCrawlingItems implements ShouldQueue
+class OnejavCrawlingItems extends BaseJob
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
-
     /**
      * Create a new job instance.
      *
@@ -26,9 +18,11 @@ class OnejavCrawlingItems implements ShouldQueue
     {
     }
 
-    public function uniqueId(): string
+    public function middleware(): array
     {
-        return md5(serialize([$this->url, $this->payload]));
+        return [
+            (new WithoutOverlapping(md5(serialize([$this->url, $this->payload]))))->dontRelease()
+        ];
     }
 
     /**

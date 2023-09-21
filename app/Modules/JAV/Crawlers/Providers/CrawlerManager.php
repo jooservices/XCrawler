@@ -2,6 +2,8 @@
 
 namespace App\Modules\JAV\Crawlers\Providers;
 
+use App\Modules\Client\Responses\XResponseInterface;
+
 class CrawlerManager
 {
     private CrawlerProviderInterface $provider;
@@ -26,5 +28,10 @@ class CrawlerManager
     public function getLastPage(): int
     {
         return $this->provider->getLastPage();
+    }
+
+    public function getResponse(): XResponseInterface
+    {
+        return $this->provider->getResponse();
     }
 }

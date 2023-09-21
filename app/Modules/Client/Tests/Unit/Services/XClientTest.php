@@ -4,6 +4,7 @@ namespace App\Modules\Client\Tests\Unit\Services;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\Client\Services\XClient;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
@@ -76,7 +77,7 @@ class XClientTest extends TestCase
         ];
     }
 
-    public function testRequestReturnException()
+    public function testRequestReturnSubClassRequestException()
     {
         $url = $this->faker->url;
         $this->instance(
@@ -109,10 +110,46 @@ class XClientTest extends TestCase
             'method' => 'GET',
             'status_code' => 500,
             'is_success' => false,
+            'response' => 'Internal Server Error',
         ], 'mongodb');
 
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertFalse($response->isSuccessful());
         $this->assertEquals('Internal Server Error', $response->getData());
+    }
+
+    public function testRequestReturnException()
+    {
+        $url = $this->faker->url;
+        $this->instance(
+            Client::class,
+            Mockery::mock(Client::class, function (MockInterface $mock) {
+                $mock->shouldReceive('request')
+                    ->andThrow(new Exception('Fatal Error'));
+            })
+        );
+
+        $this->instance(Factory::class, Mockery::mock(Factory::class, function (MockInterface $mock) {
+            $mock->shouldReceive('enableRetries')
+                ->andReturnSelf();
+
+            $mock->shouldReceive('make')
+                ->andReturn(app(Client::class));
+
+            $mock->shouldReceive('enableLogging');
+        }));
+
+        $client = app(XClient::class);
+        $response = $client->get($url);
+
+        $this->assertDatabaseHas('request_logs', [
+            'url' => $url,
+            'method' => 'GET',
+            'is_success' => false,
+            'response' => 'Fatal Error',
+        ], 'mongodb');
+
+        $this->assertFalse($response->isSuccessful());
+        $this->assertNull($response->getBody());
     }
 }

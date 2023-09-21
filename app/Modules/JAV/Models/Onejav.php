@@ -7,7 +7,7 @@ use App\Modules\JAV\Services\Movie\Traits\HasMovieObserver;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
-* @property string $url
+ * @property string $url
  * @property string $dvd_id
  * @property array $genres
  * @property array $performers

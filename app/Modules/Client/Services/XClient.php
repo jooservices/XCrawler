@@ -74,7 +74,6 @@ class XClient
         $xresponse = new XResponse();
 
         try {
-
             $key = md5(serialize([$method, $endpoint, $options]));
 
             $xresponse = Cache::remember($key, 60 * 60, function () use ($method, $endpoint, $options, $xresponse) {
@@ -99,9 +98,10 @@ class XClient
 
             if (is_subclass_of($e, RequestException::class) && $e->hasResponse()) {
                 $xresponse->setResponse($e->getResponse());
+
                 $data = array_merge($data, [
                     'status_code' => $xresponse->getStatusCode(),
-                    'response' => $xresponse->getResponse()->getBody(),
+                    'response' => $xresponse->getBody()
                 ]);
             }
 

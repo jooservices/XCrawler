@@ -2,8 +2,8 @@
 
 namespace App\Modules\Flickr\Console;
 
-use Illuminate\Console\Command;
 use App\Modules\Flickr\Jobs\FlickrContacts as FlickrContactsJob;
+use Illuminate\Console\Command;
 
 class FlickrContacts extends Command
 {

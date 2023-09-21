@@ -3,6 +3,8 @@
 namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Services\FlickrService;
+use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Models\FlickrContacts as FlickrContactsModel;
 use App\Modules\Flickr\Models\FlickrPhotos as FlickrPhotosModel;
 use Illuminate\Bus\Queueable;
@@ -11,19 +13,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class FlickrFavorites implements ShouldQueue
+class FlickrFavorites extends BaseJob
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
-
-    public $tries = 10;
-
-    public $timeout = 60;
-
-    public $retryAfter = 120;
-
     /**
      * Create a new job instance.
      *
@@ -58,15 +49,15 @@ class FlickrFavorites implements ShouldQueue
             ]);
         });
 
-        if ($this->page === $adapter->totalPages() || $adapter->totalPages() <= 1) {
+        if ($adapter->endOfList()) {
             FlickrContactsModel::where('nsid', $this->nsid)->update([
-                'favorites_state_code' => 'COMPLETED'
+                'favorites_state_code' => States::STATE_COMPLETED
             ]);
             return;
         }
 
         FlickrContactsModel::where('nsid', $this->nsid)->update([
-            'favorites_state_code' => 'RECURSIVE'
+            'favorites_state_code' => States::STATE_RECURRING
         ]);
 
         self::dispatch($this->nsid, $this->page + 1);

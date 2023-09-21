@@ -19,7 +19,7 @@ trait HasList
             )
         );
 
-        if (!$this->isSuccessfull($response->getData())) {
+        if (!$response->getData() || !$this->isSuccessfull($response->getData())) {
             return collect();
         }
 
@@ -28,16 +28,16 @@ trait HasList
         return collect($response->getData()[$this->getListEntities()][$this->getListEntity()]);
     }
 
+    protected function getListMethod(): string
+    {
+        return $this->getListMethod;
+    }
+
     protected function getListParameters(): array
     {
         return [
             'per_page' => self::PER_PAGE,
         ];
-    }
-
-    protected function getListMethod(): string
-    {
-        return $this->getListMethod;
     }
 
     protected function getListEntities(): string
@@ -50,18 +50,36 @@ trait HasList
         return $this->entity;
     }
 
-    public function totalPages(): int
+    public function endOfList(): bool
     {
-        return (int) $this->listData[$this->getListEntities()]['pages'];
+        return
+            $this->totalPages() === 0
+            || $this->currentPage() === $this->totalPages();
     }
 
-    public function totalItems(): int
+    public function totalPages(): int
     {
-        return (int) $this->listData[$this->getListEntities()]['total'];
+        return empty($this->listData)
+            ? 0
+            : (int)$this->listData[$this->getListEntities()]['pages'];
     }
 
     public function currentPage(): int
     {
-        return (int) $this->listData[$this->getListEntities()]['page'];
+        return empty($this->listData)
+            ? 0
+            : $this->listData[$this->getListEntities()]['page'] ?? 0;
+    }
+
+    public function nextPage(): int
+    {
+        return $this->currentPage() + 1;
+    }
+
+    public function totalItems(): int
+    {
+        return empty($this->listData)
+            ? 0
+            : (int)$this->listData[$this->getListEntities()]['total'];
     }
 }

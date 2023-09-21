@@ -16,27 +16,6 @@ class MovieService
         $this->insertGenres($movie);
     }
 
-    private function insertGenres(MovieEntityInterface $movie)
-    {
-        $genres = $movie->getGenres();
-        $genres = array_diff(
-            $genres,
-            MovieGenre::whereIn('name', $genres)->pluck('name')->toArray()
-        );
-
-        $now = Carbon::now();
-        MovieGenre::insert(
-            collect($genres)->map(function ($genre) use ($now) {
-                return [
-                    'uuid' => Str::orderedUuid(),
-                    'name' => $genre,
-                    'created_at' => $now,
-                    'updated_at' => $now
-                ];
-            })->toArray()
-        );
-    }
-
     private function insertPerformers(MovieEntityInterface $movie)
     {
         $performers = $movie->getPerformers();
@@ -52,6 +31,27 @@ class MovieService
                 return [
                     'uuid' => Str::orderedUuid(),
                     'name' => $performer,
+                    'created_at' => $now,
+                    'updated_at' => $now
+                ];
+            })->toArray()
+        );
+    }
+
+    private function insertGenres(MovieEntityInterface $movie)
+    {
+        $genres = $movie->getGenres();
+        $genres = array_diff(
+            $genres,
+            MovieGenre::whereIn('name', $genres)->pluck('name')->toArray()
+        );
+
+        $now = Carbon::now();
+        MovieGenre::insert(
+            collect($genres)->map(function ($genre) use ($now) {
+                return [
+                    'uuid' => Str::orderedUuid(),
+                    'name' => $genre,
                     'created_at' => $now,
                     'updated_at' => $now
                 ];
