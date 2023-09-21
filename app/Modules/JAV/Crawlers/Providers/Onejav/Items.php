@@ -15,18 +15,17 @@ class Items extends AbstractProvider
     public const DEFAULT_DATE_FORMAT = 'Y/m/d';
     public const ONEJAV_URL = 'https://onejav.com';
 
-    protected ?XResponseInterface $response;
-
     protected string $url;
 
     /**
      * @throws GuzzleException
      */
-    public function crawl(string $url, array $data = [], string $method = 'GET'): Collection
+    public function crawl(string $url, array $payload = [], string $method = 'GET'): Collection
     {
         $this->url = $url;
         $method = strtolower($method);
-        $this->response = $this->client->{$method}($url, $data);
+
+        $this->response = $this->client->{$method}($url, $payload);
 
         if (!$this->isSuccess($this->response)) {
             return $this->items;

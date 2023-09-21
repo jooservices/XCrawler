@@ -18,17 +18,20 @@ use Mockery\MockInterface;
 
 class OnejavServiceTest extends TestCase
 {
-    public function __construct()
+    private OnejavService $service;
+
+    public function setUp(): void
     {
-        parent::__construct();
+        parent::setUp();
+
+        Onejav::truncate();
+        \App\Modules\Core\Models\Setting::truncate();
 
         $this->service = app(OnejavService::class);
     }
 
     public function testGetItems()
     {
-        Onejav::truncate();
-
         $this->instance(
             Client::class,
             Mockery::mock(Client::class, function (MockInterface $mock) {
@@ -52,7 +55,6 @@ class OnejavServiceTest extends TestCase
 
     public function testGetDaily()
     {
-        Onejav::truncate();
         Event::fake([
             OnejavCompleted::class,
             OnejavDailyCompleted::class,
@@ -94,7 +96,6 @@ class OnejavServiceTest extends TestCase
 
     public function testGetAll()
     {
-        Onejav::truncate();
         Event::fake([
             OnejavCompleted::class,
             OnejavDailyCompleted::class,
@@ -136,5 +137,69 @@ class OnejavServiceTest extends TestCase
         $this->service->new();
 
         $this->assertEquals(1, Setting::get('onejav', 'new_current_page'));
+    }
+
+    public function testGetAllWithException()
+    {
+        $this->instance(
+            Client::class,
+            Mockery::mock(Client::class, function (MockInterface $mock) {
+                for ($index = 12215; $index <= 12218; $index++) {
+                    $mock->shouldReceive('request')
+                        ->withArgs(function ($method, $url, $payload) use ($index) {
+                            return $method === 'GET'
+                                && !empty($url)
+                                && $payload['query']['page'] === $index;
+                        })
+                        ->andReturn(
+                            new Response(
+                                200,
+                                [],
+                                file_get_contents(__DIR__ . '/../../Fixtures/onejav_new_' . $index . '.html'),
+                            )
+                        );
+                }
+                $mock->shouldReceive('request')
+                    ->withArgs(function ($method, $url, $payload) {
+                        return $method === 'GET'
+                            && !empty($url)
+                            && in_array(
+                                $payload['query']['page'],
+                                [12219, 12220, 12221, 12222]
+                            );
+                    })
+                    ->andReturn(
+                        new Response(
+                            404,
+                            [],
+                            ''
+                        )
+                    );
+            })
+        );
+
+        $this->mockFactory();
+
+        Setting::set('onejav', 'new_current_page', 12219);
+        $this->service->new();
+
+        $this->assertEquals(12220, Setting::get('onejav', 'new_current_page'));
+        $this->assertEquals(12220, Setting::get('onejav', 'new_last_page'));
+        $this->assertEquals(1, Setting::get('onejav', 'new_retried'));
+
+        $this->service->new();
+        $this->assertEquals(2, Setting::get('onejav', 'new_retried'));
+        $this->assertEquals(12221, Setting::get('onejav', 'new_current_page'));
+        $this->assertEquals(12221, Setting::get('onejav', 'new_last_page'));
+
+        $this->service->new();
+        $this->assertEquals(3, Setting::get('onejav', 'new_retried'));
+        $this->assertEquals(12222, Setting::get('onejav', 'new_current_page'));
+        $this->assertEquals(12222, Setting::get('onejav', 'new_last_page'));
+
+        $this->service->new();
+        $this->assertEquals(0, Setting::get('onejav', 'new_retried'));
+        $this->assertEquals(1, Setting::get('onejav', 'new_current_page'));
+        $this->assertEquals(1, Setting::get('onejav', 'new_last_page'));
     }
 }

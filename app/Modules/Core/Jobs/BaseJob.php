@@ -13,7 +13,7 @@ class BaseJob implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
 
-    public $tries = 10;
+    public $tries = 5;
 
     public $timeout = 60;
 

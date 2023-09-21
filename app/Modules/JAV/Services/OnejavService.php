@@ -9,6 +9,7 @@ use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
 use App\Modules\JAV\Events\OnejavAllCompleted;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;
+use App\Modules\JAV\Events\OnejavRetried;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
@@ -19,7 +20,7 @@ class OnejavService
     {
         $items = app(CrawlerManager::class)
             ->setProvider(app(Items::class))
-            ->crawl($url, $payload, 'GET');
+            ->crawl($url, $payload);
 
         Event::dispatch(new OnejavCompleted($items));
 
@@ -31,7 +32,7 @@ class OnejavService
         $daily = app(Daily::class);
         $items = app(CrawlerManager::class)
             ->setProvider($daily)
-            ->crawl($daily->getUrl(), [], 'GET');
+            ->crawl($daily->getUrl());
 
         Event::dispatch(new OnejavCompleted($items));
         Event::dispatch(new OnejavDailyCompleted($daily->getDay(), $items));
@@ -41,19 +42,40 @@ class OnejavService
 
     public function new(): Collection
     {
-        return $this->all('new');
+        return $this->all();
     }
 
     public function all(string $prefix = 'new'): Collection
     {
         $slug = Str::slug($prefix);
-        $currentPage = Setting::remember('onejav', $slug . '_current_page', fn() => 1);
+        $currentPage = Setting::remember('onejav', $slug . '_current_page', fn () => 1);
 
         $service = app(CrawlerManager::class)->setProvider(app(Items::class));
 
         $items = $service->crawl(Items::ONEJAV_URL . '/' . $prefix, ['page' => $currentPage]);
 
         $lastPage = $service->getLastPage();
+        $response = $service->getResponse();
+
+        /**
+         * Maybe server error by accident
+         * - Try 3 times
+         * - Move forward to next page
+         */
+        if (in_array($response->getStatusCode(), [404, 500])) {
+            $retried = Setting::remember('onejav', $slug . '_retried', fn () => 0);
+            $retried++;
+
+            if ($retried <= 3) {
+                Setting::setInt('onejav', $slug . '_retried', $retried);
+                // Try next page
+                $lastPage = $currentPage + 1;
+                Event::dispatch(OnejavRetried::class);
+            } else {
+                //
+                Setting::setInt('onejav', $slug . '_retried', 0);
+            }
+        }
 
         Setting::setInt('onejav', $slug . '_last_page', (int)$lastPage);
 
