@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
+use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Tests\TestCase;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\FlickrPhotos;
@@ -13,6 +14,8 @@ class FlickrPeoplePhotosTest extends TestCase
     {
         FlickrContacts::truncate();
         \App\Modules\Flickr\Models\FlickrPhotos::truncate();
+        Integration::truncate();
+        Integration::factory()->create();
 
         $contact = FlickrContacts::create(['nsid' => '73115043@N07',]);
 

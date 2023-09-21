@@ -33,14 +33,12 @@ class Daily extends Items
         return self::ONEJAV_URL . '/' . $this->date->format('Y/m/d');
     }
 
-    public function crawl(string $url, array $data = [], string $method = 'GET'): Collection
+    public function crawl(string $url, array $payload = [], string $method = 'GET'): Collection
     {
-        $page = $data['page'] ?? 1;
+        $page = $payload['page'] ?? 1;
         parent::crawl(
             $url,
-            [
-                'query' => ['page' => $page]
-            ],
+            ['page' => $page],
             $method
         );
 

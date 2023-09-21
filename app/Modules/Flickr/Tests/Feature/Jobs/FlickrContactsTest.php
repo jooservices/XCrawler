@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
+use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Tests\TestCase;
 use App\Modules\Flickr\Jobs\FlickrContacts;
 use App\Modules\Flickr\Models\FlickrContacts as FlickrContactModel;
@@ -11,6 +12,8 @@ class FlickrContactsTest extends TestCase
     public function testGetContacts()
     {
         FlickrContactModel::truncate();
+        Integration::truncate();
+        Integration::factory()->create();
 
         FlickrContacts::dispatch();
 

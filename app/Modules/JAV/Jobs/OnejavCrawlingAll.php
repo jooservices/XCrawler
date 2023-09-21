@@ -2,28 +2,13 @@
 
 namespace App\Modules\JAV\Jobs;
 
-use App\Modules\Core\Facades\Setting;
+use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\JAV\Repositories\Onejav;
 use App\Modules\JAV\Services\OnejavService;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
-class OnejavCrawlingAll implements ShouldQueue
+class OnejavCrawlingAll extends BaseJob
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
-
-    public $tries = 10;
-
-    public $timeout = 120;
-
-    public $retryAfter = 150;
-
     /**
      * Create a new job instance.
      *
@@ -33,9 +18,11 @@ class OnejavCrawlingAll implements ShouldQueue
     {
     }
 
-    public function uniqueId(): string
+    public function middleware(): array
     {
-        return (string)Setting::getInt('onejav', $this->endpoint . '_current_page');
+        return [
+            (new WithoutOverlapping($this->endpoint))->dontRelease()
+        ];
     }
 
     /**
