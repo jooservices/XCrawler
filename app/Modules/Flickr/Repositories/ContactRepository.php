@@ -32,6 +32,7 @@ class ContactRepository extends CrudRepository
                 return $query->where('state_code', '!=', States::STATE_IN_PROGRESS)
                     ->where('state_code', '!=', States::STATE_COMPLETED);
             })
+            ->orderBy('created_at')
             ->limit($limit)
             ->get();
 
@@ -54,6 +55,7 @@ class ContactRepository extends CrudRepository
                 return $query->where('favorites_state_code', '!=', States::STATE_IN_PROGRESS)
                     ->where('favorites_state_code', '!=', States::STATE_COMPLETED);
             })
+            ->orderBy('created_at')
             ->limit($limit)
             ->get();
 
