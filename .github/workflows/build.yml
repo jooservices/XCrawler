@@ -101,6 +101,7 @@ jobs:
         with:
           name: coverage-reports
           path: coverage-tests-${{ matrix.lint }}.xml
+          retention-days: 1
 
   finalizing_build:
     name: "All Parallel Tests passed"
