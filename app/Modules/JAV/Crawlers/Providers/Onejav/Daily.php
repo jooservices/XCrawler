@@ -38,9 +38,7 @@ class Daily extends Items
         $page = $data['page'] ?? 1;
         parent::crawl(
             $url,
-            [
-                'query' => ['page' => $page]
-            ],
+            ['page' => $page],
             $method
         );
 

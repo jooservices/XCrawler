@@ -51,11 +51,7 @@ class OnejavService
 
         $service = app(CrawlerManager::class)->setProvider(app(Items::class));
 
-        $items = $service->crawl(Items::ONEJAV_URL . '/' . $prefix, [
-            'query' => [
-                'page' => $currentPage
-            ]
-        ], 'GET');
+        $items = $service->crawl(Items::ONEJAV_URL . '/' . $prefix, ['page' => $currentPage]);
 
         $lastPage = $service->getLastPage();
 

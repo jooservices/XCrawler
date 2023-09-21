@@ -25,7 +25,8 @@ class Items extends AbstractProvider
     public function crawl(string $url, array $data = [], string $method = 'GET'): Collection
     {
         $this->url = $url;
-        $this->response = $this->client->request($method, $url, $data);
+        $method = strtolower($method);
+        $this->response = $this->client->{$method}($url, $data);
 
         if (!$this->isSuccess($this->response)) {
             return $this->items;
