@@ -68,6 +68,7 @@ class OnejavService
          * Normally
          */
         if (!in_array($service->getResponse()->getStatusCode(), [404, 500])) {
+            Setting::setInt('onejav', $prefix . '_last_page', $lastPage);
             if ($currentPage < $lastPage) {
                 Setting::increment('onejav', $prefix . '_current_page');
                 return;
