@@ -29,7 +29,7 @@ abstract class AbstractProvider implements CrawlerProviderInterface
         return $this->lastPage;
     }
 
-    public function getResponse(): XResponse
+    public function getResponse(): XResponseInterface
     {
         return $this->response;
     }

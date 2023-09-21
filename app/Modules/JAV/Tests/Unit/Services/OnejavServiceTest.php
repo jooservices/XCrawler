@@ -5,6 +5,7 @@ namespace App\Modules\JAV\Tests\Unit\Services;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;
+use App\Modules\JAV\Events\OnejavRetried;
 use App\Modules\JAV\Models\Onejav;
 use App\Modules\JAV\Services\OnejavService;
 use App\Modules\JAV\Tests\TestCase;
@@ -16,6 +17,9 @@ use Illuminate\Support\Facades\Event;
 use Mockery;
 use Mockery\MockInterface;
 
+/**
+ * @SuppressWarnings(PHPMD)
+ */
 class OnejavServiceTest extends TestCase
 {
     private OnejavService $service;
@@ -125,22 +129,26 @@ class OnejavServiceTest extends TestCase
         $this->mockFactory();
 
         Setting::set('onejav', 'new_current_page', 12215);
-        $items = $this->service->new();
+        $items = $this->service->all();
 
         $this->assertInstanceOf(Collection::class, $items);
         $this->assertEquals(10, $items->count());
         $this->assertEquals(12216, Setting::get('onejav', 'new_current_page'));
 
         // 12216
-        $this->service->new();
-        $this->service->new();
-        $this->service->new();
+        $this->service->all();
+        $this->service->all();
+        $this->service->all();
 
         $this->assertEquals(1, Setting::get('onejav', 'new_current_page'));
     }
 
     public function testGetAllWithException()
     {
+        Event::fake([
+            OnejavRetried::class,
+        ]);
+
         $this->instance(
             Client::class,
             Mockery::mock(Client::class, function (MockInterface $mock) {
@@ -181,25 +189,27 @@ class OnejavServiceTest extends TestCase
         $this->mockFactory();
 
         Setting::set('onejav', 'new_current_page', 12219);
-        $this->service->new();
+        $this->service->all();
 
         $this->assertEquals(12220, Setting::get('onejav', 'new_current_page'));
         $this->assertEquals(12220, Setting::get('onejav', 'new_last_page'));
         $this->assertEquals(1, Setting::get('onejav', 'new_retried'));
 
-        $this->service->new();
+        $this->service->all();
         $this->assertEquals(2, Setting::get('onejav', 'new_retried'));
         $this->assertEquals(12221, Setting::get('onejav', 'new_current_page'));
         $this->assertEquals(12221, Setting::get('onejav', 'new_last_page'));
 
-        $this->service->new();
+        $this->service->all();
         $this->assertEquals(3, Setting::get('onejav', 'new_retried'));
         $this->assertEquals(12222, Setting::get('onejav', 'new_current_page'));
         $this->assertEquals(12222, Setting::get('onejav', 'new_last_page'));
 
-        $this->service->new();
+        $this->service->all();
         $this->assertEquals(0, Setting::get('onejav', 'new_retried'));
         $this->assertEquals(1, Setting::get('onejav', 'new_current_page'));
         $this->assertEquals(1, Setting::get('onejav', 'new_last_page'));
+
+        Event::assertDispatchedTimes(OnejavRetried::class, 3);
     }
 }

@@ -40,59 +40,73 @@ class OnejavService
         return $items;
     }
 
-    public function new(): Collection
-    {
-        return $this->all();
-    }
-
     public function all(string $prefix = 'new'): Collection
     {
         $slug = Str::slug($prefix);
-        $currentPage = Setting::remember('onejav', $slug . '_current_page', fn () => 1);
-
         $service = app(CrawlerManager::class)->setProvider(app(Items::class));
 
-        $items = $service->crawl(Items::ONEJAV_URL . '/' . $prefix, ['page' => $currentPage]);
-
-        $lastPage = $service->getLastPage();
-        $response = $service->getResponse();
-
-        /**
-         * Maybe server error by accident
-         * - Try 3 times
-         * - Move forward to next page
-         */
-        if (in_array($response->getStatusCode(), [404, 500])) {
-            $retried = Setting::remember('onejav', $slug . '_retried', fn () => 0);
-            $retried++;
-
-            if ($retried <= 3) {
-                Setting::setInt('onejav', $slug . '_retried', $retried);
-                // Try next page
-                $lastPage = $currentPage + 1;
-                Event::dispatch(OnejavRetried::class);
-            } else {
-                //
-                Setting::setInt('onejav', $slug . '_retried', 0);
-            }
-        }
-
-        Setting::setInt('onejav', $slug . '_last_page', (int)$lastPage);
-
-        // Reset back to 1
-        if ($currentPage >= $lastPage) {
-            Setting::setInt('onejav', $slug . '_current_page', 0);
-
-            Event::dispatch(new OnejavAllCompleted());
-        }
-
-        Setting::increment('onejav', $slug . '_current_page');
+        $items = $service->crawl(
+            Items::ONEJAV_URL . '/' . $prefix,
+            ['page' => $this->getSetting($slug . '_current_page', 1)],
+        );
+        $this->nextPage($service, $slug);
 
         return $items;
     }
 
-    public function popular(): Collection
+    private function getSetting(string $key, $default = null): mixed
     {
-        return $this->all('popular');
+        return Setting::remember('onejav', $key, fn () => $default);
+    }
+
+    private function nextPage(CrawlerManager $service, string $prefix = 'new')
+    {
+        $currentPage = $this->getSetting($prefix . '_current_page', 1);
+        $lastPage = $service->getLastPage();
+
+        /**
+         * Normally
+         */
+        if (!in_array($service->getResponse()->getStatusCode(), [404, 500])) {
+            if ($currentPage < $lastPage) {
+                Setting::increment('onejav', $prefix . '_current_page');
+                return;
+            }
+
+            // Reset back to first page
+            Setting::setInt('onejav', $prefix . '_current_page', 1);
+            Event::dispatch(new OnejavAllCompleted());
+
+            return;
+        }
+
+        /**
+         * Trying because sometimes the page have 404 or 500 error
+         * So we will try 3 times with 3 next pages
+         */
+        $retried = $this->getSetting($prefix . '_retried', 0);
+        $retried = $retried < 3 ? $retried + 1 : 0;
+        Setting::setInt('onejav', $prefix . '_retried', $retried);
+
+        /**
+         * We already tried 3 times
+         */
+        if ($retried === 0) {
+            Setting::setInt('onejav', $prefix . '_current_page', 1);
+            Setting::setInt('onejav', $prefix . '_last_page', 1);
+
+            Event::dispatch(new OnejavAllCompleted());
+
+            return;
+        }
+
+        /**
+         * We will try next page
+         */
+
+        Setting::increment('onejav', $prefix . '_current_page');
+        Setting::setInt('onejav', $prefix . '_last_page', $currentPage + 1);
+
+        Event::dispatch(new OnejavRetried());
     }
 }
