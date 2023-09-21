@@ -45,7 +45,7 @@ jobs:
     name: Execute UnitTest
     strategy:
       matrix:
-        lint: [ Client, JAV, Flickr ]
+        lint: [ Client, JAV, Flickr, Core ]
 
     runs-on:
       - self-hosted
