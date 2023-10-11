@@ -2,7 +2,7 @@
 
 namespace App\Modules\Client\Tests\Unit\Services\Flickr;
 
-use App\Modules\Client\Services\FlickrService;
+use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Client\Tests\TestCase;
 
 class FlickrServiceTest extends TestCase
@@ -11,12 +11,12 @@ class FlickrServiceTest extends TestCase
     {
         $this->expectExceptionMessage('Adapter not found');
         $this->expectException(\Exception::class);
-        app(FlickrService::class)->foo;
+        app(FlickrManager::class)->foo;
     }
 
     public function testContacts()
     {
-        $service = app(FlickrService::class)->contacts;
+        $service = app(FlickrManager::class)->contacts;
         $list = $service->getList();
         $this->assertCount(1000, $list);
         $this->assertEquals(1, $service->currentPage());
@@ -26,7 +26,7 @@ class FlickrServiceTest extends TestCase
 
     public function testPeopleGetPhotos()
     {
-        $service = app(FlickrService::class)->people;
+        $service = app(FlickrManager::class)->people;
         $list = $service->getList(['user_id' => '94529704@N02']);
 
         $this->assertCount(358, $list);

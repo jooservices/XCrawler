@@ -2,14 +2,14 @@
 
 namespace App\Modules\Client\Tests\Unit\Services\Flickr;
 
-use App\Modules\Client\Services\FlickrService;
+use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Client\Tests\TestCase;
 
 class FavoritesTest extends TestCase
 {
     public function testGetList()
     {
-        $service = app(FlickrService::class)->favorites;
+        $service = app(FlickrManager::class)->favorites;
         $items = $service->getList([
             'user_id' => '94529704@N02'
         ]);

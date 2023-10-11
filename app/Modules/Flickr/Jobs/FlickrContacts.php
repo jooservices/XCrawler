@@ -2,7 +2,7 @@
 
 namespace App\Modules\Flickr\Jobs;
 
-use App\Modules\Client\Services\FlickrService;
+use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Flickr\Repositories\ContactRepository;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,7 +37,7 @@ class FlickrContacts implements ShouldQueue
      *
      * @return void
      */
-    public function handle(FlickrService $flickrService)
+    public function handle(FlickrManager $flickrService)
     {
         $contactsService = $flickrService->contacts;
         $repository = app(ContactRepository::class);

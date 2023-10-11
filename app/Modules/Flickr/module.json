@@ -5,7 +5,8 @@
     "keywords": [],
     "priority": 0,
     "providers": [
-        "App\\Modules\\Flickr\\Providers\\FlickrServiceProvider"
+        "App\\Modules\\Flickr\\Providers\\FlickrServiceProvider",
+        "App\\Modules\\Flickr\\Providers\\EventServiceProvider"
     ],
     "files": []
 }

@@ -12,7 +12,7 @@ use Exception;
  * @property People $people
  * @property Favorites $favorites
  */
-class FlickrService
+class FlickrManager
 {
     public function __get(string $name)
     {
