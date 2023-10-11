@@ -28,7 +28,8 @@ class FlickrManagerTest extends TestCase
         $this->assertEquals(1, Cache::get('flickr_request_count'));
     }
 
-    public function testFlickrRequestLimit() {
+    public function testFlickrRequestLimit()
+    {
         $this->expectException(RequestLimited::class);
         Cache::set('flickr_request_count', 3600);
 
