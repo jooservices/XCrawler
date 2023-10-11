@@ -4,7 +4,6 @@ namespace App\Modules\Client\OAuth\OAuth1\Providers;
 
 use App\Modules\Client\Events\AfterFlickrRequest;
 use App\Modules\Client\Events\BeforeFlickrRequest;
-use App\Modules\Client\OAuth\Exceptions\FlickrRequestLimit;
 use App\Modules\Client\OAuth\Exceptions\TokenResponseException;
 use App\Modules\Client\OAuth\OAuth1\Token\Token;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface;
@@ -13,7 +12,6 @@ use App\Modules\Client\OAuth\Uri\Uri;
 use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Services\XClient;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 
 class Flickr extends AbstractProvider
@@ -102,13 +100,8 @@ class Flickr extends AbstractProvider
         array $extraHeaders = [],
         string $method = 'POST',
     ): XResponseInterface {
-        $count = Cache::remember('flickr_request_count', 60* 60, function(){
-            return 0;
-        });
 
-        if ($count >= 3600) {
-            throw new FlickrRequestLimit('Flickr API request limit exceeded.');
-        }
+        $this->verifyLimit();
 
         Event::dispatch(new BeforeFlickrRequest());
 
@@ -140,8 +133,6 @@ class Flickr extends AbstractProvider
         );
 
         Event::dispatch(new AfterFlickrRequest());
-
-        Cache::increment('flickr_request_count');
 
         return $response;
     }

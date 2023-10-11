@@ -2,7 +2,7 @@
 
 namespace App\Modules\Client\Tests\Unit\Services\Flickr;
 
-use App\Modules\Client\OAuth\Exceptions\FlickrRequestLimit;
+use App\Modules\Client\OAuth\Exceptions\RequestLimited;
 use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Client\Tests\TestCase;
 use Illuminate\Support\Facades\Cache;
@@ -29,7 +29,7 @@ class FlickrManagerTest extends TestCase
     }
 
     public function testFlickrRequestLimit() {
-        $this->expectException(FlickrRequestLimit::class);
+        $this->expectException(RequestLimited::class);
         Cache::set('flickr_request_count', 3600);
 
         $service = app(FlickrManager::class)->contacts;
