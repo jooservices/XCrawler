@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * @SuppressWarnings (PHPMD)
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -31,7 +34,8 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 
-    private function testMySqlConnection()
+
+    private function testMySqlConnection(): void
     {
         try {
             DB::connection()->getPdo();
@@ -41,7 +45,7 @@ class AppServiceProvider extends ServiceProvider
         }
     }
 
-    private function testRedisConnection()
+    private function testRedisConnection(): void
     {
         try {
             Cache::get('dummy');

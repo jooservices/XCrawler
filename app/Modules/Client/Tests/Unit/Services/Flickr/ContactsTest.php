@@ -2,14 +2,14 @@
 
 namespace App\Modules\Client\Tests\Unit\Services\Flickr;
 
-use App\Modules\Client\Services\FlickrService;
+use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Client\Tests\TestCase;
 
 class ContactsTest extends TestCase
 {
     public function testGetList()
     {
-        $service = app(FlickrService::class)->contacts;
+        $service = app(FlickrManager::class)->contacts;
         $items = $service->getList();
 
         $this->assertCount(1000, $items);
@@ -27,7 +27,7 @@ class ContactsTest extends TestCase
 
     public function testGetListWithException()
     {
-        $service = app(FlickrService::class)->contacts;
+        $service = app(FlickrManager::class)->contacts;
         $items = $service->getList([
             'exception' => true
         ]);

@@ -4,16 +4,19 @@ namespace App\Modules\Flickr\Tests\Feature\Commands;
 
 use App\Modules\Client\Tests\TestCase;
 use App\Modules\Core\Services\States;
+use App\Modules\Flickr\Events\BeforeProcessContact;
 use App\Modules\Flickr\Jobs\FlickrFavorites;
 use App\Modules\Flickr\Jobs\FlickrPhotos;
 use App\Modules\Flickr\Models\FlickrContacts;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Event;
 
 class FlickrContactFavoritesTest extends TestCase
 {
     public function testCommand()
     {
         FlickrContacts::truncate();
+
         Bus::fake();
 
         $contact = FlickrContacts::create([

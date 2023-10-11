@@ -5,6 +5,7 @@ namespace App\Modules\Client\OAuth\OAuth1\Providers;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\AbstractBaseProvider;
 use App\Modules\Client\OAuth\Events\RetrievedRequestToken;
+use App\Modules\Client\OAuth\Exceptions\RequestLimited;
 use App\Modules\Client\OAuth\Exceptions\TokenResponseException;
 use App\Modules\Client\OAuth\OAuth1\Signature\Signature;
 use App\Modules\Client\OAuth\OAuth1\Signature\SignatureInterface;
@@ -14,6 +15,7 @@ use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Services\XClient;
 use DateTime;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
@@ -343,4 +345,18 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
      * @return TokenInterface
      */
     abstract protected function parseAccessTokenResponse(string $responseBody): TokenInterface;
+
+    protected function verifyLimit()
+    {
+        $key = strtolower($this->service()) . '_request_count';
+        $count = Cache::remember($key, 3600, function () {
+            return 0;
+        });
+
+        if ($count >= 3600) {
+            throw new RequestLimited('API request limit exceeded.');
+        }
+
+        Cache::increment($key);
+    }
 }
