@@ -7,8 +7,7 @@ use Illuminate\Events\Dispatcher;
 
 class ContactEventSubscriber
 {
-
-    public function onBeforeProcessContact(BeforeProcessContact $event): void
+    public function onBeforeProcessContact(): void
     {
     }
 
