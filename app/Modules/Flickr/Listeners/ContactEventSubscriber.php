@@ -10,7 +10,6 @@ class ContactEventSubscriber
 
     public function onBeforeProcessContact(BeforeProcessContact $event): void
     {
-       dd($event->contact);
     }
 
     public function subscribe(Dispatcher $events): void
