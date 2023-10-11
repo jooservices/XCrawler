@@ -2,10 +2,12 @@
 
 namespace App\Modules\Client\Tests\Unit\Services\Flickr;
 
+use App\Modules\Client\OAuth\Exceptions\FlickrRequestLimit;
 use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Client\Tests\TestCase;
+use Illuminate\Support\Facades\Cache;
 
-class FlickrServiceTest extends TestCase
+class FlickrManagerTest extends TestCase
 {
     public function testGetPropertyException()
     {
@@ -22,6 +24,16 @@ class FlickrServiceTest extends TestCase
         $this->assertEquals(1, $service->currentPage());
         $this->assertEquals(2, $service->totalPages());
         $this->assertEquals(1102, $service->totalItems());
+
+        $this->assertEquals(1, Cache::get('flickr_request_count'));
+    }
+
+    public function testFlickrRequestLimit() {
+        $this->expectException(FlickrRequestLimit::class);
+        Cache::set('flickr_request_count', 3600);
+
+        $service = app(FlickrManager::class)->contacts;
+        $service->getList();
     }
 
     public function testPeopleGetPhotos()
