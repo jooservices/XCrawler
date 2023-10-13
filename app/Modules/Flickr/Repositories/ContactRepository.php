@@ -4,19 +4,19 @@ namespace App\Modules\Flickr\Repositories;
 
 use App\Modules\Core\Repositories\CrudRepository;
 use App\Modules\Core\Services\States;
-use App\Modules\Flickr\Models\FlickrContacts;
+use App\Modules\Flickr\Models\FlickrContact;
 use Illuminate\Support\Collection;
 
 class ContactRepository extends CrudRepository
 {
     public function __construct()
     {
-        $this->setModel(app(FlickrContacts::class));
+        $this->setModel(app(FlickrContact::class));
     }
 
-    public function create(array $attributes): FlickrContacts
+    public function create(array $attributes): FlickrContact
     {
-        return FlickrContacts::updateOrCreate(
+        return FlickrContact::updateOrCreate(
             [
                 'nsid' => $attributes['nsid']
             ],
@@ -35,8 +35,8 @@ class ContactRepository extends CrudRepository
             ->limit($limit)
             ->get();
 
-        if ($this->getModel()->newQuery()->count() > 1 && $items->isEmpty()) {
-            FlickrContacts::query()->update([
+        if ($this->getModel()->count() > 1 && $items->isEmpty()) {
+            FlickrContact::query()->update([
                 'state_code' => null
             ]);
 
@@ -58,7 +58,7 @@ class ContactRepository extends CrudRepository
             ->get();
 
         if ($this->getModel()->newQuery()->count() > 1 && $items->isEmpty()) {
-            FlickrContacts::query()->update([
+            FlickrContact::query()->update([
                 'favorites_state_code' => null
             ]);
 

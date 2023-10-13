@@ -8,7 +8,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 /**
  * @property string $nsid
  */
-class FlickrContacts extends Model
+class FlickrContact extends Model
 {
     use HasStates;
 

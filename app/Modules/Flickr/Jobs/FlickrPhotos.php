@@ -4,7 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Core\Services\States;
-use App\Modules\Flickr\Models\FlickrContacts as FlickrContactsModel;
+use App\Modules\Flickr\Models\FlickrContact as FlickrContactsModel;
 use App\Modules\Flickr\Models\FlickrPhotos as FlickrPhotosModel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

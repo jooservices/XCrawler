@@ -348,7 +348,7 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
 
     protected function verifyLimit()
     {
-        $key = strtolower($this->service()) . '_request_count';
+        $key = strtolower($this->service()) . '_requests_count';
         $count = Cache::remember($key, 3600, function () {
             return 0;
         });

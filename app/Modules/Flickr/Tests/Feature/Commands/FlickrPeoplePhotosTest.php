@@ -2,20 +2,19 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Commands;
 
-use App\Modules\Client\Tests\TestCase;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\FlickrPhotos;
-use App\Modules\Flickr\Models\FlickrContacts;
+use App\Modules\Flickr\Models\FlickrContact;
+use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Bus;
 
 class FlickrPeoplePhotosTest extends TestCase
 {
     public function testCommand()
     {
-        FlickrContacts::truncate();
         Bus::fake();
 
-        $contact = FlickrContacts::create([
+        $contact = FlickrContact::create([
             'nsid' => '73115043@N07',
         ]);
 

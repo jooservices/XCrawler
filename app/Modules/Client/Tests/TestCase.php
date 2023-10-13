@@ -2,6 +2,8 @@
 
 namespace App\Modules\Client\Tests;
 
+use App\Modules\Client\Models\Integration;
+use App\Modules\Client\Models\RequestLog;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
@@ -17,6 +19,11 @@ class TestCase extends \Tests\TestCase
         parent::setUp();
 
         $this->mockFlickr();
+
+        Integration::truncate();
+        RequestLog::truncate();
+
+        Integration::factory()->create();
     }
 
     private function mockFlickr(): void
