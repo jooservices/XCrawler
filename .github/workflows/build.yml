@@ -41,6 +41,10 @@ jobs:
       - name: Lint
         run: composer ${{ matrix.lint }}
 
+      - name: The PHP Security Checker
+        uses: symfonycorp/security-checker-action@v4
+
+
   tests:
     name: Execute UnitTest
     strategy:
