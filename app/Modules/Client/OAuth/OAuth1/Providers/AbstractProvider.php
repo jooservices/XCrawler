@@ -350,11 +350,14 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
     protected function verifyLimit()
     {
         $key = strtolower($this->service()) . '_requests_count';
-        $count = Cache::remember($key, 3600, function () {
+        $count = Cache::remember($key, 0, function () {
             return 0;
         });
 
-        if (!app()->environment('testing') && $count >= Setting::get($this->service() . '_requests_limit', 3600)) {
+        if (
+            Setting::get('system', 'ignore_api_limit', true)
+            && $count >= Setting::get($this->service(), 'requests_limit', 3600)
+        ) {
             throw new RequestLimited('API request limit exceeded.');
         }
 
