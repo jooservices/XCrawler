@@ -355,8 +355,7 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
         });
 
         if (
-            Setting::get('system', 'ignore_api_limit', true)
-            && $count >= Setting::get($this->service(), 'requests_limit', 3600)
+            $count >= Setting::get($this->service(), 'requests_limit', 3600)
         ) {
             throw new RequestLimited('API request limit exceeded.');
         }
