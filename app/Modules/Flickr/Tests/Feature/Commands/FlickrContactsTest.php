@@ -2,8 +2,8 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Commands;
 
-use App\Modules\Client\Tests\TestCase;
 use App\Modules\Flickr\Jobs\FlickrContacts;
+use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Bus;
 
 class FlickrContactsTest extends TestCase

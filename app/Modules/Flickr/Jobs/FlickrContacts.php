@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Flickr\Repositories\ContactRepository;
+use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -37,19 +38,8 @@ class FlickrContacts implements ShouldQueue
      *
      * @return void
      */
-    public function handle(FlickrManager $flickrService)
+    public function handle(FlickrService $flickrService)
     {
-        $contactsService = $flickrService->contacts;
-        $repository = app(ContactRepository::class);
-
-        $contactsService->getList(['page' => $this->page])->each(function ($contact) use ($repository) {
-            $repository->create($contact);
-        });
-
-        if ($this->page === $contactsService->totalPages()) {
-            return;
-        }
-
-        FlickrContacts::dispatch($this->page + 1);
+        $flickrService->contacts($this->page);
     }
 }

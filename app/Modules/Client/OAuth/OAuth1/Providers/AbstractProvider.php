@@ -14,6 +14,7 @@ use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
 use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Services\XClient;
+use App\Modules\Core\Facades\Setting;
 use DateTime;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
@@ -348,12 +349,14 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
 
     protected function verifyLimit()
     {
-        $key = strtolower($this->service()) . '_request_count';
-        $count = Cache::remember($key, 3600, function () {
+        $key = strtolower($this->service()) . '_requests_count';
+        $count = Cache::remember($key, 0, function () {
             return 0;
         });
 
-        if ($count >= 3600) {
+        if (
+            $count >= Setting::get($this->service(), 'requests_limit', 3600)
+        ) {
             throw new RequestLimited('API request limit exceeded.');
         }
 

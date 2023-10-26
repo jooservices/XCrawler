@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Console;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\FlickrPhotos;
 use App\Modules\Flickr\Repositories\ContactRepository;
+use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
 
 class FlickrPeoplePhotos extends Command
@@ -28,17 +29,8 @@ class FlickrPeoplePhotos extends Command
      *
      * @return void
      */
-    public function handle(): void
+    public function handle(FlickrService $service): void
     {
-        /**
-         * @var \App\Modules\Flickr\Models\FlickrContacts $contact
-         */
-        $contact = app(ContactRepository::class)->getContactsForPhotos()->first();
-
-        $contact->update([
-            'state_code' => States::STATE_IN_PROGRESS
-        ]);
-
-        FlickrPhotos::dispatch($contact->nsid)->onQueue('flickr');
+        $service->contactPhotos();
     }
 }

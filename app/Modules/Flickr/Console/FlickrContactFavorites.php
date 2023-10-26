@@ -31,6 +31,6 @@ class FlickrContactFavorites extends Command
      */
     public function handle(): void
     {
-        app(FlickrService::class)->processContacts();
+        app(FlickrService::class)->contactFavorites();
     }
 }

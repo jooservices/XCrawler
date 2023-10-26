@@ -53,6 +53,7 @@ class Flickr extends AbstractProvider
     protected function parseRequestTokenResponse(string $responseBody): TokenInterface
     {
         parse_str($responseBody, $data);
+
         if (!is_array($data)) {
             //throw new TokenResponseException('Unable to parse response.');
         } elseif (!isset($data['oauth_callback_confirmed']) || $data['oauth_callback_confirmed'] != 'true') {

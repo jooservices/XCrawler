@@ -75,7 +75,7 @@
             "@php vendor/bin/phpcs --standard=./phpcs.xml"
         ],
         "test": [
-            "@php vendor/bin/phpunit --coverage-clover coverage-tests.xml --testsuite=Client,JAV,Flickr"
+            "@php vendor/bin/phpunit --coverage-clover coverage-tests.xml --testsuite=Core,Client,JAV,Flickr"
         ]
     },
     "extra": {
