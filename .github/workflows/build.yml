@@ -12,15 +12,18 @@ jobs:
 
   security_check:
     name: Security Check
+    runs-on:
+      - self-hosted
+      - ubuntu
+
     steps:
+        - name: The PHP Security Checker
+          uses: symfonycorp/security-checker-action@v4
 
-      - name: The PHP Security Checker
-        uses: symfonycorp/security-checker-action@v4
-
-      - name: PHP Security Checker
-        uses: StephaneBour/actions-php-security-checker@1.1
-        with:
-        composer-lock: './composer.lock'
+        - name: PHP Security Checker
+          uses: StephaneBour/actions-php-security-checker@1.1
+          with:
+            composer-lock: './composer.lock'
 
   code_standards:
     name: Code standards check
