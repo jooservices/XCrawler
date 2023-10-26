@@ -17,6 +17,15 @@ jobs:
       - ubuntu
 
     steps:
+      - name: Setup PHP with pre-release PECL extension
+        uses: shivammathur/setup-php@v2
+        env:
+          runner: self-hosted
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd, pcntl
+          coverage: pcov
+
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
 
