@@ -3,6 +3,7 @@
 namespace App\Modules\JAV\Services;
 
 use App\Modules\Core\Facades\Setting;
+use App\Modules\Core\Services\AbstractCrudService;
 use App\Modules\JAV\Crawlers\Providers\CrawlerManager;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Daily;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
@@ -14,22 +15,23 @@ use App\Modules\JAV\Repositories\OnejavRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
 
-class OnejavService
+class OnejavService extends AbstractCrudService
 {
+    public const SERVICE_NAME = 'onejav';
+
     public function __construct(private CrawlerManager $service)
     {
     }
 
-    /**
-     * @TODO Move to CRUD Service
-     * @param array $properties
-     * @return Model
-     */
-    public function create(array $properties): Model
+    protected function serviceName(): string
     {
-        return app(OnejavRepository::class)->create($properties);
+        return self::SERVICE_NAME;
+    }
+
+    protected function getRepository(): OnejavRepository
+    {
+        return app(OnejavRepository::class);
     }
 
     public function items(string $url, array $payload = []): Collection
