@@ -180,17 +180,17 @@ return [
     */
 
     'defaults' => [
-        'supervisor-1' => [
+        'default' => [
             'connection' => 'redis',
             'queue' => ['default'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 10,
-            'minProcesses' => 1,
+            'maxProcesses' => 20,
+            'minProcesses' => 4,
             'maxTime' => 0,
             'maxJobs' => 0,
-            'memory' => 128,
-            'tries' => 1,
+            'memory' => 1024,
+            'tries' => 10,
             'timeout' => 60,
             'nice' => 0,
         ],
@@ -199,13 +199,13 @@ return [
             'queue' => ['onejav'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
+            'maxProcesses' => 5,
             'minProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
-            'memory' => 128,
+            'memory' => 1024,
             'tries' => 10,
-            'timeout' => 120,
+            'timeout' => 60,
             'nice' => 0,
         ],
         'oauth' => [
@@ -213,12 +213,12 @@ return [
             'queue' => ['flickr'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 10,
-            'minProcesses' => 2,
+            'maxProcesses' => 1,
+            'minProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
-            'memory' => 128,
-            'tries' => 5,
+            'memory' => 1024,
+            'tries' => 10,
             'timeout' => 60,
             'nice' => 0,
         ]
@@ -226,32 +226,12 @@ return [
 
     'environments' => [
         'production' => [
-            'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-            'onejav' => [
-                'queue' => ['onejav']
-            ]
         ],
 
         'local' => [
-            'supervisor-1' => [
-                'maxProcesses' => 3,
-            ],
-            'onejav' => [
-                'queue' => ['onejav']
-            ]
         ],
 
         'staging' => [
-            'supervisor-1' => [
-                'maxProcesses' => 3,
-            ],
-            'onejav' => [
-                'queue' => ['onejav']
-            ]
         ],
     ],
 ];
