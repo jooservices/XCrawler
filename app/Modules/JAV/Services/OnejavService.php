@@ -63,21 +63,16 @@ class OnejavService
 
         $items = $service->crawl(
             Items::ONEJAV_URL . '/' . $prefix,
-            ['page' => $this->getSetting($slug . '_current_page', 1)],
+            ['page' => Setting::get('onejav', $slug . '_current_page', 1)],
         );
         $this->nextPage($slug);
 
         return $items;
     }
 
-    private function getSetting(string $key, $default = null): mixed
-    {
-        return Setting::remember('onejav', $key, fn() => $default);
-    }
-
     private function nextPage(string $prefix = 'new')
     {
-        $currentPage = $this->getSetting($prefix . '_current_page', 1);
+        $currentPage = Setting::get('onejav', $prefix . '_current_page', 1);
         $lastPage = $this->service->getLastPage();
 
         /**
@@ -101,7 +96,7 @@ class OnejavService
          * Trying because sometimes the page have 404 or 500 error
          * So we will try 3 times with 3 next pages
          */
-        $retried = $this->getSetting($prefix . '_retried', 0);
+        $retried = Setting::get('onejav', $prefix . '_retried', 0);
         $retried = $retried < 3 ? $retried + 1 : 0;
         Setting::setInt('onejav', $prefix . '_retried', $retried);
 
