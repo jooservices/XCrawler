@@ -27,7 +27,6 @@ class MovieService
         $now = Carbon::now();
         MoviePerformer::insert(
             collect($performers)->map(function ($performer) use ($now) {
-
                 return [
                     'uuid' => Str::orderedUuid(),
                     'name' => $performer,
