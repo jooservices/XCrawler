@@ -10,6 +10,18 @@ on:
 
 jobs:
 
+  security_check:
+    name: Security Check
+    steps:
+
+      - name: The PHP Security Checker
+        uses: symfonycorp/security-checker-action@v4
+
+      - name: PHP Security Checker
+        uses: StephaneBour/actions-php-security-checker@1.1
+        with:
+        composer-lock: './composer.lock'
+
   code_standards:
     name: Code standards check
     strategy:
@@ -41,21 +53,13 @@ jobs:
       - name: Lint
         run: composer ${{ matrix.lint }}
 
-      - name: The PHP Security Checker
-        uses: symfonycorp/security-checker-action@v4
+  #      - name: Psalm Security Scan
+  #        uses: docker://ghcr.io/psalm/psalm-security-scan
 
-      - name: PHP Security Checker
-        uses: StephaneBour/actions-php-security-checker@1.1
-        with:
-          composer-lock: './composer.lock'
-
-#      - name: Psalm Security Scan
-#        uses: docker://ghcr.io/psalm/psalm-security-scan
-
-      - name: Import Security Analysis results into GitHub Security Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: results.sarif
+  #      - name: Import Security Analysis results into GitHub Security Code Scanning
+  #        uses: github/codeql-action/upload-sarif@v2
+  #        with:
+  #          sarif_file: results.sarif
 
 
 
