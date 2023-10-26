@@ -17,15 +17,6 @@ jobs:
       - ubuntu
 
     steps:
-      - name: Setup PHP with pre-release PECL extension
-        uses: shivammathur/setup-php@v2
-        env:
-          runner: self-hosted
-        with:
-          php-version: '8.2'
-          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd, pcntl
-          coverage: pcov
-
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
 
@@ -34,15 +25,15 @@ jobs:
         with:
           composer-lock: './composer.lock'
 
-      - name: Psalm
-        uses: docker://ghcr.io/psalm/psalm-github-actions
-        with:
-          security_analysis: true
-          report_file: results.sarif
-      - name: Upload Psalm Security Analysis results to GitHub
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: results.sarif
+#      - name: Psalm
+#        uses: docker://ghcr.io/psalm/psalm-github-actions
+#        with:
+#          security_analysis: true
+#          report_file: results.sarif
+#      - name: Upload Psalm Security Analysis results to GitHub
+#        uses: github/codeql-action/upload-sarif@v2
+#        with:
+#          sarif_file: results.sarif
 
   code_standards:
     name: Code standards check
@@ -75,17 +66,6 @@ jobs:
 
       - name: Lint
         run: composer ${{ matrix.lint }}
-
-  #      - name: Psalm Security Scan
-  #        uses: docker://ghcr.io/psalm/psalm-security-scan
-
-  #      - name: Import Security Analysis results into GitHub Security Code Scanning
-  #        uses: github/codeql-action/upload-sarif@v2
-  #        with:
-  #          sarif_file: results.sarif
-
-
-
 
   tests:
     name: Execute UnitTest
