@@ -6,6 +6,11 @@ use App\Modules\Client\Services\XClient;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 
+/**
+ * Fetching daily items
+ * - URL by date
+ * - Process all pages
+ */
 class Daily extends Items
 {
     private Carbon $date;

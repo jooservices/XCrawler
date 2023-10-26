@@ -9,7 +9,7 @@ use App\Modules\JAV\Models\Onejav as OnejavModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 
-class Onejav extends CrudRepository
+class OnejavRepository extends CrudRepository
 {
     public function __construct()
     {

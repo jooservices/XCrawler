@@ -29,7 +29,5 @@ class CrawlingItems extends Command
     public function handle(): void
     {
         OnejavCrawlingItems::dispatch($this->argument('url'))->onQueue('onejav');
-
-        return;
     }
 }

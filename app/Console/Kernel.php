@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Modules\Core\Facades\Setting;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -21,12 +22,14 @@ class Kernel extends ConsoleKernel
         $schedule->command('onejav:crawling-daily')->daily();
         $schedule->command('onejav:crawling-all');
 
-        /**
-         * Flickr
-         */
-        $schedule->command('flickr:contacts')->weekly();
-        $schedule->command('flickr:people-photos')->everyMinute();
-        $schedule->command('flickr:contact-favorites')->everyMinute();
+        if (Setting::get('flickr', 'enable_schedule', false)) {
+            /**
+             * Flickr
+             */
+            $schedule->command('flickr:contacts')->weekly();
+            $schedule->command('flickr:people-photos')->everyMinute();
+            $schedule->command('flickr:contact-favorites')->everyMinute();
+        }
     }
 
     /**

@@ -10,15 +10,31 @@ use App\Modules\JAV\Events\OnejavAllCompleted;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;
 use App\Modules\JAV\Events\OnejavRetried;
+use App\Modules\JAV\Repositories\OnejavRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
 
 class OnejavService
 {
+    public function __construct(private CrawlerManager $service)
+    {
+    }
+
+    /**
+     * @TODO Move to CRUD Service
+     * @param array $properties
+     * @return Model
+     */
+    public function create(array $properties): Model
+    {
+        return app(OnejavRepository::class)->create($properties);
+    }
+
     public function items(string $url, array $payload = []): Collection
     {
-        $items = app(CrawlerManager::class)
+        $items = $this->service
             ->setProvider(app(Items::class))
             ->crawl($url, $payload);
 
@@ -30,7 +46,7 @@ class OnejavService
     public function daily(): Collection
     {
         $daily = app(Daily::class);
-        $items = app(CrawlerManager::class)
+        $items = $this->service
             ->setProvider($daily)
             ->crawl($daily->getUrl());
 
@@ -43,31 +59,31 @@ class OnejavService
     public function all(string $prefix = 'new'): Collection
     {
         $slug = Str::slug($prefix);
-        $service = app(CrawlerManager::class)->setProvider(app(Items::class));
+        $service = $this->service->setProvider(app(Items::class));
 
         $items = $service->crawl(
             Items::ONEJAV_URL . '/' . $prefix,
             ['page' => $this->getSetting($slug . '_current_page', 1)],
         );
-        $this->nextPage($service, $slug);
+        $this->nextPage($slug);
 
         return $items;
     }
 
     private function getSetting(string $key, $default = null): mixed
     {
-        return Setting::remember('onejav', $key, fn () => $default);
+        return Setting::remember('onejav', $key, fn() => $default);
     }
 
-    private function nextPage(CrawlerManager $service, string $prefix = 'new')
+    private function nextPage(string $prefix = 'new')
     {
         $currentPage = $this->getSetting($prefix . '_current_page', 1);
-        $lastPage = $service->getLastPage();
+        $lastPage = $this->service->getLastPage();
 
         /**
          * Normally
          */
-        if (!in_array($service->getResponse()->getStatusCode(), [404, 500])) {
+        if (!in_array($this->service->getResponse()->getStatusCode(), [404, 500])) {
             Setting::setInt('onejav', $prefix . '_last_page', $lastPage);
             if ($currentPage < $lastPage) {
                 Setting::increment('onejav', $prefix . '_current_page');
