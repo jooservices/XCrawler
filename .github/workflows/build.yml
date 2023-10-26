@@ -17,16 +17,27 @@ jobs:
       - ubuntu
 
     steps:
-        - name: The PHP Security Checker
-          uses: symfonycorp/security-checker-action@v4
+      - name: The PHP Security Checker
+        uses: symfonycorp/security-checker-action@v4
 
-        - name: PHP Security Checker
-          uses: StephaneBour/actions-php-security-checker@1.1
-          with:
-            composer-lock: './composer.lock'
+      - name: PHP Security Checker
+        uses: StephaneBour/actions-php-security-checker@1.1
+        with:
+          composer-lock: './composer.lock'
+
+      - name: Psalm
+        uses: docker://ghcr.io/psalm/psalm-github-actions
+        with:
+          security_analysis: true
+          report_file: results.sarif
+      - name: Upload Psalm Security Analysis results to GitHub
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif
 
   code_standards:
     name: Code standards check
+    needs: [ security_check ]
     strategy:
       matrix:
         lint: [ phpstan, phpmd, phpcs ]
