@@ -33,7 +33,5 @@ class CrawlingAll extends Command
         foreach ($subpages as $page) {
             OnejavCrawlingAll::dispatch($page)->onQueue('onejav');
         }
-
-        return;
     }
 }

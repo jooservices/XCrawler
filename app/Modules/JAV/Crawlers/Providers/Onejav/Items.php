@@ -59,11 +59,11 @@ class Items extends AbstractProvider
         }
 
         if ($crawler->filter('.columns img.image')->count()) {
-            $item->cover = trim($crawler->filter('.columns img.image')->attr('src'));
+            $item->cover = $crawler->filter('.columns img.image')->attr('src');
         }
 
         if ($crawler->filter('h5 a')->count()) {
-            $item->dvd_id = (trim($crawler->filter('h5 a')->text(null, false)));
+            $item->dvd_id = $crawler->filter('h5 a')->text(null, false);
             $item->dvd_id = implode(
                 '-',
                 preg_split('/(,?\\s+)|((?<=[a-z])(?=\\d))|((?<=\\d)(?=[a-z]))/i', $item->dvd_id)
@@ -71,7 +71,7 @@ class Items extends AbstractProvider
         }
 
         if ($crawler->filter('h5 span')->count()) {
-            $size = trim($crawler->filter('h5 span')->text(null, false));
+            $size = $crawler->filter('h5 span')->text(null, false);
 
             if (str_contains($size, 'MB')) {
                 $item->size = (float)trim(str_replace('MB', '', $size));
@@ -98,7 +98,7 @@ class Items extends AbstractProvider
 
         // Description
         $description = $crawler->filter('.level.has-text-grey-dark');
-        $item->description = $description->count() ? trim($description->text(null, false)) : null;
+        $item->description = $description->count() ? $description->text(null, false) : null;
         $item->description = preg_replace("/\r|\n/", '', $item->description);
 
         $item->performers = collect($crawler->filter('.panel .panel-block')->each(

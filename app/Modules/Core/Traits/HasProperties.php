@@ -30,6 +30,7 @@ trait HasProperties
 
     public function setProperty(string $key, mixed $value): void
     {
+        $value = is_string($value) ? trim($value) : $value;
         $this->properties->put($key, $value);
     }
 
@@ -40,7 +41,9 @@ trait HasProperties
 
     public function setProperties(array $properties): void
     {
-        $this->properties->merge($properties);
+        foreach ($properties as $key => $value) {
+            $this->setProperty($key, $value);
+        }
     }
 
     public function hasProperty(string $key): bool

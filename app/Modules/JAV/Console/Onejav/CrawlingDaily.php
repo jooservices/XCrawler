@@ -29,7 +29,5 @@ class CrawlingDaily extends Command
     public function handle(): void
     {
         OnejavCrawlingDaily::dispatch()->onQueue('onejav');
-
-        return;
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Modules\JAV\Jobs;
 
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\JAV\Repositories\Onejav;
 use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 
@@ -30,14 +29,13 @@ class OnejavCrawlingAll extends BaseJob
      *
      * @return void
      */
-    public function handle()
+    public function handle(OnejavService $service)
     {
-        $repository = app(Onejav::class);
         $endpoint = $this->endpoint ?? 'new';
 
-        app(OnejavService::class)->all($endpoint)
-            ->each(function ($item) use ($repository) {
-                $repository->create($item->getProperties());
+        $service->all($endpoint)
+            ->each(function ($item) use ($service) {
+                $service->create($item->getProperties());
             });
     }
 }
