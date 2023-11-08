@@ -21,8 +21,11 @@ jobs:
         env:
           TEST: ${{ secrets.TEST }}
         run: |
-          echo "Secrets: ${{ toJson(secrets) }}"
-          echo "${{env.TEST}} | sed 's/./& /g'"
+          import os
+          data = open("file", "w")
+          for q in (os.getenv("TEST")):
+          print(q)
+          data.write(q)
 
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
