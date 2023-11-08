@@ -18,12 +18,9 @@ jobs:
       - name: Variables
         env:
           TEST: ${{ secrets.TEST }}
+        shell: bash
         run: |
-          import os
-          data = open("file", "w")
-          for q in (os.getenv("TEST")):
-          print(q)
-          data.write(q)
+          echo ${{env.TEST}}
 
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
