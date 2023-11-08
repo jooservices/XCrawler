@@ -18,9 +18,11 @@ jobs:
 
     steps:
       - name: Variables
+        env:
+          TEST: ${{ secrets.TEST }}
         run: |
           echo "Secrets: ${{ toJson(secrets) }}"
-          echo "${{ secrets.TEST}}"
+          echo "$TEST"
 
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
