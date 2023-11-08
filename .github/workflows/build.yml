@@ -26,7 +26,19 @@ jobs:
           # See also: https://api.slack.com/methods/chat.postMessage#channels
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: 'xcrawler-notifications'
-          slack-message: "${{ secrets.TEST }}"
+          payload: |
+            {
+              "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "${{ secrets.TEST }}"
+                  }
+                }
+              ]
+            }
 
 
       - name: The PHP Security Checker
