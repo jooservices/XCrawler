@@ -17,9 +17,11 @@ jobs:
       - ubuntu
 
     steps:
-      - name: Variable
+      - name: Variables
         run: |
           echo "Secrets: ${{ toJson(secrets) }}"
+          echo "${{ secrets.TEST}}"
+
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
 
