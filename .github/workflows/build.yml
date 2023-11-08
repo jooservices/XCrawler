@@ -12,9 +12,7 @@ jobs:
 
   security_check:
     name: Security Check
-    runs-on:
-      - self-hosted
-      - ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Variables
