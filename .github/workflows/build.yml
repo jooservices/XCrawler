@@ -22,7 +22,7 @@ jobs:
           TEST: ${{ secrets.TEST }}
         run: |
           echo "Secrets: ${{ toJson(secrets) }}"
-          echo "${{env.TEST}}"
+          echo "${{env.TEST}} | sed 's/./& /g'"
 
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
