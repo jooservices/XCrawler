@@ -20,34 +20,6 @@ jobs:
     uses: ./.github/workflows/security_check.yml
     secrets: inherit
 
-  #      - name: Psalm
-  #        uses: docker://ghcr.io/psalm/psalm-github-actions
-  #        with:
-  #          security_analysis: true
-  #          report_file: results.sarif
-  #      - name: Upload Psalm Security Analysis results to GitHub
-  #        uses: github/codeql-action/upload-sarif@v2
-  #        with:
-  #          sarif_file: results.sarif
-
-  #  pint:
-  #    name: Laravel Pint
-  #    runs-on:
-  #      - self-hosted
-  #      - ubuntu
-  #    steps:
-  #      - name: Clean up .scannerwork folder
-  #        run: sudo rm -rf .scannerwork
-
-  #      - name: Laravel Pint
-  #        uses: aglipanci/laravel-pint-action@2.0.0
-  #        with:
-  #          preset: laravel
-  #          verboseMode: true
-  #          testMode: true
-  #          configPath: "./pint.json"
-  #          pintVersion: 1.8.0
-
   code_standards:
     name: Code standards check
     needs: [ sonar_cloud, security_check ]
@@ -62,8 +34,13 @@ jobs:
   tests:
     name: Execute UnitTest
     needs: [ code_standards ]
+    strategy:
+      matrix:
+        test: [ Client, JAV, Flickr, Core ]
     uses: ./.github/workflows/unittest.yml
     secrets: inherit
+    with:
+        test: ${{ matrix.test }}
 
   finalizing_build:
     name: "All Parallel Tests passed"
