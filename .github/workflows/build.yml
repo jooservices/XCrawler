@@ -51,8 +51,13 @@ jobs:
   code_standards:
     name: Code standards check
     needs: [ sonar_cloud, security_check ]
+    strategy:
+      matrix:
+        lint: [ phpstan, phpmd, phpcs ]
     uses: ./.github/workflows/code_standards.yml
     secrets: inherit
+    with:
+      lint: ${{ matrix.lint }}
 
   tests:
     name: Execute UnitTest
