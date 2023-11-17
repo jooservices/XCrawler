@@ -11,7 +11,13 @@ on:
 jobs:
 
   sonar_cloud:
-    uses: ./.github/workflows/sonar_cloud.yml
+    name: SonarCloud
+    runs-on:
+      - self-hosted
+      - ubuntu
+
+    steps:
+     - uses: ./.github/workflows/sonar_cloud.yml
 
   security_check:
     name: Security Check
