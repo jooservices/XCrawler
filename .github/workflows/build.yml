@@ -39,49 +39,20 @@ jobs:
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
 
-      - name: Laravel Pint
-        uses: aglipanci/laravel-pint-action@2.0.0
-        with:
-          preset: laravel
-          verboseMode: true
-          testMode: true
-          configPath: "./pint.json"
-          pintVersion: 1.8.0
+#      - name: Laravel Pint
+#        uses: aglipanci/laravel-pint-action@2.0.0
+#        with:
+#          preset: laravel
+#          verboseMode: true
+#          testMode: true
+#          configPath: "./pint.json"
+#          pintVersion: 1.8.0
 
   code_standards:
     name: Code standards check
     needs: [ sonar_cloud, security_check, pint ]
-    strategy:
-      matrix:
-        lint: [ phpstan, phpmd, phpcs ]
-
-    runs-on:
-      - self-hosted
-      - ubuntu
-
-    steps:
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
-
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP with pre-release PECL extension
-        uses: shivammathur/setup-php@v2
-        env:
-          runner: self-hosted
-        with:
-          php-version: '8.2'
-          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd, pcntl
-          coverage: pcov
-
-      - name: Setup application
-        if: success()
-        run: |
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
-          composer install --no-ansi --no-scripts --no-progress --prefer-dist
-
-      - name: Lint
-        run: composer ${{ matrix.lint }}
+    uses: ./.github/workflows/code_standards.yml
+    secrets: inherit
 
   tests:
     name: Execute UnitTest

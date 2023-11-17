@@ -1,11 +1,11 @@
-name: Security Check
+name: Security check
 
 on:
   workflow_call:
 
 jobs:
   security_check:
-    name: Security Check
+    name: Security check
     runs-on:
       - self-hosted
       - ubuntu
