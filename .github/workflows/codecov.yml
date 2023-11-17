@@ -1,0 +1,33 @@
+name: Codecov
+
+on:
+  workflow_call:
+
+jobs:
+  codecov:
+    name: Codecov
+    runs-on:
+      - self-hosted
+      - ubuntu
+    steps:
+      - name: Download build from artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-reports
+          path: ./reports
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        if: success() && github.event.pull_request.draft == false
+        env:
+          CODECOV_TOKEN: ${{ secrets.PUBLIC_CODECOV_TOKEN }}
+          directory: ./reports
+
+      - name: 'Cleanup build folder'
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - uses: actions/checkout@v4

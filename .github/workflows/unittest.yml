@@ -1,0 +1,68 @@
+name: UnitTest
+
+on:
+  workflow_call:
+    inputs:
+      test:
+        required: true
+        type: string
+
+jobs:
+  unittest:
+    name: UnitTest
+    runs-on:
+      - self-hosted
+      - ubuntu
+
+    services:
+      mariadb:
+        image: mariadb
+        ports:
+          - 3306:3306
+        env:
+          MARIADB_DATABASE: laravel
+          MARIADB_PASSWORD: root
+          MARIADB_ROOT_PASSWORD: root
+
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+
+    steps:
+      - name: Clean up .scannerwork folder
+        run: sudo rm -rf .scannerwork
+
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP with pre-release PECL extension
+        uses: shivammathur/setup-php@v2
+        env:
+          runner: self-hosted
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
+          coverage: pcov
+
+      - name: Setup application
+        if: success()
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          composer install --no-ansi --no-scripts --no-progress --prefer-dist
+          php artisan key:generate
+          chmod -R 777 storage bootstrap/cache
+          php artisan config:clear
+          php artisan migrate:fresh
+
+      - name: Execute tests (Unit and Feature tests) via PHPUnit
+        if: success()
+        run: |
+          ./vendor/bin/phpunit --coverage-clover coverage-tests-${{ inputs.test }}.xml --testsuite=${{ inputs.test }}
+
+      - name: Coverage
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: coverage-reports
+          path: coverage-tests-${{ inputs.test }}.xml
+          retention-days: 1

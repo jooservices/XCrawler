@@ -1,0 +1,84 @@
+name: Sonarcloud
+
+on:
+  workflow_call:
+
+jobs:
+  sonar_cloud:
+    name: SonarCloud
+    runs-on:
+      - self-hosted
+      - ubuntu
+    steps:
+      - name: Clean up .scannerwork folder
+        run: sudo rm -rf .scannerwork
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.PUBLIC_SONAR_TOKEN }}
+
+      - name: Post to a Slack channel
+        if: failure()
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+          channel-id: 'github-notifications'
+          # For posting a simple plain text message
+          payload: |
+            {
+            	"attachments": [
+            		{
+            			"color": "#FF0000",
+            			"blocks": [
+            				{
+            					"type": "section",
+            					"text": {
+            						"type": "mrkdwn",
+            						"text": "Sonarcloud failed"
+            					}
+            				},
+            				{
+            					"type": "section",
+            					"fields": [
+            						{
+            							"type": "mrkdwn",
+            							"text": "*Name:*\n ${{ github.event_name }} "
+            						},
+            						{
+            							"type": "mrkdwn",
+            							"text": "*Type:*\n ${{ github.event.action }} ${{ github.event.ref_type }} ${{ github.event.ref }}"
+            						}
+            					]
+            				},
+            				{
+            					"type": "section",
+            					"fields": [
+            						{
+            							"type": "mrkdwn",
+            							"text": "*Branch:*\n ${{ github.event.pull_request.head.ref }}"
+            						},
+            						{
+            							"type": "mrkdwn",
+            							"text": "*Status:*\n `${{ job.status }}`"
+            						}
+            					]
+            				},
+            				{
+            					"type": "context",
+            					"elements": [
+            						{
+            							"type": "mrkdwn",
+            							"text": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+            						}
+            					]
+            				}
+            			]
+            		}
+            	]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.PUBLIC_SLACK_BOT_TOKEN }}

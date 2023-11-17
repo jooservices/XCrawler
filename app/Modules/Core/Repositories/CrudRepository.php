@@ -2,29 +2,20 @@
 
 namespace App\Modules\Core\Repositories;
 
+use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
-class CrudRepository
+class CrudRepository extends ItemsRepository
 {
-    protected Model $model;
-
     public function create(array $attributes): Model
     {
-        return $this->getModel()->create(Arr::only($attributes, $this->getColumns()));
-    }
-
-    public function getModel(): Model
-    {
-        return $this->model;
-    }
-
-    public function setModel(Model $model): self
-    {
-        $this->model = $model;
-
-        return $this;
+        return $this->getModel()
+            ->newQuery()
+            ->create(Arr::only($attributes, $this->getColumns()));
     }
 
     protected function getColumns()
@@ -32,13 +23,25 @@ class CrudRepository
         return Schema::getColumnListing($this->getModel()->getTable());
     }
 
-    public function update(array $attributes): bool
+    public function get(string $uuid): Model
     {
-        return $this->getModel()->update(Arr::only($attributes, $this->getColumns()));
+        return $this->getModel()
+            ->newModelQuery()
+            ->where('uuid', $uuid)->firstOrFail();
     }
 
-    public function delete(): bool
+    public function update(string $uuid, array $attributes): bool
     {
-        return $this->getModel()->delete();
+        return $this->getModel()
+            ->newModelQuery()
+            ->where('uuid', $uuid)
+            ->update(Arr::only($attributes, $this->getColumns()));
+    }
+
+    public function delete(string $uuid): bool
+    {
+        return $this->getModel()
+            ->newModelQuery()
+            ->where('uuid', $uuid)->delete();
     }
 }

@@ -1,0 +1,39 @@
+name: Code standards check
+
+on:
+  workflow_call:
+    inputs:
+      lint:
+        required: true
+        type: string
+
+jobs:
+  code_standards_check:
+    name: Code standards check
+    runs-on:
+      - self-hosted
+      - ubuntu
+
+    steps:
+      - name: Clean up .scannerwork folder
+        run: sudo rm -rf .scannerwork
+
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP with pre-release PECL extension
+        uses: shivammathur/setup-php@v2
+        env:
+          runner: self-hosted
+        with:
+          php-version: '8.2'
+          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd, pcntl
+          coverage: pcov
+
+      - name: Setup application
+        if: success()
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          composer install --no-ansi --no-scripts --no-progress --prefer-dist
+
+      - name: Lint
+        run: composer ${{ inputs.lint }}
