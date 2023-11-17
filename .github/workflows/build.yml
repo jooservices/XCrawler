@@ -28,6 +28,9 @@ jobs:
         with:
           composer-lock: './composer.lock'
 
+      - name: Clean up .scannerwork folder
+        run: docker run -v "$(pwd):/usr/src" sonarsource/sonar-scanner-cli rm -rf .scannerwork
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
