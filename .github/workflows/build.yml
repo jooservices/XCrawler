@@ -17,8 +17,28 @@ jobs:
       - ubuntu
 
     steps:
-      - name: Post to a Slack channel
+      - name: Clean up .scannerwork folder
+        run: sudo rm -rf .scannerwork
 
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: The PHP Security Checker
+        uses: symfonycorp/security-checker-action@v4
+
+      - name: PHP Security Checker
+        uses: StephaneBour/actions-php-security-checker@1.1
+        with:
+          composer-lock: './composer.lock'
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.PUBLIC_SONAR_TOKEN }}
+
+      - name: Post to a Slack channel
+        if: failure()
         uses: slackapi/slack-github-action@v1.24.0
         with:
           # Slack channel id, channel name, or user id to post message.
@@ -26,7 +46,6 @@ jobs:
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: 'github-notifications'
           # For posting a simple plain text message
-          slack-message: "[!warning]Security failed \n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
           payload: |
             {
             	"attachments": [
@@ -81,26 +100,6 @@ jobs:
             }
         env:
           SLACK_BOT_TOKEN: ${{ secrets.PUBLIC_SLACK_BOT_TOKEN }}
-
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: The PHP Security Checker
-        uses: symfonycorp/security-checker-action@v4
-
-      - name: PHP Security Checker
-        uses: StephaneBour/actions-php-security-checker@1.1
-        with:
-          composer-lock: './composer.lock'
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.PUBLIC_SONAR_TOKEN }}
 
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
