@@ -6,6 +6,9 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessiveClassComplexity)
+ */
 class ItemsRepository extends BaseRepository
 {
     protected Builder $baseQuery;
@@ -37,7 +40,9 @@ class ItemsRepository extends BaseRepository
             $this->baseQuery = $options['model']->newQuery();
         } elseif ($options->has('source')) {
             $this->baseQuery = $options['source'];
-        } else {
+        }
+
+        if (!isset($this->baseQuery)) {
             $this->baseQuery = $this->getModel()->newQuery();
         }
 
@@ -94,6 +99,9 @@ class ItemsRepository extends BaseRepository
         );
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereAfter(Collection $options): void
     {
         if (!is_array($options->get('whereAfter')) || empty($options->get('whereAfter'))) {
@@ -108,6 +116,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function where(Collection $options): void
     {
         if (is_array($options->get('where'))) {
@@ -121,6 +132,9 @@ class ItemsRepository extends BaseRepository
         $this->baseQuery->where($options->get('where'));
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereIn(Collection $options): void
     {
         if (!is_array($options->get('whereIn')) || empty($options->get('whereIn'))) {
@@ -135,6 +149,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereNull(Collection $options)
     {
         if (!is_array($options->get('whereNull')) || empty($options->get('whereNull'))) {
@@ -146,6 +163,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereNotNull(Collection $options)
     {
         if (!is_array($options->get('whereNotNull')) || empty($options->get('whereNotNull'))) {
@@ -157,6 +177,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereNotEmpty(Collection $options): void
     {
         if (!is_array($options->get('whereNotEmpty')) || empty($options->get('whereNotEmpty'))) {
@@ -168,6 +191,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereHas(Collection $options): void
     {
         if (!is_array($options->get('whereHas')) || empty($options->get('whereHas'))) {
@@ -183,6 +209,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereHasIn(Collection $options): void
     {
         if (!is_array($options->get('whereHasIn')) || empty($options->get('whereHasIn'))) {
@@ -198,6 +227,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function whereDoesntHave(Collection $options): void
     {
         if (!is_array($options->get('whereDoesntHave')) || empty($options->get('whereHasIn'))) {
@@ -211,6 +243,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function has(Collection $options): void
     {
         if (!is_array($options->get('has')) || empty($options->get('has'))) {
@@ -222,6 +257,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function doesntHave(Collection $options)
     {
         if (!is_array($options->get('doesntHave')) || empty($options->get('doesntHave'))) {
@@ -233,6 +271,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function search(Collection $options): void
     {
         if (!$options->has('searchIn') || !$options->get('searchIn')) {
@@ -257,6 +298,9 @@ class ItemsRepository extends BaseRepository
         });
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function addSelect(Collection $options): void
     {
         if (!$options->has('addSelect') || !$options->get('addSelect')) {
@@ -268,6 +312,9 @@ class ItemsRepository extends BaseRepository
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
+     */
     private function groupBy(Collection $options): void
     {
         $groupsBy = $options->get('groupBy');
