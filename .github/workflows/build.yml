@@ -198,7 +198,7 @@ jobs:
 
   code_standards:
     name: Code standards check
-    needs: [ security_check, sonar_cloud ]
+    needs: [ sonar_cloud, security_check ]
     strategy:
       matrix:
         lint: [ phpstan, phpmd, phpcs ]
@@ -208,6 +208,9 @@ jobs:
       - ubuntu
 
     steps:
+      - name: Clean up .scannerwork folder
+        run: sudo rm -rf .scannerwork
+
       - uses: actions/checkout@v4
 
       - name: Setup PHP with pre-release PECL extension
