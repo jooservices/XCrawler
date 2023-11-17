@@ -1,23 +1,29 @@
-name: Sonarcloud
+name: Security Check
 
 on:
   workflow_call:
 
 jobs:
-  sonar_cloud:
-    name: SonarCloud
+  security_check:
+    name: Security Check
     runs-on:
       - self-hosted
       - ubuntu
+
     steps:
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.PUBLIC_SONAR_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: The PHP Security Checker
+        uses: symfonycorp/security-checker-action@v4
+
+      - name: PHP Security Checker
+        uses: StephaneBour/actions-php-security-checker@1.1
+        with:
+          composer-lock: './composer.lock'
 
       - name: Post to a Slack channel
         if: failure()
@@ -38,7 +44,7 @@ jobs:
             					"type": "section",
             					"text": {
             						"type": "mrkdwn",
-            						"text": "Sonarcloud failed"
+            						"text": "Security failed"
             					}
             				},
             				{
