@@ -3,7 +3,7 @@
 namespace App\Modules\Core\Repositories;
 
 use Illuminate\Contracts\Database\Query\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 class ItemsRepository extends BaseRepository
