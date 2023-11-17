@@ -11,6 +11,7 @@ on:
 jobs:
 
   sonar_cloud:
+    name: SonarCloud
     runs-on:
       - self-hosted
       - ubuntu
