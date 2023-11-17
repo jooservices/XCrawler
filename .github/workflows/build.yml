@@ -177,7 +177,11 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.PUBLIC_CODECOV_TOKEN }}
           directory: ./reports
 
-      - name: "Finalizing Tasks"
-        if: success()
+      - name: 'Cleanup build folder'
         run: |
-          echo "Build finished"
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - uses: actions/checkout@v4
