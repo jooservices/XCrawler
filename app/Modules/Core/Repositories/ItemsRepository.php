@@ -2,8 +2,8 @@
 
 namespace App\Modules\Core\Repositories;
 
-use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 
 class ItemsRepository extends BaseRepository
@@ -61,7 +61,7 @@ class ItemsRepository extends BaseRepository
         ];
 
         foreach ($queries as $query) {
-            if (!$options->has($query) || !$options->input($query)) {
+            if (!$options->has($query) || !$options->get($query)) {
                 continue;
             }
 
