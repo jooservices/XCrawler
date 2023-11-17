@@ -198,7 +198,7 @@ jobs:
 
   code_standards:
     name: Code standards check
-    needs: [ security_check ]
+    needs: [ security_check, sonar_cloud ]
     strategy:
       matrix:
         lint: [ phpstan, phpmd, phpcs ]
