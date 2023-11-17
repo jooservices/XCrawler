@@ -35,28 +35,10 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.PUBLIC_SONAR_TOKEN }}
 
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
-
-  slack_notification:
-    name: Post to a Slack channel
-    if: success()
-    runs-on:
-      - self-hosted
-      - ubuntu
-    steps:
-      - uses: slackapi/slack-github-action@v1.24.0
-        with:
-          # Slack channel id, channel name, or user id to post message.
-          # See also: https://api.slack.com/methods/chat.postMessage#channels
-          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
-          channel-id: 'github-notifications'
-          # For posting a simple plain text message
-          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   #      - name: Psalm
   #        uses: docker://ghcr.io/psalm/psalm-github-actions
@@ -191,7 +173,7 @@ jobs:
         uses: codecov/codecov-action@v3
         if: success() && github.event.pull_request.draft == false
         env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          CODECOV_TOKEN: ${{ secrets.PUBLIC_CODECOV_TOKEN }}
           directory: ./reports
 
       - name: "Finalizing Tasks"
