@@ -26,9 +26,10 @@ jobs:
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: 'github-notifications'
           # For posting a simple plain text message
-          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+          slack-message: "[!warning]Security failed \n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.PUBLIC_SLACK_BOT_TOKEN }}
+
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
 
@@ -51,6 +52,8 @@ jobs:
 
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
+
+
   #      - name: Psalm
   #        uses: docker://ghcr.io/psalm/psalm-github-actions
   #        with:
