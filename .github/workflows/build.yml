@@ -30,121 +30,38 @@ jobs:
   #        with:
   #          sarif_file: results.sarif
 
-  pint:
-    name: Laravel Pint
-    runs-on:
-      - self-hosted
-      - ubuntu
-    steps:
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
+  #  pint:
+  #    name: Laravel Pint
+  #    runs-on:
+  #      - self-hosted
+  #      - ubuntu
+  #    steps:
+  #      - name: Clean up .scannerwork folder
+  #        run: sudo rm -rf .scannerwork
 
-#      - name: Laravel Pint
-#        uses: aglipanci/laravel-pint-action@2.0.0
-#        with:
-#          preset: laravel
-#          verboseMode: true
-#          testMode: true
-#          configPath: "./pint.json"
-#          pintVersion: 1.8.0
+  #      - name: Laravel Pint
+  #        uses: aglipanci/laravel-pint-action@2.0.0
+  #        with:
+  #          preset: laravel
+  #          verboseMode: true
+  #          testMode: true
+  #          configPath: "./pint.json"
+  #          pintVersion: 1.8.0
 
   code_standards:
     name: Code standards check
-    needs: [ sonar_cloud, security_check, pint ]
+    needs: [ sonar_cloud, security_check ]
     uses: ./.github/workflows/code_standards.yml
     secrets: inherit
 
   tests:
     name: Execute UnitTest
-    strategy:
-      matrix:
-        lint: [ Client, JAV, Flickr, Core ]
-
-    runs-on:
-      - self-hosted
-      - ubuntu
-
     needs: [ code_standards ]
-
-    services:
-      mariadb:
-        image: mariadb
-        ports:
-          - 3306:3306
-        env:
-          MARIADB_DATABASE: laravel
-          MARIADB_PASSWORD: root
-          MARIADB_ROOT_PASSWORD: root
-
-      mongodb:
-        image: mongo
-        ports:
-          - 27017:27017
-
-    steps:
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
-
-      - uses: actions/checkout@v4
-
-      - name: Setup PHP with pre-release PECL extension
-        uses: shivammathur/setup-php@v2
-        env:
-          runner: self-hosted
-        with:
-          php-version: '8.2'
-          extensions: mbstring, intl, redis, pdo_mysql, mongodb, gd
-          coverage: pcov
-
-      - name: Setup application
-        if: success()
-        run: |
-          php -r "file_exists('.env') || copy('.env.example', '.env');"
-          composer install --no-ansi --no-scripts --no-progress --prefer-dist
-          php artisan key:generate
-          chmod -R 777 storage bootstrap/cache
-          php artisan config:clear
-          php artisan migrate:fresh
-
-      - name: Execute tests (Unit and Feature tests) via PHPUnit
-        if: success()
-        run: |
-          ./vendor/bin/phpunit --coverage-clover coverage-tests-${{ matrix.lint }}.xml --testsuite=${{ matrix.lint }}
-
-      - name: Coverage
-        uses: actions/upload-artifact@v3
-        if: success()
-        with:
-          name: coverage-reports
-          path: coverage-tests-${{ matrix.lint }}.xml
-          retention-days: 1
+    uses: ./.github/workflows/unittest.yml
+    secrets: inherit
 
   finalizing_build:
     name: "All Parallel Tests passed"
-    runs-on:
-      - self-hosted
-      - ubuntu
     needs: [ tests ]
-
-    steps:
-      - name: Download build from artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-reports
-          path: ./reports
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        if: success() && github.event.pull_request.draft == false
-        env:
-          CODECOV_TOKEN: ${{ secrets.PUBLIC_CODECOV_TOKEN }}
-          directory: ./reports
-
-      - name: 'Cleanup build folder'
-        run: |
-          ls -la ./
-          rm -rf ./* || true
-          rm -rf ./.??* || true
-          ls -la ./
-
-      - uses: actions/checkout@v4
+    uses: ./.github/workflows/codecov.yml
+    secrets: inherit
