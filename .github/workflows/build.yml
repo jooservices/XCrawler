@@ -40,6 +40,21 @@ jobs:
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
 
+  slack_notification:
+    name: Post to a Slack channel
+    id: slack
+    if: success()
+    uses: slackapi/slack-github-action@v1.24.0
+    with:
+      # Slack channel id, channel name, or user id to post message.
+      # See also: https://api.slack.com/methods/chat.postMessage#channels
+      # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+      channel-id: 'CHANNEL_ID,ANOTHER_CHANNEL_ID'
+      # For posting a simple plain text message
+      slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+    env:
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
 #      - name: Psalm
 #        uses: docker://ghcr.io/psalm/psalm-github-actions
 #        with:
@@ -176,72 +191,18 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
           directory: ./reports
 
-      - name: Slack Notification
+      - name: Post to a Slack channel
         id: slack
         uses: slackapi/slack-github-action@v1.24.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_NOTIFICATIONS }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
           # Slack channel id, channel name, or user id to post message.
           # See also: https://api.slack.com/methods/chat.postMessage#channels
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
-          channel-id: 'xcrawler-notifications'
-
-          # This data can be any valid JSON from a previous step in the GitHub Action
-          # For posting a rich message using Block Kit
-          payload: |
-            {
-              "attachments": [
-                {
-                  "blocks": [
-                    {
-                      "type": "header",
-                      "text": {
-                        "type": "plain_text",
-                        "text": "PR passed",
-                        "emoji": true
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Name:*\n ${{ github.event_name }} "
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Type:*\n ${{ github.event.action }} ${{ github.event.ref_type }} ${{ github.event.ref }}"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Branch:*\n ${{ github.event.pull_request.head.ref }}"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Status:*\n `${{ job.status }}`"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "context",
-                      "elements": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
+          channel-id: 'CHANNEL_ID,ANOTHER_CHANNEL_ID'
+          # For posting a simple plain text message
+          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
       - name: "Finalizing Tasks"
         if: success()
