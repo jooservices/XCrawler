@@ -1,0 +1,49 @@
+# https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions
+name: XCrawler - Build & Tests
+
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
+on:
+  # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
+  pull_request:
+    branches: [ develop ]
+    types: [ closed ]
+
+jobs:
+
+  sonar_cloud:
+    name: SonarCloud
+    uses: ./.github/workflows/sonar_cloud.yml
+    secrets: inherit
+
+  security_check:
+    name: Security check
+    uses: ./.github/workflows/security_check.yml
+    secrets: inherit
+
+  code_standards:
+    name: Code standards check
+    needs: [ sonar_cloud, security_check ]
+    strategy:
+      matrix:
+        lint: [ phpstan, phpmd, phpcs ]
+    uses: ./.github/workflows/code_standards.yml
+    with:
+      lint: ${{ matrix.lint }}
+    secrets: inherit
+
+  tests:
+    name: Execute UnitTest
+    needs: [ code_standards ]
+    strategy:
+      matrix:
+        test: [ Client, JAV, Flickr, Core ]
+    uses: ./.github/workflows/unittest.yml
+    with:
+      test: ${{ matrix.test }}
+    secrets: inherit
+
+  finalizing_build:
+    name: "All Parallel Tests passed"
+    needs: [ tests ]
+    uses: ./.github/workflows/codecov.yml
+    secrets: inherit
