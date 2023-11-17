@@ -42,40 +42,43 @@ jobs:
 
   slack_notification:
     name: Post to a Slack channel
+    if: success()
+    id: slack
+    runs-on:
+      - self-hosted
+      - ubuntu
     steps:
-      id: slack
-      if: success()
-      uses: slackapi/slack-github-action@v1.24.0
-      with:
-        # Slack channel id, channel name, or user id to post message.
-        # See also: https://api.slack.com/methods/chat.postMessage#channels
-        # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
-        channel-id: 'CHANNEL_ID,ANOTHER_CHANNEL_ID'
-        # For posting a simple plain text message
-        slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      - uses: slackapi/slack-github-action@v1.24.0
+        with:
+          # Slack channel id, channel name, or user id to post message.
+          # See also: https://api.slack.com/methods/chat.postMessage#channels
+          # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
+          channel-id: 'CHANNEL_ID,ANOTHER_CHANNEL_ID'
+          # For posting a simple plain text message
+          slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
-#      - name: Psalm
-#        uses: docker://ghcr.io/psalm/psalm-github-actions
-#        with:
-#          security_analysis: true
-#          report_file: results.sarif
-#      - name: Upload Psalm Security Analysis results to GitHub
-#        uses: github/codeql-action/upload-sarif@v2
-#        with:
-#          sarif_file: results.sarif
+  #      - name: Psalm
+  #        uses: docker://ghcr.io/psalm/psalm-github-actions
+  #        with:
+  #          security_analysis: true
+  #          report_file: results.sarif
+  #      - name: Upload Psalm Security Analysis results to GitHub
+  #        uses: github/codeql-action/upload-sarif@v2
+  #        with:
+  #          sarif_file: results.sarif
 
-#  pint:
-#    name: "laravel-pint"
-#    uses: aglipanci/laravel-pint-action@2.0.0
-#    with:
-#      preset: laravel
-#      verboseMode: true
-#      testMode: true
-#      configPath: "./pint.json"
-#      pintVersion: 1.8.0
-#      onlyDirty: true
+  #  pint:
+  #    name: "laravel-pint"
+  #    uses: aglipanci/laravel-pint-action@2.0.0
+  #    with:
+  #      preset: laravel
+  #      verboseMode: true
+  #      testMode: true
+  #      configPath: "./pint.json"
+  #      pintVersion: 1.8.0
+  #      onlyDirty: true
 
   code_standards:
     name: Code standards check
