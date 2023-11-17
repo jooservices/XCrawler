@@ -20,6 +20,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Clean up .scannerwork folder
+        run: sudo rm -rf .scannerwork
+
       - name: The PHP Security Checker
         uses: symfonycorp/security-checker-action@v4
 
@@ -27,9 +30,6 @@ jobs:
         uses: StephaneBour/actions-php-security-checker@1.1
         with:
           composer-lock: './composer.lock'
-
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
