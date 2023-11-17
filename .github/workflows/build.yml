@@ -43,7 +43,6 @@ jobs:
   slack_notification:
     name: Post to a Slack channel
     if: success()
-    id: slack
     runs-on:
       - self-hosted
       - ubuntu
