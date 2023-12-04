@@ -74,7 +74,7 @@ class OnejavService extends AbstractCrudService
 
     private function nextPage(string $prefix = 'new')
     {
-        $currentPage = Setting::get('onejav', $prefix . '_current_page', 1);
+        $currentPage = Setting::remember('onejav', $prefix . '_current_page', 1);
         $lastPage = $this->service->getLastPage();
 
         /**
