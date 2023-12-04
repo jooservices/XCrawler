@@ -2,21 +2,29 @@
 
 namespace App\Modules\JAV\Services\Movie;
 
+use App\Modules\JAV\Models\Movie;
 use App\Modules\JAV\Models\MovieGenre;
 use App\Modules\JAV\Models\MoviePerformer;
 use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
-use Carbon\Carbon;
 use Illuminate\Support\Str;
 
 class MovieService
 {
-    public function create(MovieEntityInterface $movie)
+    private Movie $movie;
+
+    public function create(MovieEntityInterface $movie): void
     {
+        $this->movie = Movie::firstOrCreate([
+            'dvd_id' => $movie->getDvdId(),
+        ], [
+            'url' => $movie->getUrl(),
+        ]);
+
         $this->insertPerformers($movie);
         $this->insertGenres($movie);
     }
 
-    private function insertPerformers(MovieEntityInterface $movie)
+    private function insertPerformers(MovieEntityInterface $movie): void
     {
         $performers = $movie->getPerformers();
         $performers = array_diff(
@@ -24,20 +32,19 @@ class MovieService
             MoviePerformer::whereIn('name', $performers)->pluck('name')->toArray()
         );
 
-        $now = Carbon::now();
-        MoviePerformer::insert(
-            collect($performers)->map(function ($performer) use ($now) {
-                return [
-                    'uuid' => Str::orderedUuid(),
-                    'name' => $performer,
-                    'created_at' => $now,
-                    'updated_at' => $now
-                ];
-            })->toArray()
-        );
+        collect($performers)->each(function ($performer) {
+            $performer = MoviePerformer::firstOrCreate([
+                'name' => $performer
+            ], [
+                'uuid' => Str::orderedUuid(),
+                'name' => $performer,
+            ]);
+
+            $this->movie->performers()->syncWithoutDetaching($performer);
+        });
     }
 
-    private function insertGenres(MovieEntityInterface $movie)
+    private function insertGenres(MovieEntityInterface $movie): void
     {
         $genres = $movie->getGenres();
         $genres = array_diff(
@@ -45,16 +52,15 @@ class MovieService
             MovieGenre::whereIn('name', $genres)->pluck('name')->toArray()
         );
 
-        $now = Carbon::now();
-        MovieGenre::insert(
-            collect($genres)->map(function ($genre) use ($now) {
-                return [
-                    'uuid' => Str::orderedUuid(),
-                    'name' => $genre,
-                    'created_at' => $now,
-                    'updated_at' => $now
-                ];
-            })->toArray()
-        );
+        collect($genres)->each(function ($genre) {
+            $genre = MovieGenre::firstOrCreate([
+                'name' => $genre
+            ], [
+                'uuid' => Str::orderedUuid(),
+                'name' => $genre,
+            ]);
+
+            $this->movie->genres()->syncWithoutDetaching($genre);
+        });
     }
 }

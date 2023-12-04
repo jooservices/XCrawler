@@ -2,8 +2,11 @@
 
 namespace App\Modules\JAV\Models;
 
+use App\Modules\JAV\Database\factories\MovieGenreFactory;
+use App\Modules\JAV\Database\factories\OnejavFactory;
 use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
 use App\Modules\JAV\Services\Movie\Traits\HasMovieObserver;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 /**
@@ -18,6 +21,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 class Onejav extends Model implements MovieEntityInterface
 {
     use HasMovieObserver;
+    use HasFactory;
 
     protected $connection = 'mongodb';
     protected $collection = 'onejav';
@@ -71,5 +75,10 @@ class Onejav extends Model implements MovieEntityInterface
     public function getGallery(): array
     {
         return (array)$this->gallery;
+    }
+
+    protected static function newFactory(): OnejavFactory
+    {
+        return OnejavFactory::new();
     }
 }
