@@ -31,6 +31,7 @@ class CrawlingAll extends Command
     {
         $subpages = Setting::remember('onejav', 'subpages', fn() => ['new', 'popular']);
         foreach ($subpages as $page) {
+            $this->output->text("Crawling {$page} pages...");
             OnejavCrawlingAll::dispatch($page)->onQueue('onejav');
         }
     }
