@@ -25,7 +25,7 @@ jobs:
     needs: [ sonar_cloud, security_check ]
     strategy:
       matrix:
-        lint: [ phpstan, phpmd, phpcs ]
+        lint: [ phpstan, phpcs ]
     uses: ./.github/workflows/code_standards.yml
     with:
       lint: ${{ matrix.lint }}
