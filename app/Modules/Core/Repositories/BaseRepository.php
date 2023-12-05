@@ -3,13 +3,12 @@
 namespace App\Modules\Core\Repositories;
 
 use AllowDynamicProperties;
-use App\Modules\Core\Repositories\Interfaces\HasModelInterface;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property Model $model
  */
-#[AllowDynamicProperties] class BaseRepository implements HasModelInterface
+#[AllowDynamicProperties] class BaseRepository
 {
     public function getModel(): Model
     {

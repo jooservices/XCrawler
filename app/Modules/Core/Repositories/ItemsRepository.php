@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
  */
 class ItemsRepository extends BaseRepository
 {
-    protected Builder $baseQuery;
+    private Builder $baseQuery;
 
     public function pagination(Collection $options): LengthAwarePaginator
     {

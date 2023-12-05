@@ -16,4 +16,9 @@ class MovieObserver
     {
         app(MovieService::class)->create($model);
     }
+
+    public function updated(MovieEntityInterface $model)
+    {
+        app(MovieService::class)->update($model);
+    }
 }

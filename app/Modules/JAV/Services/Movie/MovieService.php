@@ -54,6 +54,15 @@ class MovieService
         $this->insertGenres($movie);
     }
 
+    public function update(MovieEntityInterface $movie): void
+    {
+        $this->movie = Movie::updateOrCreate([
+            'dvd_id' => $movie->getDvdId(),
+        ], [
+            'url' => $movie->getUrl(),
+            'cover' => $movie->getCover(),
+        ]);
+    }
 
     private function insertPerformers(MovieEntityInterface $movie): void
     {
