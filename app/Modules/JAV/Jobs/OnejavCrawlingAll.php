@@ -4,7 +4,6 @@ namespace App\Modules\JAV\Jobs;
 
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\JAV\Services\OnejavService;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 class OnejavCrawlingAll extends BaseJob
 {
@@ -15,13 +14,6 @@ class OnejavCrawlingAll extends BaseJob
      */
     public function __construct(public string $endpoint = 'new')
     {
-    }
-
-    public function middleware(): array
-    {
-        return [
-            (new WithoutOverlapping($this->endpoint))->dontRelease()
-        ];
     }
 
     /**
