@@ -19,6 +19,6 @@ class MovieRepositoryTest extends TestCase
     {
         Movie::factory()->count(10)->create();
 
-        $this->assertEquals(10, $this->repository->items());
+        $this->assertEquals(10, $this->repository->items()->count());
     }
 }
