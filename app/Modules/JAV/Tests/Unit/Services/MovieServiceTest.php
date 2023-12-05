@@ -33,6 +33,7 @@ class MovieServiceTest extends TestCase
         $this->assertDatabaseHas('movies', [
             'dvd_id' => $onejav->getDvdId(),
             'url' => $onejav->getUrl(),
+            'cover' => $onejav->getCover(),
         ]);
 
         $movie = Movie::all()->first();
@@ -50,6 +51,7 @@ class MovieServiceTest extends TestCase
     public function testCreateMovieDuplicate()
     {
         $onejav = Onejav::factory()->create();
+
         app(MovieService::class)->create($onejav);
         $this->assertDatabaseHas('genres', [
             'name' => 'genre1'

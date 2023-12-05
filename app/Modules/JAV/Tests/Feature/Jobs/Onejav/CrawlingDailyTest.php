@@ -62,6 +62,17 @@ class CrawlingDailyTest extends TestCase
         Onejav::create([
             'url' => 'https://onejav.com/torrent/stars908',
             'dvd_id' => 'STARS-908',
+            'cover' => $this->faker->imageUrl(),
+            'performers' => [
+                'Miyuu Yanagi',
+            ],
+            'genres' => [
+                'Beautiful Girl',
+                'Slender',
+                'Featured Actress',
+                'Creampie',
+                'Hi-Def',
+            ],
         ]);
 
         OnejavCrawlingDaily::dispatch();

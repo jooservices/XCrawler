@@ -18,6 +18,7 @@ class MovieService
             'dvd_id' => $movie->getDvdId(),
         ], [
             'url' => $movie->getUrl(),
+            'cover' => $movie->getCover(),
         ]);
 
         $this->insertPerformers($movie);
