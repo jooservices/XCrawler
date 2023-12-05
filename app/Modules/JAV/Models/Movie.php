@@ -3,6 +3,8 @@
 namespace App\Modules\JAV\Models;
 
 use App\Modules\Core\Models\Traits\HasUuid;
+use App\Modules\JAV\Database\factories\MovieFactory;
+use App\Modules\JAV\Database\factories\MovieGenreFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -29,6 +31,11 @@ class Movie extends Model
         'size' => 'float',
         'gallery' => 'array'
     ];
+
+    protected static function newFactory()
+    {
+        return MovieFactory::new();
+    }
 
     public function genres(): BelongsToMany
     {

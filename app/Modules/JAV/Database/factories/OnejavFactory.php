@@ -33,7 +33,8 @@ class OnejavFactory extends Factory
                 'performer1',
                 'performer2',
                 'performer3',
-            ]
+            ],
+            'cover' => $this->faker->imageUrl(),
         ];
     }
 }

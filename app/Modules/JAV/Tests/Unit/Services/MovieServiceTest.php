@@ -9,84 +9,63 @@ use App\Modules\JAV\Tests\TestCase;
 
 class MovieServiceTest extends TestCase
 {
+    private Onejav $onejav;
+
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->onejav = Onejav::factory()->create();
+    }
+
     public function testCreateMovie()
     {
-        $onejav = Onejav::factory()->create();
 
-        app(MovieService::class)->create($onejav);
-        $this->assertDatabaseHas('genres', [
-            'name' => 'genre1'
-        ]);
-        $this->assertDatabaseHas('genres', [
-            'name' => 'genre2'
-        ]);
-        $this->assertDatabaseHas('performers', [
-            'name' => 'performer1'
-        ]);
-        $this->assertDatabaseHas('performers', [
-            'name' => 'performer2'
-        ]);
-        $this->assertDatabaseHas('performers', [
-            'name' => 'performer3'
-        ]);
+        $genres = $this->onejav->getGenres();
+        $performers = $this->onejav->getPerformers();
+
+        app(MovieService::class)->create($this->onejav);
+
+        foreach ($genres as $genre) {
+            $this->assertDatabaseHas('genres', ['name' => $genre]);
+        }
+
+        foreach ($performers as $performer) {
+            $this->assertDatabaseHas('performers', ['name' => $performer]);
+        }
 
         $this->assertDatabaseHas('movies', [
-            'dvd_id' => $onejav->getDvdId(),
-            'url' => $onejav->getUrl(),
+            'dvd_id' => $this->onejav->getDvdId(),
+            'url' => $this->onejav->getUrl(),
+            'cover' => $this->onejav->getCover(),
         ]);
 
         $movie = Movie::all()->first();
-        $this->assertEquals([
-            'performer1',
-            'performer2',
-            'performer3',
-        ], $movie->performers->pluck('name')->toArray());
-        $this->assertEquals([
-            'genre1',
-            'genre2',
-        ], $movie->genres->pluck('name')->toArray());
+        $this->assertEquals($performers, $movie->performers->pluck('name')->toArray());
+        $this->assertEquals($genres, $movie->genres->pluck('name')->toArray());
     }
 
     public function testCreateMovieDuplicate()
     {
-        $onejav = Onejav::factory()->create();
-        app(MovieService::class)->create($onejav);
-        $this->assertDatabaseHas('genres', [
-            'name' => 'genre1'
-        ]);
-        $this->assertDatabaseHas('genres', [
-            'name' => 'genre2'
-        ]);
-        $this->assertDatabaseHas('performers', [
-            'name' => 'performer1'
-        ]);
-        $this->assertDatabaseHas('performers', [
-            'name' => 'performer2'
-        ]);
-        $this->assertDatabaseHas('performers', [
-            'name' => 'performer3'
-        ]);
+        $genres = $this->onejav->getGenres();
+        $performers = $this->onejav->getPerformers();
+
+        app(MovieService::class)->create($this->onejav);
 
         $this->assertDatabaseHas('movies', [
-            'dvd_id' => $onejav->getDvdId(),
-            'url' => $onejav->getUrl(),
+            'dvd_id' => $this->onejav->getDvdId(),
+            'url' => $this->onejav->getUrl(),
+            'cover' => $this->onejav->getCover(),
         ]);
 
         $movie = Movie::all()->first();
-        $this->assertEquals([
-            'performer1',
-            'performer2',
-            'performer3',
-        ], $movie->performers->pluck('name')->toArray());
-        $this->assertEquals([
-            'genre1',
-            'genre2',
-        ], $movie->genres->pluck('name')->toArray());
+        $this->assertEquals($performers, $movie->performers->pluck('name')->toArray());
+        $this->assertEquals($genres, $movie->genres->pluck('name')->toArray());
 
         Onejav::factory()->create([
-            'dvd_id' => $onejav->getDvdId(),
+            'dvd_id' => $this->onejav->getDvdId(),
         ]);
-        app(MovieService::class)->create($onejav);
+        app(MovieService::class)->create($this->onejav);
 
         $this->assertEquals(1, Movie::all()->count());
     }

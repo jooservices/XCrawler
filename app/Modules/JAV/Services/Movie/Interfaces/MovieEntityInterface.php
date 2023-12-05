@@ -10,6 +10,8 @@ interface MovieEntityInterface
 
     public function getPerformers(): array;
 
+    public function getCover();
+
     public function getUrl(): string;
 
     public function getGallery(): array;

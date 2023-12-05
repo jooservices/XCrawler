@@ -1,5 +1,6 @@
 <?php
 
 return [
-    'name' => 'JAV'
+    'name' => 'JAV',
+    'censored' => env('JAV_CENSORED', true),
 ];

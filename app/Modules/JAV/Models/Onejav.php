@@ -2,7 +2,6 @@
 
 namespace App\Modules\JAV\Models;
 
-use App\Modules\JAV\Database\factories\MovieGenreFactory;
 use App\Modules\JAV\Database\factories\OnejavFactory;
 use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
 use App\Modules\JAV\Services\Movie\Traits\HasMovieObserver;
@@ -16,6 +15,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property array $performers
  * @property string $torrent
  * @property array $gallery
+ * @property string $cover
  *
  */
 class Onejav extends Model implements MovieEntityInterface
@@ -54,31 +54,36 @@ class Onejav extends Model implements MovieEntityInterface
 
     public function getDvdId(): string
     {
-        return (string)$this->dvd_id;
+        return $this->dvd_id;
     }
 
     public function getGenres(): array
     {
-        return (array)$this->genres;
+        return $this->genres;
     }
 
     public function getPerformers(): array
     {
-        return (array)$this->performers;
+        return $this->performers;
     }
 
     public function getUrl(): string
     {
-        return (string)$this->url;
+        return $this->url;
     }
 
     public function getGallery(): array
     {
-        return (array)$this->gallery;
+        return $this->gallery;
     }
 
     protected static function newFactory(): OnejavFactory
     {
         return OnejavFactory::new();
+    }
+
+    public function getCover(): string
+    {
+        return $this->cover;
     }
 }

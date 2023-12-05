@@ -5,12 +5,29 @@ namespace App\Modules\JAV\Services\Movie;
 use App\Modules\JAV\Models\Movie;
 use App\Modules\JAV\Models\MovieGenre;
 use App\Modules\JAV\Models\MoviePerformer;
+use App\Modules\JAV\Repositories\MovieRepository;
 use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class MovieService
 {
     private Movie $movie;
+
+    public function items(Collection $options): Collection
+    {
+        $repository = app(MovieRepository::class);
+
+        return $repository->items($options);
+    }
+
+    public function pagination(Collection $options): LengthAwarePaginator
+    {
+        $repository = app(MovieRepository::class);
+
+        return $repository->pagination($options);
+    }
 
     public function create(MovieEntityInterface $movie): void
     {
@@ -18,6 +35,7 @@ class MovieService
             'dvd_id' => $movie->getDvdId(),
         ], [
             'url' => $movie->getUrl(),
+            'cover' => $movie->getCover(),
         ]);
 
         $this->insertPerformers($movie);
