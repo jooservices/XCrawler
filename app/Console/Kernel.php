@@ -22,7 +22,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('onejav:crawling-daily')->daily();
         $schedule->command('onejav:crawling-all');
 
-        if (Setting::remember('flickr', 'enable_schedule', false)) {
+        if (Setting::remember('flickr', 'enable_schedule', fn() => false)) {
             /**
              * Flickr
              */
