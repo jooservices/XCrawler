@@ -22,13 +22,13 @@ class Kernel extends ConsoleKernel
         $schedule->command('onejav:crawling-daily')->daily();
         $schedule->command('onejav:crawling-all');
 
-        if (Setting::get('flickr', 'enable_schedule', false)) {
+        if (Setting::remember('flickr', 'enable_schedule', false)) {
             /**
              * Flickr
              */
             $schedule->command('flickr:contacts')->weekly();
-            $schedule->command('flickr:people-photos')->everyMinute();
-            $schedule->command('flickr:contact-favorites')->everyMinute();
+            $schedule->command('flickr:people-photos')->everyFiveMinutes();
+            $schedule->command('flickr:contact-favorites')->everyFiveMinutes();
         }
     }
 
