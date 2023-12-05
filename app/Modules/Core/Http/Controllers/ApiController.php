@@ -7,7 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Routing\ResponseFactory;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
-class ApiController  extends Controller
+class ApiController extends Controller
 {
     protected array $data = [];
 

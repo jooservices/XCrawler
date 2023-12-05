@@ -7,7 +7,7 @@ use App\Modules\JAV\Models\Movie;
 
 class MovieRepository extends ItemsRepository
 {
-    public function __construct (protected Movie $model)
+    public function __construct(protected Movie $model)
     {
     }
 }
