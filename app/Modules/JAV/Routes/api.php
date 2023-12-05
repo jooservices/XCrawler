@@ -18,4 +18,6 @@ Route::prefix('jav')
     ->name('jav.')
     ->group(function () {
         Route::get('/', [JAVController::class, 'index'])->name('index');
+        Route::get('/genres', [JAVController::class, 'genres'])->name('genres');
+        Route::get('/idols', [JAVController::class, 'idols'])->name('idols');
     });

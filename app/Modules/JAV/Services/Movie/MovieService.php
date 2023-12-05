@@ -5,6 +5,8 @@ namespace App\Modules\JAV\Services\Movie;
 use App\Modules\JAV\Models\Movie;
 use App\Modules\JAV\Models\MovieGenre;
 use App\Modules\JAV\Models\MoviePerformer;
+use App\Modules\JAV\Repositories\GenreRepository;
+use App\Modules\JAV\Repositories\IdolRepository;
 use App\Modules\JAV\Repositories\MovieRepository;
 use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -29,6 +31,16 @@ class MovieService
         return $repository->pagination($options);
     }
 
+    public function genres(): Collection
+    {
+        return app(GenreRepository::class)->items();
+    }
+
+    public function idols(): Collection
+    {
+        return app(IdolRepository::class)->items();
+    }
+
     public function create(MovieEntityInterface $movie): void
     {
         $this->movie = Movie::firstOrCreate([
@@ -41,6 +53,7 @@ class MovieService
         $this->insertPerformers($movie);
         $this->insertGenres($movie);
     }
+
 
     private function insertPerformers(MovieEntityInterface $movie): void
     {
