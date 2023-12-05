@@ -25,9 +25,9 @@ class ItemsRepository extends BaseRepository
         );
     }
 
-    public function items(Collection $options): Collection
+    public function items(?Collection $options = null): Collection
     {
-        return $this->buildIndexQuery($options)->get();
+        return $this->buildIndexQuery($options ?? collect())->get();
     }
 
     private function buildIndexQuery(Collection $options): Builder
@@ -40,9 +40,7 @@ class ItemsRepository extends BaseRepository
             $this->baseQuery = $options['model']->newQuery();
         } elseif ($options->has('source')) {
             $this->baseQuery = $options['source'];
-        }
-
-        if (!isset($this->baseQuery)) {
+        } else {
             $this->baseQuery = $this->getModel()->newQuery();
         }
 

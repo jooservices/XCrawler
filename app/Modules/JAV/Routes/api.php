@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Modules\JAV\Http\Controllers\JAVController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/jav', function (Request $request) {
-    return $request->user();
-});
+Route::prefix('jav')
+    ->name('jav.')
+    ->group(function () {
+        Route::get('/', [JAVController::class, 'index'])->name('index');
+    });

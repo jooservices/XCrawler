@@ -2,13 +2,12 @@
 
 namespace App\Modules\Core\Repositories;
 
+use AllowDynamicProperties;
 use App\Modules\Core\Repositories\Interfaces\HasModelInterface;
 use Illuminate\Database\Eloquent\Model;
 
-class BaseRepository implements HasModelInterface
+#[AllowDynamicProperties] class BaseRepository implements HasModelInterface
 {
-    protected Model $model;
-
     public function getModel(): Model
     {
         return $this->model;
