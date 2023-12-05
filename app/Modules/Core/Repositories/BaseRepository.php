@@ -6,6 +6,9 @@ use AllowDynamicProperties;
 use App\Modules\Core\Repositories\Interfaces\HasModelInterface;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @property Model $model
+ */
 #[AllowDynamicProperties] class BaseRepository implements HasModelInterface
 {
     public function getModel(): Model

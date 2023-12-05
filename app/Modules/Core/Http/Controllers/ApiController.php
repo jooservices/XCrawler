@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 
 class ApiController extends Controller
 {
+    use Traits\ErrorsResponding;
+    use Traits\GeneralResponding;
+
     protected array $data = [];
 
     protected array $messages = [];
@@ -18,9 +21,6 @@ class ApiController extends Controller
     protected array $headers = [];
 
     protected ResponseFactory $response;
-
-    use Traits\ErrorsResponding;
-    use Traits\GeneralResponding;
 
     public function __construct(ResponseFactory $response)
     {

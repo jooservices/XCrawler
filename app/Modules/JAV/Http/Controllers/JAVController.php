@@ -20,7 +20,6 @@ class JAVController extends ResourceController
                 'total' => $items->total(),
                 'perPage' => $items->perPage(),
                 'is_last_page' => !$items->hasMorePages(),
-                'count' => $items->count(),
             ]
         );
     }

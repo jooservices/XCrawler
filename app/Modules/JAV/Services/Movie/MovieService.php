@@ -7,7 +7,7 @@ use App\Modules\JAV\Models\MovieGenre;
 use App\Modules\JAV\Models\MoviePerformer;
 use App\Modules\JAV\Repositories\MovieRepository;
 use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
