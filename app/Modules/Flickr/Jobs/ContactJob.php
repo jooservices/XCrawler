@@ -2,8 +2,6 @@
 
 namespace App\Modules\Flickr\Jobs;
 
-use App\Modules\Client\Services\FlickrManager;
-use App\Modules\Flickr\Repositories\ContactRepository;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,7 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class FlickrContacts implements ShouldQueue
+class ContactJob implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;

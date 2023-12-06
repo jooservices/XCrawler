@@ -4,16 +4,14 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Services\FlickrManager;
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Models\FlickrContact as FlickrContactsModel;
-use App\Modules\Flickr\Models\FlickrPhotos as FlickrPhotosModel;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use App\Modules\Flickr\Models\FlickrPhoto as FlickrPhotosModel;
+use App\Modules\Flickr\Services\FlickrService;
 
-class FlickrFavorites extends BaseJob
+/**
+ * Get all favorites of a contact.
+ */
+class ContactFavoritesJob extends BaseJob
 {
     /**
      * Create a new job instance.
@@ -29,14 +27,24 @@ class FlickrFavorites extends BaseJob
      *
      * @return void
      */
-    public function handle(FlickrManager $flickrService)
+    public function handle(FlickrManager $flickrManager, FlickrService $flickrService)
     {
-        $adapter = $flickrService->favorites;
+        $adapter = $flickrManager->favorites;
         $adapter->getList([
             'user_id' => $this->nsid,
             'page' => $this->page
-        ])->each(function ($photo) {
+        ])->each(function ($photo) use ($flickrService) {
             unset($photo['date_faved']);
+            $flickrService->create([
+                'nsid' => $photo['owner']
+            ]);
+            /**
+             * @TODO Use relationship
+             */
+            FlickrContactsModel::firstOrCreate([
+                'nsid' => $photo['owner']
+            ]);
+
             FlickrPhotosModel::updateOrCreate(
                 [
                     'owner' => $photo['owner'],
@@ -44,21 +52,11 @@ class FlickrFavorites extends BaseJob
                 ],
                 $photo
             );
-            FlickrContactsModel::firstOrCreate([
-                'nsid' => $photo['owner']
-            ]);
         });
 
         if ($adapter->endOfList()) {
-            FlickrContactsModel::where('nsid', $this->nsid)->update([
-                'favorites_state_code' => States::STATE_COMPLETED
-            ]);
             return;
         }
-
-        FlickrContactsModel::where('nsid', $this->nsid)->update([
-            'favorites_state_code' => States::STATE_RECURRING
-        ]);
 
         self::dispatch($this->nsid, $this->page + 1);
     }

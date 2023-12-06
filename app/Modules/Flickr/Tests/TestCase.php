@@ -4,7 +4,7 @@ namespace App\Modules\Flickr\Tests;
 
 use App\Modules\Client\Tests\TestCase as BaseTestCase;
 use App\Modules\Flickr\Models\FlickrContact;
-use App\Modules\Flickr\Models\FlickrPhotos;
+use App\Modules\Flickr\Models\FlickrPhoto;
 
 class TestCase extends BaseTestCase
 {
@@ -13,6 +13,6 @@ class TestCase extends BaseTestCase
         parent::setUp();
 
         FlickrContact::truncate();
-        FlickrPhotos::truncate();
+        FlickrPhoto::truncate();
     }
 }
