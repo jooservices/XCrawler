@@ -198,7 +198,6 @@ return [
                 'minProcesses' => env('HORIZON_DEFAULT_MIN_PROCESSES', 5),
                 'memory' => env('HORIZON_DEFAULT_MEMORY', 2048),
                 'timeout' => env('HORIZON_DEFAULT_TIMEOUT', 600),
-
             ]
         ),
         'onejav' => array_merge(
@@ -209,7 +208,6 @@ return [
                 'minProcesses' => env('HORIZON_ONEJAV_MIN_PROCESSES', 5),
                 'memory' => env('HORIZON_ONEJAV_MEMORY', 2048),
                 'timeout' => env('HORIZON_ONEJAV_TIMEOUT', 600),
-
             ]
         ),
         'oauth' => array_merge(
