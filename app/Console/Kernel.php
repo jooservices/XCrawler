@@ -2,7 +2,6 @@
 
 namespace App\Console;
 
-use App\Modules\Core\Facades\Setting;
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\ContactCommand;
@@ -17,7 +16,7 @@ class Kernel extends ConsoleKernel
      * @param Schedule $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule)
+    protected function schedule(Schedule $schedule): void
     {
         /**
          * JAV
@@ -25,14 +24,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('onejav:crawling-daily')->daily();
         $schedule->command('onejav:crawling-all');
 
-        if (Setting::remember('flickr', 'enable_schedule', fn() => false)) {
-            /**
-             * Flickr
-             */
-            $schedule->command(ContactCommand::COMMAND)->weekly();
-            $schedule->command(PhotosCommand::COMMAND)->everyFiveMinutes();
-            $schedule->command(FavoritesCommand::COMMAND)->everyFiveMinutes();
-        }
+        /**
+         * Flickr
+         */
+        $schedule->command(ContactCommand::COMMAND)->weekly();
+        $schedule->command(PhotosCommand::COMMAND)->everyTwoMinutes();
+        $schedule->command(FavoritesCommand::COMMAND)->everyTwoMinutes();
     }
 
     /**
