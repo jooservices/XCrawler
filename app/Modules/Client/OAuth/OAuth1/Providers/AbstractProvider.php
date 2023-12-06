@@ -346,20 +346,4 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
      * @return TokenInterface
      */
     abstract protected function parseAccessTokenResponse(string $responseBody): TokenInterface;
-
-    protected function verifyLimit()
-    {
-        $key = strtolower($this->service()) . '_requests_count';
-        $count = Cache::remember($key, 0, function () {
-            return 0;
-        });
-
-        if (
-            $count >= Setting::get($this->service(), 'requests_limit', 3600)
-        ) {
-            throw new RequestLimited('API request limit exceeded.');
-        }
-
-        Cache::increment($key);
-    }
 }

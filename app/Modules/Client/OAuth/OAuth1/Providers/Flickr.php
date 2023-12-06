@@ -101,9 +101,6 @@ class Flickr extends AbstractProvider
         array $extraHeaders = [],
         string $method = 'POST',
     ): XResponseInterface {
-
-        $this->verifyLimit();
-
         Event::dispatch(new BeforeFlickrRequest());
 
         $uri = $this->determineRequestUriFromPath('/', $this->baseApiUri);
