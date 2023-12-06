@@ -204,16 +204,16 @@ return [
             $default,
             [
                 'queue' => ['onejav'],
-                'maxProcesses' => env('HORIZON_ONEJAV_MAX_PROCESSES', 10),
-                'minProcesses' => env('HORIZON_ONEJAV_MIN_PROCESSES', 5),
+                'maxProcesses' => env('HORIZON_ONEJAV_MAX_PROCESSES', 2),
+                'minProcesses' => env('HORIZON_ONEJAV_MIN_PROCESSES', 1),
             ]
         ),
         'oauth' => array_merge(
             $default,
             [
                 'queue' => ['flickr'],
-                'maxProcesses' => env('HORIZON_OAUTH_MAX_PROCESSES', 10),
-                'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 5),
+                'maxProcesses' => env('HORIZON_OAUTH_MAX_PROCESSES', 5),
+                'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 2),
             ]
         ),
     ],
