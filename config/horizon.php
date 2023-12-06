@@ -2,6 +2,16 @@
 
 use Illuminate\Support\Str;
 
+$default = [
+    'connection' => 'redis',
+    'balance' => 'auto',
+    'autoScalingStrategy' => 'time',
+    'maxTime' => 0,
+    'maxJobs' => 0,
+    'tries' => 10,
+    'nice' => 0,
+];
+
 return [
 
     /*
@@ -180,48 +190,35 @@ return [
     */
 
     'defaults' => [
-        'default' => [
-            'connection' => 'redis',
-            'queue' => ['default'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'time',
-            'maxProcesses' => env('HORIZON_DEFAULT_MAX_PROCESSES', 10),
-            'minProcesses' => env('HORIZON_DEFAULT_MIN_PROCESSES', 5),
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => env('HORIZON_DEFAULT_MEMORY', 2048),
-            'tries' => 10,
-            'timeout' => env('HORIZON_DEFAULT_TIMEOUT', 600),
-            'nice' => 0,
-        ],
-        'onejav' => [
-            'connection' => 'redis',
-            'queue' => ['onejav'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'time',
-            'maxProcesses' => env('HORIZON_ONEJAV_MAX_PROCESSES', 4),
-            'minProcesses' => env('HORIZON_ONEJAV_MIN_PROCESSES', 2),
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => env('HORIZON_ONEJAV_MEMORY', 2048),
-            'tries' => 10,
-            'timeout' => env('HORIZON_ONEJAV_TIMEOUT', 600),
-            'nice' => 0,
-        ],
-        'oauth' => [
-            'connection' => 'redis',
-            'queue' => ['flickr'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'time',
-            'maxProcesses' => env('HORIZON_OAUTH_MAX_PROCESSES', 4),
-            'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 2),
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => env('HORIZON_OAUTH_MEMORY', 2048),
-            'tries' => 10,
-            'timeout' => env('HORIZON_OAUTH_TIMEOUT', 600),
-            'nice' => 0,
-        ]
+        'default' => array_merge(
+            $default,
+            [
+                'queue' => ['default'],
+                'maxProcesses' => env('HORIZON_DEFAULT_MAX_PROCESSES', 10),
+                'minProcesses' => env('HORIZON_DEFAULT_MIN_PROCESSES', 5),
+                'memory' => env('HORIZON_DEFAULT_MEMORY', 2048),
+                'timeout' => env('HORIZON_DEFAULT_TIMEOUT', 600),
+
+            ]),
+        'onejav' => array_merge(
+            $default,
+            [
+                'queue' => ['default'],
+                'maxProcesses' => env('HORIZON_ONEJAV_MAX_PROCESSES', 10),
+                'minProcesses' => env('HORIZON_ONEJAV_MIN_PROCESSES', 5),
+                'memory' => env('HORIZON_ONEJAV_MEMORY', 2048),
+                'timeout' => env('HORIZON_ONEJAV_TIMEOUT', 600),
+
+            ]),
+        'oauth' => array_merge(
+            $default,
+            [
+                'queue' => ['default'],
+                'maxProcesses' => env('HORIZON_OAUTH_MAX_PROCESSES', 10),
+                'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 5),
+                'memory' => env('HORIZON_OAUTH_MEMORY', 2048),
+                'timeout' => env('HORIZON_OAUTH_TIMEOUT', 600),
+            ]),
     ],
 
     'environments' => [
