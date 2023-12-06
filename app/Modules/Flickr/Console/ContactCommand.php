@@ -2,17 +2,18 @@
 
 namespace App\Modules\Flickr\Console;
 
-use App\Modules\Flickr\Jobs\FlickrContacts as FlickrContactsJob;
+use App\Modules\Flickr\Jobs\ContactJob;
 use Illuminate\Console\Command;
 
-class FlickrContacts extends Command
+class ContactCommand extends Command
 {
+    public const COMMAND = 'flickr:contacts';
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $name = 'flickr:contacts';
+    protected $signature = self::COMMAND;
 
     /**
      * The console command description.
@@ -28,6 +29,8 @@ class FlickrContacts extends Command
      */
     public function handle(): void
     {
-        FlickrContactsJob::dispatch()->onQueue('flickr');
+        $this->info('Fetching contacts...');
+
+        ContactJob::dispatch()->onQueue('flickr');
     }
 }

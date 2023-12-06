@@ -2,17 +2,25 @@
 
 namespace App\Modules\Flickr\Listeners;
 
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\BeforeProcessContact;
-use Exception;
+use App\Modules\Flickr\Events\ContactCreatedEvent;
+use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Events\Dispatcher;
-use Illuminate\Support\Facades\Cache;
 
 class ContactEventSubscriber
 {
     public function onBeforeProcessContact(): void
     {
-        if (Cache::get('flickr_requests_count', 1) >= 3500) {
-            throw new Exception('Flickr API limit reached.');
+    }
+
+    public function onFlickrContactCreated(ContactCreatedEvent $event): void
+    {
+        foreach (FlickrService::TASKS as $task) {
+            $event->contact->tasks()->create([
+                'task' => $task,
+                'state_code' => States::STATE_INIT,
+            ]);
         }
     }
 
@@ -21,6 +29,11 @@ class ContactEventSubscriber
         $events->listen(
             BeforeProcessContact::class,
             [self::class, 'onBeforeProcessContact']
+        );
+
+        $events->listen(
+            ContactCreatedEvent::class,
+            [self::class, 'onFlickrContactCreated']
         );
     }
 }

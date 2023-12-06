@@ -3,6 +3,9 @@
 namespace App\Console;
 
 use App\Modules\Core\Facades\Setting;
+use App\Modules\Flickr\Console\Contact\FavoritesCommand;
+use App\Modules\Flickr\Console\Contact\PhotosCommand;
+use App\Modules\Flickr\Console\ContactCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -26,9 +29,9 @@ class Kernel extends ConsoleKernel
             /**
              * Flickr
              */
-            $schedule->command('flickr:contacts')->weekly();
-            $schedule->command('flickr:people-photos')->everyFiveMinutes();
-            $schedule->command('flickr:contact-favorites')->everyFiveMinutes();
+            $schedule->command(ContactCommand::COMMAND)->weekly();
+            $schedule->command(PhotosCommand::COMMAND)->everyFiveMinutes();
+            $schedule->command(FavoritesCommand::COMMAND)->everyFiveMinutes();
         }
     }
 

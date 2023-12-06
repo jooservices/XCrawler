@@ -4,6 +4,7 @@ namespace App\Modules\Client\Tests;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Models\RequestLog;
+use App\Modules\Core\Models\Task;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Support\Facades\Cache;
@@ -27,6 +28,7 @@ class TestCase extends \Tests\TestCase
         Integration::factory()->create();
 
         Cache::delete('flickr_requests_count');
+        Task::truncate();
     }
 
     private function mockFlickr(): void
