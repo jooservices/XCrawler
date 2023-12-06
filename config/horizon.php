@@ -199,7 +199,8 @@ return [
                 'memory' => env('HORIZON_DEFAULT_MEMORY', 2048),
                 'timeout' => env('HORIZON_DEFAULT_TIMEOUT', 600),
 
-            ]),
+            ]
+        ),
         'onejav' => array_merge(
             $default,
             [
@@ -209,7 +210,8 @@ return [
                 'memory' => env('HORIZON_ONEJAV_MEMORY', 2048),
                 'timeout' => env('HORIZON_ONEJAV_TIMEOUT', 600),
 
-            ]),
+            ]
+        ),
         'oauth' => array_merge(
             $default,
             [
@@ -218,7 +220,8 @@ return [
                 'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 5),
                 'memory' => env('HORIZON_OAUTH_MEMORY', 2048),
                 'timeout' => env('HORIZON_OAUTH_TIMEOUT', 600),
-            ]),
+            ]
+        ),
     ],
 
     'environments' => [
