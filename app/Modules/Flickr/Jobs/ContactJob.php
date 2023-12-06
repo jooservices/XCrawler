@@ -2,20 +2,11 @@
 
 namespace App\Modules\Flickr\Jobs;
 
+use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Services\FlickrService;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 
-class ContactJob implements ShouldQueue
+class ContactJob extends BaseJob
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
-
     public $tries = 10;
 
     public $timeout = 60;

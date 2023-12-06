@@ -2,15 +2,16 @@
 
 namespace App\Modules\Core\Services;
 
-use App\Modules\Core\Models\HasTasksInterface;
+use App\Modules\Core\Models\Task;
+use Illuminate\Support\Collection;
 
 class TaskService
 {
-    public function add(HasTasksInterface $model, string $task)
+    public function tasks(string $task, int $limit): Collection
     {
-        $model->tasks()->create([
-            $task,
-            'state_code' => States::STATE_IN_PROGRESS,
-        ]);
+        return Task::where('task', $task)
+            ->where('state_code', States::STATE_INIT)
+            ->limit($limit)
+            ->get();
     }
 }

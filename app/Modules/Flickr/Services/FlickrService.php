@@ -20,7 +20,7 @@ class FlickrService
     ];
 
     public function __construct(
-        private FlickrManager $flickrManager,
+        private readonly FlickrManager $flickrManager,
     ) {
     }
 

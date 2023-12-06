@@ -3,8 +3,8 @@
 namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
+use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
@@ -27,16 +27,15 @@ class FavoritesCommand extends Command
     protected $description = '';
 
     /**
-     * Execute the console command.
-     *
+     * @param TaskService $taskService
      * @return void
      */
-    public function handle(): void
+    public function handle(TaskService $taskService): void
     {
-        $tasks = Task::where('task', FlickrService::TASK_CONTACT_FAVORITES)
-            ->where('state_code', States::STATE_INIT)
-            ->limit(Setting::remember('flickr', 'task_contact_favorites_limit', fn() => 10))
-            ->get();
+        $tasks = $taskService->tasks(
+            FlickrService::TASK_CONTACT_FAVORITES,
+            Setting::remember('flickr', 'task_contact_favorites_limit', fn() => 10)
+        );
 
         foreach ($tasks as $task) {
             $model = $task->model;

@@ -14,20 +14,19 @@ use App\Modules\Flickr\Services\FlickrService;
 class ContactFavoritesJob extends BaseJob
 {
     /**
-     * Create a new job instance.
-     *
-     * @return void
+     * @param string $nsid
+     * @param int $page
      */
     public function __construct(public string $nsid, public int $page = 1)
     {
     }
 
     /**
-     * Execute the job.
-     *
+     * @param FlickrManager $flickrManager
+     * @param FlickrService $flickrService
      * @return void
      */
-    public function handle(FlickrManager $flickrManager, FlickrService $flickrService)
+    public function handle(FlickrManager $flickrManager, FlickrService $flickrService): void
     {
         $adapter = $flickrManager->favorites;
         $adapter->getList([

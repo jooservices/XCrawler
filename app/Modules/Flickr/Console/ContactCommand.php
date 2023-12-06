@@ -29,6 +29,8 @@ class ContactCommand extends Command
      */
     public function handle(): void
     {
+        $this->info('Fetching contacts...');
+
         ContactJob::dispatch()->onQueue('flickr');
     }
 }
