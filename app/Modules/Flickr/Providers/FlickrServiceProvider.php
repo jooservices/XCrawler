@@ -6,6 +6,7 @@ use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\ContactCommand;
 use App\Modules\Flickr\Console\FlickrContactFavorites;
+use App\Modules\Flickr\Console\SyncContactTasks;
 use Illuminate\Support\ServiceProvider;
 
 class FlickrServiceProvider extends ServiceProvider
@@ -59,6 +60,7 @@ class FlickrServiceProvider extends ServiceProvider
             ContactCommand::class,
             FavoritesCommand::class,
             PhotosCommand::class,
+            SyncContactTasks::class
         ]);
     }
 
