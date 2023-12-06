@@ -5,7 +5,6 @@ namespace App\Modules\Flickr\Providers;
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\ContactCommand;
-use App\Modules\Flickr\Console\FlickrContactFavorites;
 use App\Modules\Flickr\Console\SyncContactTasks;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,19 +13,19 @@ class FlickrServiceProvider extends ServiceProvider
     /**
      * @var string $moduleName
      */
-    protected $moduleName = 'Flickr';
+    protected string $moduleName = 'Flickr';
 
     /**
      * @var string $moduleNameLower
      */
-    protected $moduleNameLower = 'flickr';
+    protected string $moduleNameLower = 'flickr';
 
     /**
      * Boot the application events.
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerConfig();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
@@ -37,7 +36,7 @@ class FlickrServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerConfig()
+    protected function registerConfig(): void
     {
         $this->publishes([
             module_path($this->moduleName, 'Config/config.php') => config_path($this->moduleNameLower . '.php'),
@@ -53,7 +52,7 @@ class FlickrServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->app->register(RouteServiceProvider::class);
         $this->commands([
@@ -69,7 +68,7 @@ class FlickrServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return [];
     }

@@ -39,6 +39,7 @@ class PhotosCommand extends Command
         );
 
         foreach ($tasks as $task) {
+            $this->info('Processing '. $task->task . ' for ' . $task->model->nsid);
             $model = $task->model;
             ContactPhotosJob::dispatch($model->nsid)->onQueue('flickr');
             /**

@@ -38,6 +38,7 @@ class FavoritesCommand extends Command
         );
 
         foreach ($tasks as $task) {
+            $this->info('Processing '. $task->task . ' for ' . $task->model->nsid);
             $model = $task->model;
             ContactFavoritesJob::dispatch($model->nsid)->onQueue('flickr');
             /**
