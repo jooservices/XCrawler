@@ -10,6 +10,8 @@ $default = [
     'maxJobs' => 0,
     'tries' => 10,
     'nice' => 0,
+    'memory' => env('HORIZON_DEFAULT_MEMORY', 2048),
+    'timeout' => env('HORIZON_DEFAULT_TIMEOUT', 600),
 ];
 
 return [
@@ -196,8 +198,6 @@ return [
                 'queue' => ['default'],
                 'maxProcesses' => env('HORIZON_DEFAULT_MAX_PROCESSES', 10),
                 'minProcesses' => env('HORIZON_DEFAULT_MIN_PROCESSES', 5),
-                'memory' => env('HORIZON_DEFAULT_MEMORY', 2048),
-                'timeout' => env('HORIZON_DEFAULT_TIMEOUT', 600),
             ]
         ),
         'onejav' => array_merge(
@@ -206,8 +206,6 @@ return [
                 'queue' => ['onejav'],
                 'maxProcesses' => env('HORIZON_ONEJAV_MAX_PROCESSES', 10),
                 'minProcesses' => env('HORIZON_ONEJAV_MIN_PROCESSES', 5),
-                'memory' => env('HORIZON_ONEJAV_MEMORY', 2048),
-                'timeout' => env('HORIZON_ONEJAV_TIMEOUT', 600),
             ]
         ),
         'oauth' => array_merge(
@@ -216,8 +214,6 @@ return [
                 'queue' => ['flickr'],
                 'maxProcesses' => env('HORIZON_OAUTH_MAX_PROCESSES', 10),
                 'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 5),
-                'memory' => env('HORIZON_OAUTH_MEMORY', 2048),
-                'timeout' => env('HORIZON_OAUTH_TIMEOUT', 600),
             ]
         ),
     ],
