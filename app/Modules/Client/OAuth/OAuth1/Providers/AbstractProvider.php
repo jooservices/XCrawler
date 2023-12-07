@@ -15,6 +15,7 @@ use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Services\XClient;
 use App\Modules\Core\Facades\Setting;
+use App\Modules\Core\Services\States;
 use DateTime;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
@@ -92,12 +93,12 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
         $accessToken = $this->requestAccessToken($requestToken, $verifier, $token->getAccessTokenSecret());
 
         if ($accessToken) {
-            Integration::updateOrCreate([
-                'service' => $this->service(),
-            ], [
+            Integration::where('service', $this->service())
+                ->where('state_code', States::STATE_INIT)
+                ->update([
                 'token_secret' => $accessToken->getAccessTokenSecret(),
                 'token' => $accessToken->getAccessToken(),
-                'data' => (array)($accessToken)
+                'state_code' => States::STATE_COMPLETED
             ]);
         }
 

@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
 
+/**
+ * @property string $service
+ * @property string $key
+ */
 class Integration extends Model
 {
     use HasFactory;
@@ -17,16 +21,26 @@ class Integration extends Model
 
     protected $fillable = [
         'service',
+        'key',
+        'secret',
+        'callback',
+        'is_primary',
         'token',
         'token_secret',
-        'data'
+        'data',
+        'state_code',
     ];
 
     protected $casts = [
         'service' => 'string',
+        'key' => 'string',
+        'secret' => 'string',
+        'callback' => 'string',
+        'is_primary' => 'string',
         'token' => 'string',
         'token_secret' => 'string',
         'data' => 'array',
+        'state_code' => 'string',
     ];
 
     protected static function newFactory()
