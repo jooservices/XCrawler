@@ -2,7 +2,7 @@
 
 namespace App\Modules\Client\OAuth\OAuth1\Signature;
 
-use App\Modules\Client\OAuth\Uri\UriInterface;
+use App\Modules\Client\Uri\UriInterface;
 
 interface SignatureInterface
 {

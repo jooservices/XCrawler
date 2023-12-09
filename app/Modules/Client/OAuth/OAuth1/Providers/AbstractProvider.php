@@ -2,22 +2,16 @@
 
 namespace App\Modules\Client\OAuth\OAuth1\Providers;
 
-use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\AbstractBaseProvider;
 use App\Modules\Client\OAuth\Events\RetrievedRequestToken;
-use App\Modules\Client\OAuth\Exceptions\RequestLimited;
 use App\Modules\Client\OAuth\Exceptions\TokenResponseException;
 use App\Modules\Client\OAuth\OAuth1\Signature\Signature;
 use App\Modules\Client\OAuth\OAuth1\Signature\SignatureInterface;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface;
-use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
-use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
-use App\Modules\Client\Services\XClient;
-use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\States;
+use App\Modules\Client\Uri\Uri;
+use App\Modules\Client\Uri\UriInterface;
 use DateTime;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
@@ -30,16 +24,14 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
 
     protected SignatureInterface $signature;
 
-
-    public function __construct(
-        protected TokenStorageInterface $storage,
-        protected XClient $client,
-        protected ?UriInterface $baseApiUri = null
-    ) {
-        parent::__construct($this->storage, $this->client);
-
+    public function init(string $baseApiUri = null): void
+    {
         $this->signature = app(Signature::class, ['credentials' => $this->credentials]);
         $this->signature->setHashingAlgorithm($this->getSignatureMethod());
+
+        if ($baseApiUri !== null) {
+            $this->baseApiUri = new Uri($baseApiUri);
+        }
     }
 
     /**
@@ -60,7 +52,7 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
             )->getBody()
         );
 
-        $this->storage->storeAccessToken($this->service(), $token);
+        $this->storage->storeAccessToken($this->credentials->getUid(), $token);
 
         Event::dispatch(new RetrievedRequestToken($token));
 
@@ -83,35 +75,23 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
 
     public function retrieveAccessToken(string $verifier, ?TokenInterface $requestToken = null): TokenInterface
     {
-        $token = $this->storage->retrieveAccessToken($this->service());
+        $token = $this->storage->retrieveAccessToken($this->credentials->getUid());
 
         // If no request token is provided, try to get it from this object.
         if ($requestToken === null) {
             $requestToken = $token->getAccessToken();
         }
 
-        $accessToken = $this->requestAccessToken($requestToken, $verifier, $token->getAccessTokenSecret());
-
-        if ($accessToken) {
-            Integration::where('service', $this->service())
-                ->where('state_code', States::STATE_INIT)
-                ->update([
-                'token_secret' => $accessToken->getAccessTokenSecret(),
-                'token' => $accessToken->getAccessToken(),
-                'state_code' => States::STATE_COMPLETED
-            ]);
-        }
-
-        return $accessToken;
+        return $this->requestAccessToken($requestToken, $verifier, $token->getAccessTokenSecret());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function requestAccessToken($token, $verifier, $tokenSecret = null): TokenInterface
+    public function requestAccessToken(string $token, string $verifier, string $tokenSecret): TokenInterface
     {
         if ($tokenSecret === null) {
-            $storedRequestToken = $this->storage->retrieveAccessToken($this->service());
+            $storedRequestToken = $this->storage->retrieveAccessToken($this->credentials->getUid());
             $tokenSecret = $storedRequestToken->getRequestTokenSecret();
         }
         $this->signature->setTokenSecret($tokenSecret);
@@ -124,7 +104,7 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
             'Authorization' => $this->buildAuthorizationHeaderForAPIRequest(
                 'POST',
                 $this->getAccessTokenEndpoint(),
-                $this->storage->retrieveAccessToken($this->service()),
+                $this->storage->retrieveAccessToken($this->credentials->getUid()),
                 $bodyParams
             ),
         ];
@@ -138,12 +118,12 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
         );
 
         if (!$responseBody->isSuccessful()) {
-            throw  new TokenResponseException($responseBody->getBody());
+            throw new TokenResponseException($responseBody->getBody());
         }
 
         $token = $this->parseAccessTokenResponse($responseBody->getBody());
 
-        $this->storage->storeAccessToken($this->service(), $token);
+        $this->storage->storeAccessToken($this->credentials->getUid(), $token);
 
         return $token;
     }
@@ -182,7 +162,7 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
     ): XResponseInterface {
         $uri = $this->determineRequestUriFromPath($path, $this->baseApiUri);
 
-        $token = $this->storage->retrieveAccessToken($this->service());
+        $token = $this->storage->retrieveAccessToken($this->credentials->getUid());
         $extraHeaders = array_merge($this->getExtraApiHeaders(), $extraHeaders);
         $authorizationHeader = [
             'Authorization' => $this->buildAuthorizationHeaderForAPIRequest($method, $uri, $token, $body),
@@ -291,19 +271,16 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
      *
      * @return array
      */
-    protected function getBasicAuthorizationHeaderInfo()
+    protected function getBasicAuthorizationHeaderInfo(): array
     {
-        $dateTime = new DateTime();
-        $headerParameters = [
+        return [
             'oauth_callback' => $this->credentials->getCallbackUrl(),
             'oauth_consumer_key' => $this->credentials->getConsumerId(),
             'oauth_nonce' => Str::random(32),
             'oauth_signature_method' => $this->getSignatureMethod(),
-            'oauth_timestamp' => $dateTime->format('U'),
+            'oauth_timestamp' => (new DateTime())->format('U'),
             'oauth_version' => $this->getVersion(),
         ];
-
-        return $headerParameters;
     }
 
     /**

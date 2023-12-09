@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Console\Contact;
 
+use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\Core\Services\States;
 use App\Modules\Core\Services\TaskService;
@@ -31,29 +32,37 @@ class PhotosCommand extends Command
      * @param TaskService $taskService
      * @return void
      */
-    public function handle(TaskService $taskService): void
+    public function handle(TaskService $taskService, IntegrationRepository $repository): void
     {
-        $tasks = $taskService->tasks(
-            FlickrService::TASK_CONTACT_PHOTOS,
-            Setting::remember('flickr', 'task_contact_photos_limit', fn() => 10)
-        );
+        $this->info('Fetching contact\' photos ...');
 
-        foreach ($tasks as $task) {
-            $this->info('Processing '. $task->task . ' for ' . $task->model->nsid);
-            $model = $task->model;
-            ContactPhotosJob::dispatch($model->nsid)->onQueue('flickr');
-            /**
-             * @TODO Should we take care if task completed successfully?
-             */
-            $task->delete();
-            /**
-             * Create new same task for next run.
-             */
+        $repository->getCompleted('flickr')->each(function ($integration) use ($taskService) {
+            $this->output->text('Processing integration: ' . $integration->name);
 
-            $model->tasks()->create([
-                'task' => FlickrService::TASK_CONTACT_PHOTOS,
-                'state_code' => States::STATE_INIT,
-            ]);
-        }
+            $tasks = $taskService->tasks(
+                FlickrService::TASK_CONTACT_PHOTOS,
+                Setting::remember('flickr', 'task_contact_photos_limit', fn() => 10)
+            );
+
+            foreach ($tasks as $task) {
+                $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
+                $model = $task->model;
+
+                ContactPhotosJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
+
+                /**
+                 * @TODO Should we take care if task completed successfully?
+                 */
+                $task->delete();
+                /**
+                 * Create new same task for next run.
+                 */
+
+                $model->tasks()->create([
+                    'task' => FlickrService::TASK_CONTACT_PHOTOS,
+                    'state_code' => States::STATE_INIT,
+                ]);
+            }
+        });
     }
 }

@@ -5,120 +5,129 @@ namespace App\Modules\Client\OAuth\Storage;
 use App\Modules\Client\OAuth\Exceptions\AuthorizationStateNotFoundException;
 use App\Modules\Client\OAuth\Exceptions\TokenNotFoundException;
 use App\Modules\Client\OAuth\Token\TokenInterface;
+use App\Modules\Core\Storage\Storage;
 
-class Memory implements TokenStorageInterface
+class Memory extends Storage implements TokenStorageInterface
 {
-    public function __construct(protected array $tokens = [], protected array $states = [])
-    {
-    }
+    private const STATES_KEY = '_states';
 
     /**
-     * {@inheritdoc}
+     * @param string $service
+     * @return TokenInterface
+     * @throws TokenNotFoundException
      */
     public function retrieveAccessToken(string $service): TokenInterface
     {
         if ($this->hasAccessToken($service)) {
-            return $this->tokens[$service];
+            return $this->getProperty($service);
         }
 
         throw new TokenNotFoundException('Token not stored');
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $service
+     * @return bool
      */
     public function hasAccessToken(string $service): bool
     {
-        return isset($this->tokens[$service]) && $this->tokens[$service] instanceof TokenInterface;
+        return $this->hasProperty($service)
+            && $this->getProperty($service) instanceof TokenInterface;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $service
+     * @param TokenInterface $token
+     * @return $this
      */
     public function storeAccessToken(string $service, TokenInterface $token): self
     {
-        $this->tokens[$service] = $token;
+        $this->setProperty($service, $token);
 
-        // allow chaining
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $service
+     * @return $this
      */
     public function clearToken(string $service): self
     {
-        if (array_key_exists($service, $this->tokens)) {
-            unset($this->tokens[$service]);
-        }
+        $this->removeProperty($service);
 
-        // allow chaining
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @return $this
      */
     public function clearAllTokens(): self
     {
-        $this->tokens = [];
+        $this->reset();
 
-        // allow chaining
         return $this;
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function retrieveAuthorizationState(string $service): string
-    {
-        if ($this->hasAuthorizationState($service)) {
-            return $this->states[$service];
-        }
-
-        throw new AuthorizationStateNotFoundException('State not stored');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function hasAuthorizationState(string $service): bool
-    {
-        return isset($this->states[$service]) && null !== $this->states[$service];
-    }
-
-    /**
-     * {@inheritdoc}
+     * @param string $service
+     * @param string $state
+     * @return $this
      */
     public function storeAuthorizationState(string $service, string $state): self
     {
-        $this->states[$service] = $state;
+        $states = $this->getProperty(self::STATES_KEY, []);
+        $states[$service] = $state;
 
-        // allow chaining
+        $this->setProperty(self::STATES_KEY, $states);
+
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $service
+     * @return string
+     * @throws AuthorizationStateNotFoundException
+     */
+    public function retrieveAuthorizationState(string $service): string
+    {
+        if (!$this->hasAuthorizationState($service)) {
+            throw new AuthorizationStateNotFoundException('State not stored');
+        }
+
+        return $this->getProperty(self::STATES_KEY)[$service];
+    }
+
+    /**
+     * @param string $service
+     * @return bool
+     */
+    public function hasAuthorizationState(string $service): bool
+    {
+        $states = $this->getProperty(self::STATES_KEY, []);
+
+        return isset($states[$service]);
+    }
+
+    /**
+     * @param string $service
+     * @return $this
      */
     public function clearAuthorizationState(string $service): self
     {
-        if (array_key_exists($service, $this->states)) {
-            unset($this->states[$service]);
-        }
+        $states = $this->getProperty(self::STATES_KEY, []);
+        $states[$service] = null;
+        $this->setProperty(self::STATES_KEY, $states);
 
-        // allow chaining
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * @return $this
      */
     public function clearAllAuthorizationStates(): self
     {
-        $this->states = [];
+        $this->setProperty(self::STATES_KEY, []);
 
-        // allow chaining
         return $this;
     }
 }

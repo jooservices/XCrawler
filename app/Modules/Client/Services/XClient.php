@@ -2,6 +2,7 @@
 
 namespace App\Modules\Client\Services;
 
+use App\Modules\Client\Exceptions\GeneralClientException;
 use App\Modules\Client\Models\RequestLog;
 use App\Modules\Client\Responses\XResponse;
 use App\Modules\Client\Responses\XResponseInterface;
@@ -52,6 +53,7 @@ class XClient
      * @phpcs:disable
      *
      * @throws GuzzleException
+     * @throws GeneralClientException
      */
     public function request(string $method, string $endpoint, array $options = []): XResponseInterface
     {
@@ -89,7 +91,12 @@ class XClient
                 'is_success' => $xresponse->isSuccessful(),
                 'completed_at' => Carbon::now(),
             ]);
+
+
         } catch (Exception $e) {
+            /**
+             * Handle ConnectionException
+             */
             $data = [
                 'completed_at' => Carbon::now(),
                 'response' => $e->getMessage(),
@@ -107,7 +114,6 @@ class XClient
 
             $this->requestLog->update($data);
         } finally {
-
             return $xresponse;
         }
     }

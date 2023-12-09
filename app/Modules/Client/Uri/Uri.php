@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Client\OAuth\Uri;
+namespace App\Modules\Client\Uri;
 
 use InvalidArgumentException;
 

@@ -2,21 +2,26 @@
 
 namespace App\Modules\Client\OAuth;
 
-use App\Modules\Client\OAuth\Credentials\CredentialsFactory;
 use App\Modules\Client\OAuth\Credentials\CredentialsInterface;
 use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
-use App\Modules\Client\OAuth\Uri\Uri;
-use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Services\XClient;
+use App\Modules\Client\Uri\Uri;
+use App\Modules\Client\Uri\UriInterface;
 use Exception;
 
 abstract class AbstractBaseProvider implements ProviderInterface
 {
     protected CredentialsInterface $credentials;
 
-    public function __construct(protected TokenStorageInterface $storage, protected XClient $client)
-    {
-        $this->credentials = app(CredentialsFactory::class)->make($this->service());
+    /**
+     * @TODO Remove Uri object
+     */
+    protected ?Uri $baseApiUri;
+
+    public function __construct(
+        protected XClient $client,
+        protected TokenStorageInterface $storage,
+    ) {
     }
 
     /**
@@ -28,6 +33,13 @@ abstract class AbstractBaseProvider implements ProviderInterface
     {
         return $this->storage;
     }
+
+    public function setCredentials(CredentialsInterface $credentials): void
+    {
+        $this->credentials = $credentials;
+    }
+
+    abstract public function init(string $baseApiUri = null);
 
     /**
      * @param string|UriInterface $path

@@ -2,8 +2,11 @@
 
 namespace App\Modules\Client\Console;
 
+use App\Modules\Client\OAuth\OAuth1\IntegrationService;
 use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
+use App\Modules\Client\Repositories\IntegrationRepository;
+use Exception;
 use Illuminate\Console\Command;
 
 class Integration extends Command
@@ -20,33 +23,66 @@ class Integration extends Command
      *
      * @var string
      */
-    protected $description = 'Command description.';
-
+    protected $description = 'Integration.';
 
     /**
-     * Execute the console command.
-     *
-     * @return mixed
+     * @throws Exception
      */
-    public function handle()
+    public function handle(IntegrationRepository $repository): int
     {
-        $provider = app(ProviderFactory::class)->make(app(Flickr::class));
-        $this->output->title('Integrate with Flickr');
-        $requestToken = $provider->requestRequestToken();
+        $service = $this->output->ask('Enter service: ');
 
-        $this->output->text($provider->getAuthorizationUri(
+        $integrations = $repository->getNotIntegrated($service);
+        if ($integrations->isEmpty()) {
+            $this->output->error('No integrations found for ' . $service);
+            return 0;
+        }
+
+        $integrations->each(function ($integration) {
+            $this->output->table(
+                ['Service', 'Name', 'ID'],
+                [
+                    [
+                        ucfirst($integration->service),
+                        $integration->name,
+                        $integration->id,
+                    ],
+                ]
+            );
+        });
+
+        $id = $this->output->ask('Choose integration: ', $integrations->first()->id);
+        $integration = $integrations->where('id', $id)->first();
+
+        $provider = app(ProviderFactory::class)->oauth1(
+            app(Flickr::class),
+            $integration
+        );
+
+        $integrateService = app(
+            IntegrationService::class,
             [
-                'oauth_token' => $requestToken->getRequestToken(),
-                'perms' => 'read'
+                'provider' => $provider,
+                'integration' => $integration
             ]
-        )->getAbsoluteUri());
+        );
 
-        $code = $this->output->ask('Enter code');
-        $accessToken = $provider->retrieveAccessToken($code);
+        $this->output->title('Integrate with ' . ucfirst($service) . ' with ' . $integration->name);
+
+        $this->output->text($integrateService->getAuthorizationUri());
+
+        $accessToken = $integrateService->retrieveAccessToken($this->output->ask('Enter code: '));
+
         $this->output->table(
-            ['Service', 'Token', 'Token Secret'],
+            ['Service', 'Name', 'ID', 'Token', 'Token Secret'],
             [
-                ['Flickr', $accessToken->getAccessToken(), $accessToken->getAccessTokenSecret()],
+                [
+                    ucfirst($service),
+                    $integration->name,
+                    $integration->id,
+                    $accessToken->getAccessToken(),
+                    $accessToken->getAccessTokenSecret()
+                ],
             ]
         );
 

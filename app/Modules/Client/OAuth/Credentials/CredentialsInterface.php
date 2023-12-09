@@ -9,4 +9,6 @@ interface CredentialsInterface
     public function getConsumerId(): string;
 
     public function getConsumerSecret(): string;
+
+    public function getUid(): string;
 }

@@ -4,6 +4,7 @@ namespace App\Modules\Client\Database\factories;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Services\States;
+use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class IntegrationFactory extends Factory
@@ -24,14 +25,14 @@ class IntegrationFactory extends Factory
     public function definition()
     {
         return [
-            'service' => 'flickr',
+            'service' => FlickrService::SERVICE_NAME,
+            'name' => 'flickr',
             'key' => $this->faker->uuid,
             'secret' => $this->faker->uuid,
             'callback' => $this->faker->url,
             'is_primary' => true,
             'token' => $this->faker->uuid,
             'token_secret' => $this->faker->uuid,
-            'data' => [],
             'state_code' => States::STATE_COMPLETED,
         ];
     }

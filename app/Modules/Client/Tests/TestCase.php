@@ -16,6 +16,8 @@ use Mockery\MockInterface;
  */
 class TestCase extends \Tests\TestCase
 {
+    protected Integration $integration;
+
     public function setUp(): void
     {
         parent::setUp();
@@ -25,9 +27,8 @@ class TestCase extends \Tests\TestCase
         Integration::truncate();
         RequestLog::truncate();
 
-        Integration::factory()->create();
+        $this->integration = Integration::factory()->create();
 
-        Cache::delete('flickr_requests_count');
         Task::truncate();
     }
 

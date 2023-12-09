@@ -9,20 +9,13 @@ use Illuminate\Support\Facades\Queue;
 
 class FlickrServiceTest extends TestCase
 {
-    private FlickrService $service;
-
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        $this->service = app(FlickrService::class);
-    }
-
     public function testContacts()
     {
         Queue::fake(ContactJob::class);
 
-        $this->service->contacts();
+        app(FlickrService::class)
+            ->setIntegration($this->integration)
+            ->processContacts();
 
         Queue::assertPushed(ContactJob::class, function ($job) {
             return $job->page === 2;

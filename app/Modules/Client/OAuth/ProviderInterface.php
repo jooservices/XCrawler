@@ -2,9 +2,10 @@
 
 namespace App\Modules\Client\OAuth;
 
+use App\Modules\Client\OAuth\Credentials\CredentialsInterface;
 use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
-use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
+use App\Modules\Client\Uri\UriInterface;
 
 interface ProviderInterface
 {
@@ -19,7 +20,7 @@ interface ProviderInterface
      * @param array $extraHeaders Extra headers if applicable. These will override service-specific
      *                              any defaults.
      *
-     * @return XClientResponseInterface
+     * @return XResponseInterface
      */
     public function request(
         $path,
@@ -27,6 +28,8 @@ interface ProviderInterface
         array $extraHeaders = [],
         string $method = 'GET'
     ): XResponseInterface;
+
+    public function setCredentials(CredentialsInterface $credentials): void;
 
     /**
      * Returns the url to redirect to for authorization purposes.
@@ -50,6 +53,4 @@ interface ProviderInterface
     public function getAccessTokenEndpoint(): UriInterface;
 
     public function getStorage(): TokenStorageInterface;
-
-    public function service(): string;
 }

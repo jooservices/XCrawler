@@ -34,4 +34,9 @@ class Credentials implements CredentialsInterface
     {
         return $this->consumerSecret;
     }
+
+    public function getUid(): string
+    {
+        return md5($this->consumerId . $this->consumerSecret . $this->callbackUrl);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Console;
 
+use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Flickr\Jobs\ContactJob;
 use Illuminate\Console\Command;
 
@@ -27,10 +28,13 @@ class ContactCommand extends Command
      *
      * @return void
      */
-    public function handle(): void
+    public function handle(IntegrationRepository $repository): void
     {
         $this->info('Fetching contacts...');
 
-        ContactJob::dispatch()->onQueue('flickr');
+        $repository->getCompleted('flickr')->each(function ($integration) {
+            $this->output->text('Processing integration: ' . $integration->name);
+            ContactJob::dispatch($integration)->onQueue('flickr');
+        });
     }
 }

@@ -9,7 +9,7 @@ interface TokenInterface extends BaseTokenInterface
     /**
      * @return string
      */
-    public function getAccessTokenSecret();
+    public function getAccessTokenSecret(): string;
 
     /**
      * @param string $accessTokenSecret
@@ -19,7 +19,7 @@ interface TokenInterface extends BaseTokenInterface
     /**
      * @return string
      */
-    public function getRequestTokenSecret();
+    public function getRequestTokenSecret(): string;
 
     /**
      * @param string $requestTokenSecret
@@ -29,7 +29,7 @@ interface TokenInterface extends BaseTokenInterface
     /**
      * @return string
      */
-    public function getRequestToken();
+    public function getRequestToken(): string;
 
     /**
      * @param string $requestToken

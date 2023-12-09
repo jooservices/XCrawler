@@ -2,22 +2,21 @@
 
 namespace App\Modules\Client\OAuth\Credentials;
 
-use App\Modules\Client\Models\Integration;
-
+/**
+ * Factory from env
+ */
 class CredentialsFactory
 {
+    /**
+     * @param string $provider
+     * @return CredentialsInterface
+     */
     public function make(string $provider): CredentialsInterface
     {
-        $integration = Integration::where('service', $provider)->first();
-
-        if (!$integration) {
-            throw new \Exception('Integration not found');
-        }
-
         return new Credentials(
-            $integration->key,
-            $integration->secret,
-            $integration->callback,
+            config('client.' . $provider . '.key'),
+            config('client.' . $provider . '.secret'),
+            config('client.' . $provider . '.callback'),
         );
     }
 }

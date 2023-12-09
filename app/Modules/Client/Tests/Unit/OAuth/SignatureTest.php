@@ -4,7 +4,7 @@ namespace App\Modules\Client\Tests\Unit\OAuth;
 
 use App\Modules\Client\OAuth\Credentials\Credentials;
 use App\Modules\Client\OAuth\OAuth1\Signature\Signature;
-use App\Modules\Client\OAuth\Uri\Uri;
+use App\Modules\Client\Uri\Uri;
 use Tests\TestCase;
 
 class SignatureTest extends TestCase

@@ -4,7 +4,7 @@ namespace App\Modules\Client\OAuth\OAuth1\Providers;
 
 use App\Modules\Client\OAuth\ProviderInterface as BaseProviderInterface;
 use App\Modules\Client\OAuth\Token\TokenInterface;
-use App\Modules\Client\OAuth\Uri\UriInterface;
+use App\Modules\Client\Uri\UriInterface;
 
 interface ProviderInterface extends BaseProviderInterface
 {
@@ -27,7 +27,7 @@ interface ProviderInterface extends BaseProviderInterface
      *
      * @return TokenInterface $token
      */
-    public function requestAccessToken($token, $verifier, $tokenSecret): TokenInterface;
+    public function requestAccessToken(string $token, string $verifier, string $tokenSecret): TokenInterface;
 
     /**
      * @return UriInterface

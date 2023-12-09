@@ -7,33 +7,22 @@ use App\Modules\Client\Events\BeforeFlickrRequest;
 use App\Modules\Client\OAuth\Exceptions\TokenResponseException;
 use App\Modules\Client\OAuth\OAuth1\Token\Token;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface;
-use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
-use App\Modules\Client\OAuth\Uri\Uri;
-use App\Modules\Client\OAuth\Uri\UriInterface;
 use App\Modules\Client\Responses\XResponseInterface;
-use App\Modules\Client\Services\XClient;
+use App\Modules\Client\Uri\Uri;
+use App\Modules\Client\Uri\UriInterface;
+use Carbon\Carbon;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Event;
+use Jenssegers\Mongodb\Eloquent\Model;
 
 class Flickr extends AbstractProvider
 {
-    public const PROVIDER_NAME = 'flickr';
     public const OAUTH_REQUEST_TOKEN_ENDPOINT = 'https://www.flickr.com/services/oauth/request_token';
     public const OAUTH_AUTHORIZATION_ENDPOINT = 'https://www.flickr.com/services/oauth/authorize';
     public const OAUTH_REST_ENDPOINT = 'https://www.flickr.com/services/rest/';
     public const OAUTH_ACCESS_TOKEN_ENDPOINT = 'https://www.flickr.com/services/oauth/access_token';
     private string $format = 'json';
-
-    public function __construct(
-        protected TokenStorageInterface $storage,
-        protected XClient $client,
-        ?UriInterface $baseApiUri = null
-    ) {
-        parent::__construct($storage, $client, $baseApiUri);
-
-        if ($baseApiUri === null) {
-            $this->baseApiUri = new Uri(self::OAUTH_REST_ENDPOINT);
-        }
-    }
 
     public function getRequestTokenEndpoint(): UriInterface
     {
@@ -50,6 +39,9 @@ class Flickr extends AbstractProvider
         return new Uri(self::OAUTH_ACCESS_TOKEN_ENDPOINT);
     }
 
+    /**
+     * @throws TokenResponseException
+     */
     protected function parseRequestTokenResponse(string $responseBody): TokenInterface
     {
         parse_str($responseBody, $data);
@@ -63,6 +55,9 @@ class Flickr extends AbstractProvider
         return $this->parseAccessTokenResponse($responseBody);
     }
 
+    /**
+     * @throws TokenResponseException
+     */
     protected function parseAccessTokenResponse(string $responseBody): TokenInterface
     {
         parse_str($responseBody, $data);
@@ -93,7 +88,8 @@ class Flickr extends AbstractProvider
      * @param array $body
      * @param array $extraHeaders
      * @return XResponseInterface
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
+     * @throws Exception
      */
     public function request(
         $path,
@@ -114,7 +110,10 @@ class Flickr extends AbstractProvider
             }
         }
 
-        $token = $this->storage->retrieveAccessToken($this->service());
+        /**
+         * @TODO Improve storage
+         */
+        $token = $this->storage->retrieveAccessToken($this->credentials->getUid());
 
         $extraHeaders = [...$this->getExtraApiHeaders(), ...$extraHeaders];
         $authorizationHeader = [
@@ -129,6 +128,15 @@ class Flickr extends AbstractProvider
                 'headers' => array_merge($authorizationHeader, $extraHeaders)
             ]
         );
+
+        if ($response->isSuccessful() && $this->credentials instanceof Model) {
+            {
+                $this->credentials->update([
+                    'requested_at' => Carbon::now(),
+                    'requested_times' => (int)$this->credentials->requested_times + 1,
+                ]);
+            }
+        }
 
         Event::dispatch(new AfterFlickrRequest());
 
@@ -168,8 +176,8 @@ class Flickr extends AbstractProvider
         return $this->request($path, $body, $extraHeaders, $method);
     }
 
-    public function service(): string
+    public function init(string $baseApiUri = null): void
     {
-        return self::PROVIDER_NAME;
+        parent::init($baseApiUri ?? self::OAUTH_REST_ENDPOINT);
     }
 }

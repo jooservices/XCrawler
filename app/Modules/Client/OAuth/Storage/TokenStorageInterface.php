@@ -3,10 +3,11 @@
 namespace App\Modules\Client\OAuth\Storage;
 
 use App\Modules\Client\OAuth\Token\TokenInterface;
+use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface as OAuth1TokenInterface;
 
 interface TokenStorageInterface
 {
-    public function retrieveAccessToken(string $service): TokenInterface;
+    public function retrieveAccessToken(string $service): TokenInterface|OAuth1TokenInterface;
 
     public function storeAccessToken(string $service, TokenInterface $token): self;
 
