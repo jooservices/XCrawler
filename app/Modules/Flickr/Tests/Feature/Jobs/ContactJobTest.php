@@ -13,10 +13,11 @@ class ContactJobTest extends TestCase
     {
         Event::fake(ContactCreatedEvent::class);
 
-        ContactJob::dispatch();
+        ContactJob::dispatch($this->integration);
 
         $this->assertDatabaseCount('flickr_contacts', 1102, 'mongodb');
 
         Event::assertDispatchedTimes(ContactCreatedEvent::class, 1102);
+        $this->assertEquals(2, $this->integration->refresh()->requested_times);
     }
 }

@@ -2,23 +2,18 @@
 
 namespace App\Modules\Flickr\Jobs;
 
+use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Services\FlickrService;
 
 class ContactJob extends BaseJob
 {
-    public $tries = 10;
-
-    public $timeout = 60;
-
-    public $retryAfter = 120;
-
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(public int $page = 1)
+    public function __construct(public Integration $integration, public int $page = 1)
     {
     }
 
@@ -29,6 +24,7 @@ class ContactJob extends BaseJob
      */
     public function handle(FlickrService $flickrService)
     {
-        $flickrService->contacts($this->page);
+        $flickrService->setIntegration($this->integration);
+        $flickrService->processContacts($this->page);
     }
 }

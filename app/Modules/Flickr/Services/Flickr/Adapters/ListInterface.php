@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Client\Services\Flickr\Adapters;
+namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
 use Illuminate\Support\Collection;
 

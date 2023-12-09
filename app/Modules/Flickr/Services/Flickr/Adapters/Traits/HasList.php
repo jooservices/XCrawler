@@ -1,13 +1,19 @@
 <?php
 
-namespace App\Modules\Client\Services\Flickr\Adapters\Traits;
+namespace App\Modules\Flickr\Services\Flickr\Adapters\Traits;
 
+use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Collection;
 
 trait HasList
 {
     protected array $listData = [];
 
+    /**
+     * @throws GuzzleException
+     * @throws InvalidRespondException
+     */
     public function getList(array $params = []): Collection
     {
         $params['page'] = $params['page'] ?? 1;
@@ -18,6 +24,10 @@ trait HasList
                 $params
             )
         );
+
+        if (is_string($response->getData())) {
+            throw  new InvalidRespondException($response->getBody());
+        }
 
         if (!$response->getData() || !$this->isSuccessfull($response->getData())) {
             return collect();

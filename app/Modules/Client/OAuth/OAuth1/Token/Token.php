@@ -2,9 +2,10 @@
 
 namespace App\Modules\Client\OAuth\OAuth1\Token;
 
-use App\Modules\Client\OAuth\Token\AbstractBaseToken;
+use App\Modules\Client\OAuth\Token\BaseToken;
+use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface as OAuth1TokenInterface;
 
-class Token extends AbstractBaseToken implements TokenInterface
+class Token extends BaseToken implements OAuth1TokenInterface
 {
     protected string $requestToken;
 

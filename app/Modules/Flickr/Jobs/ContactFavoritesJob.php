@@ -2,7 +2,7 @@
 
 namespace App\Modules\Flickr\Jobs;
 
-use App\Modules\Client\Services\FlickrManager;
+use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Models\FlickrContact as FlickrContactsModel;
 use App\Modules\Flickr\Models\FlickrPhoto as FlickrPhotosModel;
@@ -14,21 +14,18 @@ use App\Modules\Flickr\Services\FlickrService;
 class ContactFavoritesJob extends BaseJob
 {
     /**
+     * @param Integration $integration
      * @param string $nsid
      * @param int $page
      */
-    public function __construct(public string $nsid, public int $page = 1)
+    public function __construct(public Integration $integration, public string $nsid, public int $page = 1)
     {
     }
 
-    /**
-     * @param FlickrManager $flickrManager
-     * @param FlickrService $flickrService
-     * @return void
-     */
-    public function handle(FlickrManager $flickrManager, FlickrService $flickrService): void
+    public function handle(FlickrService $flickrService): void
     {
-        $adapter = $flickrManager->favorites;
+        $flickrService->setIntegration($this->integration);
+        $adapter = $flickrService->favorites;
         $adapter->getList([
             'user_id' => $this->nsid,
             'page' => $this->page
@@ -57,6 +54,6 @@ class ContactFavoritesJob extends BaseJob
             return;
         }
 
-        self::dispatch($this->nsid, $this->page + 1);
+        self::dispatch($this->integration, $this->nsid, $this->page + 1);
     }
 }

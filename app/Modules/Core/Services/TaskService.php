@@ -9,9 +9,15 @@ class TaskService
 {
     public function tasks(string $task, int $limit): Collection
     {
-        return Task::where('task', $task)
+        $tasks = Task::where('task', $task)
             ->where('state_code', States::STATE_INIT)
             ->limit($limit)
             ->get();
+
+        Task::whereIn('id', $tasks->pluck('id'))->update([
+            'state_code' => States::STATE_IN_PROGRESS,
+        ]);
+
+        return $tasks;
     }
 }

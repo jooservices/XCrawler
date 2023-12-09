@@ -3,6 +3,7 @@
 namespace App\Modules\Client\Providers;
 
 use App\Modules\Client\Console\Integration;
+use App\Modules\Client\Console\Integration\AddCommand;
 use App\Modules\Client\OAuth\Storage\Memory;
 use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
 use Exception;
@@ -65,7 +66,8 @@ class ClientServiceProvider extends ServiceProvider
         });
 
         $this->commands([
-            Integration::class
+            Integration::class,
+            AddCommand::class
         ]);
     }
 }

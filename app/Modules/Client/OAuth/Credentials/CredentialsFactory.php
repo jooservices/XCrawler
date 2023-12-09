@@ -2,8 +2,15 @@
 
 namespace App\Modules\Client\OAuth\Credentials;
 
+/**
+ * Factory from env
+ */
 class CredentialsFactory
 {
+    /**
+     * @param string $provider
+     * @return CredentialsInterface
+     */
     public function make(string $provider): CredentialsInterface
     {
         return new Credentials(

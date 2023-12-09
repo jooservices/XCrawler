@@ -2,9 +2,10 @@
 
 namespace App\Modules\Flickr\Jobs;
 
-use App\Modules\Client\Services\FlickrManager;
+use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Models\FlickrPhoto as FlickrPhotosModel;
+use App\Modules\Flickr\Services\FlickrService;
 
 class ContactPhotosJob extends BaseJob
 {
@@ -13,7 +14,7 @@ class ContactPhotosJob extends BaseJob
      *
      * @return void
      */
-    public function __construct(public string $nsid, public int $page = 1)
+    public function __construct(public Integration $integration, public string $nsid, public int $page = 1)
     {
     }
 
@@ -22,10 +23,11 @@ class ContactPhotosJob extends BaseJob
      *
      * @return void
      */
-    public function handle(FlickrManager $flickrService)
+    public function handle(FlickrService $flickrService)
     {
-        $peopleService = $flickrService->people;
-        $peopleService->getList([
+        $flickrService->setIntegration($this->integration);
+        $adapter = $flickrService->people;
+        $adapter->getList([
             'user_id' => $this->nsid,
             'page' => $this->page
         ])->each(function ($photo) {
@@ -38,10 +40,10 @@ class ContactPhotosJob extends BaseJob
             );
         });
 
-        if ($peopleService->endOfList()) {
+        if ($adapter->endOfList()) {
             return;
         }
 
-        self::dispatch($this->nsid, $this->page + 1);
+        self::dispatch($this->integration, $this->nsid, $this->page + 1);
     }
 }

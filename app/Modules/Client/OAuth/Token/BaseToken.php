@@ -2,7 +2,7 @@
 
 namespace App\Modules\Client\OAuth\Token;
 
-abstract class AbstractBaseToken implements TokenInterface
+class BaseToken implements TokenInterface
 {
     protected int $endOfLife;
 
@@ -49,7 +49,7 @@ abstract class AbstractBaseToken implements TokenInterface
     /**
      * @param string $accessToken
      */
-    public function setAccessToken($accessToken): void
+    public function setAccessToken(string $accessToken): void
     {
         $this->accessToken = $accessToken;
     }
@@ -57,15 +57,15 @@ abstract class AbstractBaseToken implements TokenInterface
     /**
      * @param int $endOfLife
      */
-    public function setEndOfLife($endOfLife): void
+    public function setEndOfLife(int $endOfLife): void
     {
         $this->endOfLife = $endOfLife;
     }
 
     /**
-     * @param int $lifetime
+     * @param int|null $lifetime
      */
-    public function setLifetime($lifetime): void
+    public function setLifetime(?int $lifetime): void
     {
         $this->endOfLife = static::EOL_UNKNOWN;
 

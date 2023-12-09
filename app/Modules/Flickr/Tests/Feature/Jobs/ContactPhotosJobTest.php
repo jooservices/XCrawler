@@ -13,7 +13,7 @@ class ContactPhotosJobTest extends TestCase
     {
         $contact = FlickrContact::create(['nsid' => '73115043@N07',]);
 
-        ContactPhotosJob::dispatch('73115043@N07');
+        ContactPhotosJob::dispatch($this->integration, '73115043@N07');
 
         $this->assertDatabaseCount('flickr_photos', 507, 'mongodb');
         $this->assertEquals(507, $contact->photos()->count());

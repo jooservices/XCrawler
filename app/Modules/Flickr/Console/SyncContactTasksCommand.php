@@ -7,7 +7,7 @@ use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
 
-class SyncContactTasks extends Command
+class SyncContactTasksCommand extends Command
 {
     public const COMMAND = 'flickr:contact-tasks';
     /**

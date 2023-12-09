@@ -2,40 +2,34 @@
 
 namespace App\Modules\Core\Tests\Unit\Services;
 
-use App\Modules\Core\Models\Setting;
-use Tests\TestCase;
+use App\Modules\Core\Facades\Setting;
+use App\Modules\Core\Tests\TestCase;
 
 class SettingTest extends TestCase
 {
     public function testRemember()
     {
-        Setting::truncate();
-
-        $value = \App\Modules\Core\Facades\Setting::remember('home', 'title', function () {
+        $value = Setting::remember('home', 'title', function () {
             return 'Test';
         });
 
         $this->assertEquals('Test', $value);
-        $this->assertEquals('Test', \App\Modules\Core\Facades\Setting::remember('home', 'title', fn() => 'Test2'));
-        $this->assertEquals('Test', \App\Modules\Core\Facades\Setting::get('home', 'title'));
+        $this->assertEquals('Test', Setting::remember('home', 'title', fn() => 'Test2'));
+        $this->assertEquals('Test', Setting::get('home', 'title'));
 
-        \App\Modules\Core\Facades\Setting::forget('home', 'title');
-        $this->assertNull(\App\Modules\Core\Facades\Setting::get('home', 'title'));
+        Setting::forget('home', 'title');
+        $this->assertNull(Setting::get('home', 'title'));
     }
 
     public function testGetArray()
     {
-        Setting::truncate();
-
-        \App\Modules\Core\Facades\Setting::setArray('home', 'array', ['test' => 'test-value']);
-        $this->assertEquals(['test' => 'test-value'], \App\Modules\Core\Facades\Setting::getArray('home', 'array'));
+        Setting::setArray('home', 'array', ['test' => 'test-value']);
+        $this->assertEquals(['test' => 'test-value'], Setting::getArray('home', 'array'));
     }
 
     public function testSetInt()
     {
-        Setting::truncate();
-
-        \App\Modules\Core\Facades\Setting::setInt('home', 'int', false);
-        $this->assertEquals(0, \App\Modules\Core\Facades\Setting::getInt('home', 'int'));
+        Setting::setInt('home', 'int', false);
+        $this->assertEquals(0, Setting::getInt('home', 'int'));
     }
 }

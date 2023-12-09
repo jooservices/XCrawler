@@ -2,7 +2,7 @@
 
 namespace App\Modules\Client\Tests\Unit\OAuth;
 
-use App\Modules\Client\OAuth\Uri\Uri;
+use App\Modules\Client\Uri\Uri;
 use Tests\TestCase;
 
 class UriTest extends TestCase
