@@ -7,14 +7,14 @@ use App\Modules\Client\Models\RequestLog;
 use App\Modules\Core\Models\Task;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Facades\Cache;
 use Mockery;
 use Mockery\MockInterface;
+use App\Modules\Core\Tests\TestCase as BaseTestCase;
 
 /**
  * @SuppressWarnings(PHPMD)
  */
-class TestCase extends \Tests\TestCase
+class TestCase extends BaseTestCase
 {
     protected Integration $integration;
 
@@ -22,14 +22,13 @@ class TestCase extends \Tests\TestCase
     {
         parent::setUp();
 
-        $this->mockFlickr();
-
         Integration::truncate();
         RequestLog::truncate();
+        Task::truncate();
+
+        $this->mockFlickr();
 
         $this->integration = Integration::factory()->create();
-
-        Task::truncate();
     }
 
     private function mockFlickr(): void
