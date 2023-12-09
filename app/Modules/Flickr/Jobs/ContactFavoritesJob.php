@@ -4,9 +4,11 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Models\FlickrContact as FlickrContactsModel;
 use App\Modules\Flickr\Models\FlickrPhoto as FlickrPhotosModel;
 use App\Modules\Flickr\Services\FlickrService;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Get all favorites of a contact.
@@ -22,6 +24,10 @@ class ContactFavoritesJob extends BaseJob
     {
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws InvalidRespondException
+     */
     public function handle(FlickrService $flickrService): void
     {
         $flickrService->setIntegration($this->integration);
@@ -54,6 +60,6 @@ class ContactFavoritesJob extends BaseJob
             return;
         }
 
-        self::dispatch($this->integration, $this->nsid, $this->page + 1);
+        self::dispatch($this->integration, $this->nsid, $this->page + 1)->onQueue(FlickrService::QUEUE_NAME);
     }
 }
