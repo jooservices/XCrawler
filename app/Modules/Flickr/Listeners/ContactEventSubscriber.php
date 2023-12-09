@@ -10,10 +10,6 @@ use Illuminate\Events\Dispatcher;
 
 class ContactEventSubscriber
 {
-    public function onBeforeProcessContact(): void
-    {
-    }
-
     public function onFlickrContactCreated(ContactCreatedEvent $event): void
     {
         foreach (FlickrService::TASKS as $task) {
@@ -26,11 +22,6 @@ class ContactEventSubscriber
 
     public function subscribe(Dispatcher $events): void
     {
-        $events->listen(
-            BeforeProcessContact::class,
-            [self::class, 'onBeforeProcessContact']
-        );
-
         $events->listen(
             ContactCreatedEvent::class,
             [self::class, 'onFlickrContactCreated']
