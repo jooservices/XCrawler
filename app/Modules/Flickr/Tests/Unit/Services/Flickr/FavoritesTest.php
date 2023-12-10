@@ -2,8 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
-use App\Modules\Client\Services\FlickrManager;
-use App\Modules\Client\Tests\TestCase;
+use App\Modules\Flickr\Tests\TestCase;
 use App\Modules\Flickr\Services\FlickrService;
 
 class FavoritesTest extends TestCase

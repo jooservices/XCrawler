@@ -9,7 +9,7 @@ use App\Modules\Client\Repositories\IntegrationRepository;
 use Exception;
 use Illuminate\Console\Command;
 
-class Integration extends Command
+class IntegrationCommand extends Command
 {
     /**
      * The name and signature of the console command.
