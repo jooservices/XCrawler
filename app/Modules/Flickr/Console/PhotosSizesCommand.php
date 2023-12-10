@@ -4,7 +4,7 @@ namespace App\Modules\Flickr\Console;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Flickr\Jobs\PhotosSizesJob;
+use App\Modules\Flickr\Jobs\PhotoSizesJob;
 use App\Modules\Flickr\Repositories\PhotoRepository;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
@@ -42,7 +42,7 @@ class PhotosSizesCommand extends Command
                 ->getNoSizesPhotos(Setting::remember('flickr', 'task_photos_sizes_limit', fn() => 10))
                 ->each(function ($photo) use ($integration) {
                     $this->info('Processing photo ' . $photo->id . ' with integration ' . $integration->name);
-                    PhotosSizesJob::dispatch($integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
+                    PhotoSizesJob::dispatch($integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
                 });
         });
     }

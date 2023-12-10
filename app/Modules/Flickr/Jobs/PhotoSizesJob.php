@@ -11,7 +11,7 @@ use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Event;
 
-class PhotosSizesJob extends BaseJob
+class PhotoSizesJob extends BaseJob
 {
     /**
      * Create a new job instance.
