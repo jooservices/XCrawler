@@ -2,8 +2,8 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
-use App\Modules\Client\Tests\TestCase;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Tests\TestCase;
 
 class ContactsTest extends TestCase
 {

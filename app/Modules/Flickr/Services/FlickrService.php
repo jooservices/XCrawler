@@ -12,6 +12,7 @@ use App\Modules\Flickr\Repositories\ContactRepository;
 use App\Modules\Flickr\Services\Flickr\Adapters\Contacts;
 use App\Modules\Flickr\Services\Flickr\Adapters\Favorites;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
+use App\Modules\Flickr\Services\Flickr\Adapters\Photos;
 use Exception;
 use Illuminate\Support\Facades\Event;
 
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Event;
  * @property Contacts $contacts
  * @property Favorites $favorites
  * @property People $people
+ * @property Photos $photos
  */
 class FlickrService
 {

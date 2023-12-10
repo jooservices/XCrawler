@@ -3,9 +3,9 @@
 namespace App\Modules\Client\Tests\Feature\Commands;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Client\Tests\TestCase;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Tests\TestCase;
 
 class IntegrationTest extends TestCase
 {

@@ -27,7 +27,7 @@ class UriFactory implements UriFactoryInterface
         $path = $this->detectPath($server);
         $query = $this->detectQuery($server);
 
-        return $this->createFromParts($scheme, '', $host, $port, $path, $query);
+        return $this->createFromParts($scheme, '', $host, (int) $port, $path, $query);
     }
 
     /**
