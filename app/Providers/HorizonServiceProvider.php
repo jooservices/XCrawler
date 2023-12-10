@@ -35,4 +35,17 @@ class HorizonServiceProvider extends HorizonApplicationServiceProvider
             return true;
         });
     }
+
+    /**
+     * Overload authorization method from \Laravel\Horizon\HorizonApplicationServiceProvider
+     * to allow access to Horizon without having a logged in user.
+     *
+     * @return void
+     */
+    protected function authorization(): void
+    {
+        Horizon::auth(function ($request) {
+            return true;
+        });
+    }
 }
