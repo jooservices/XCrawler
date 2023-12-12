@@ -104,6 +104,18 @@ return [
                 'appname' => 'homestead',
             ],
         ],
+
+        'logging' => [
+            'driver' => 'mongodb',
+            'host' => env('MONGODB_LOGGING_HOST', '127.0.0.1'),
+            'port' => env('MONGODB_LOGGING_PORT', 27017),
+            'database' => env('MONGODB_LOGGING_DATABASE', 'xcrawler'),
+            'username' => env('MONGODB_LOGGING_USERNAME', ''),
+            'password' => env('MONGODB_LOGGING_PASSWORD', ''),
+            'options' => [
+                'appname' => 'homestead',
+            ],
+        ],
     ],
 
     /*
