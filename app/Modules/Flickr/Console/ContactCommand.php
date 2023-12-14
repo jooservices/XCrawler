@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Console;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\ContactJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
@@ -33,9 +34,8 @@ class ContactCommand extends Command
     {
         $this->info('Fetching contacts...');
 
-        $repository->getCompleted('flickr')->each(function ($integration) {
-            $this->output->text('Processing integration: ' . $integration->name);
-            ContactJob::dispatch($integration)->onQueue(FlickrService::QUEUE_NAME);
-        });
+        $integration = $repository->getItem('flickr', null, States::STATE_COMPLETED);
+        $this->output->text('Processing integration: ' . $integration->name);
+        ContactJob::dispatch($integration)->onQueue(FlickrService::QUEUE_NAME);
     }
 }
