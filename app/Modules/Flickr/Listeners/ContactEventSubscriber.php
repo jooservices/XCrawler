@@ -20,7 +20,7 @@ class ContactEventSubscriber
             ]);
         }
 
-        Event::dispatch(new ContactTasksCreatedEvent($event->contact));
+        Event::dispatch(new ContactTasksCreatedEvent());
     }
 
     public function subscribe(Dispatcher $events): void

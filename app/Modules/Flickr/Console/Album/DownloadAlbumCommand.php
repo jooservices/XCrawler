@@ -30,13 +30,7 @@ class DownloadAlbumCommand extends Command
      *
      * @return void
      */
-    public function handle(IntegrationRepository $repository): void
+    public function handle(): void
     {
-        $albumId = $this->ask('Enter album id: ');
-
-        $album =FlickrPhotoset::firstOrCreate(
-            ['id' => $albumId],
-            ['state' => FlickrPhotoset::STATE_INIT]
-        );
     }
 }

@@ -28,7 +28,7 @@ return new class extends Migration {
             $table->string('iconfarm')->nullable();
             $table->string('path_alias')->nullable();
             $table->boolean('has_stats')->nullable();
-            $table->char('gender', '1')->nullable();
+            $table->char('gender', 1)->nullable();
             $table->string('location')->nullable();
             $table->string('description')->nullable();
             $table->string('photosurl')->nullable();

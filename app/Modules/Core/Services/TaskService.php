@@ -13,12 +13,15 @@ class TaskService
 {
     public function create(TaskInterface $model, string $task): Task
     {
+        /**
+         * @var Task $task
+         */
         $task = $model->tasks()->create([
             'task' => $task,
             'state_code' => Task::STATE_INIT,
         ]);
 
-        Event::dispatch(new TaskCreatedEvent($task));
+        Event::dispatch(new TaskCreatedEvent());
 
         return $task;
     }
