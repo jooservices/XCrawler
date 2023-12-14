@@ -38,6 +38,5 @@ class DownloadAlbumCommand extends Command
             ['id' => $albumId],
             ['state' => FlickrPhotoset::STATE_INIT]
         );
-
     }
 }
