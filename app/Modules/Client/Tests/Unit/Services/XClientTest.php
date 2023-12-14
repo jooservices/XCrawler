@@ -4,6 +4,7 @@ namespace App\Modules\Client\Tests\Unit\Services;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\Client\Services\XClient;
+use App\Modules\Client\Tests\TestCase;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -11,7 +12,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\TestCase;
 
 class XClientTest extends TestCase
 {

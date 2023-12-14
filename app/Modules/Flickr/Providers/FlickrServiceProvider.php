@@ -5,6 +5,8 @@ namespace App\Modules\Flickr\Providers;
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\ContactCommand;
+use App\Modules\Flickr\Console\MigrateContacts;
+use App\Modules\Flickr\Console\MigratePhotos;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
 use App\Modules\Flickr\Console\SyncContactTasksCommand;
 use Illuminate\Support\ServiceProvider;
@@ -61,7 +63,9 @@ class FlickrServiceProvider extends ServiceProvider
             FavoritesCommand::class,
             PhotosCommand::class,
             SyncContactTasksCommand::class,
-            PhotosSizesCommand::class
+            PhotosSizesCommand::class,
+            MigrateContacts::class,
+            MigratePhotos::class,
         ]);
     }
 

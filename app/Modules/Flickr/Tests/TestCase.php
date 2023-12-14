@@ -3,8 +3,6 @@
 namespace App\Modules\Flickr\Tests;
 
 use App\Modules\Client\Tests\TestCase as BaseTestCase;
-use App\Modules\Flickr\Models\FlickrContact;
-use App\Modules\Flickr\Models\FlickrPhoto;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
@@ -15,9 +13,6 @@ class TestCase extends BaseTestCase
     public function setUp(): void
     {
         parent::setUp();
-
-        FlickrContact::truncate();
-        FlickrPhoto::truncate();
 
         $this->mockFlickr();
     }

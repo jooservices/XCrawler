@@ -2,9 +2,9 @@
 
 namespace App\Modules\Core\Models;
 
-use Jenssegers\Mongodb\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
-interface HasTasksInterface
+interface TaskInterface
 {
     public function tasks(): MorphMany;
 }

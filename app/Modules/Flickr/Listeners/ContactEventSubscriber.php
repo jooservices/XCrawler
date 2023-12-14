@@ -3,10 +3,11 @@
 namespace App\Modules\Flickr\Listeners;
 
 use App\Modules\Core\Services\States;
-use App\Modules\Flickr\Events\BeforeProcessContact;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
+use App\Modules\Flickr\Events\ContactTasksCreatedEvent;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Support\Facades\Event;
 
 class ContactEventSubscriber
 {
@@ -18,6 +19,8 @@ class ContactEventSubscriber
                 'state_code' => States::STATE_INIT,
             ]);
         }
+
+        Event::dispatch(new ContactTasksCreatedEvent($event->contact));
     }
 
     public function subscribe(Dispatcher $events): void

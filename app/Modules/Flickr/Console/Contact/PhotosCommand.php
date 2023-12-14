@@ -54,14 +54,6 @@ class PhotosCommand extends Command
                  * @TODO Should we take care if task completed successfully?
                  */
                 $task->delete();
-                /**
-                 * Create new same task for next run.
-                 */
-
-                $model->tasks()->create([
-                    'task' => FlickrService::TASK_CONTACT_PHOTOS,
-                    'state_code' => States::STATE_INIT,
-                ]);
             }
         });
     }

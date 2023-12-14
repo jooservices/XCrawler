@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Queue;
 
 class FlickrServiceTest extends TestCase
 {
-    public function testContacts()
+    public function testProcessContact()
     {
         Queue::fake(ContactJob::class);
 
@@ -20,5 +20,16 @@ class FlickrServiceTest extends TestCase
         Queue::assertPushed(ContactJob::class, function ($job) {
             return $job->page === 2;
         });
+    }
+
+    public function testProcessContactWithEndOfPages()
+    {
+        Queue::fake(ContactJob::class);
+
+        app(FlickrService::class)
+            ->setIntegration($this->integration)
+            ->processContacts(2);
+
+        Queue::assertNotPushed(ContactJob::class);
     }
 }

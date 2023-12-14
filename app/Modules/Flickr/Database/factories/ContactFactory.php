@@ -17,7 +17,17 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'nsid' => '12345678@N00',
+            'nsid' => $this->faker->uuid,
+            'username' => $this->faker->userName,
+            'realname' => $this->faker->name,
+            'friend' => $this->faker->boolean,
+            'family' => $this->faker->boolean,
+            'ignored' => $this->faker->boolean,
+            'rev_ignored' => $this->faker->boolean,
+            'iconserver' => $this->faker->randomNumber(),
+            'iconfarm' => $this->faker->randomNumber(),
+            'path_alias' => $this->faker->userName,
+            'location' => $this->faker->city,
         ];
     }
 }

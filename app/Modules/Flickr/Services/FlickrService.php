@@ -6,6 +6,7 @@ use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
+use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
 use App\Modules\Flickr\Jobs\ContactJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Repositories\ContactRepository;
@@ -26,6 +27,7 @@ class FlickrService
 {
     public const TASK_CONTACT_FAVORITES = 'contact-favorites';
     public const TASK_CONTACT_PHOTOS = 'contact-photos';
+    public const TASK_CONTACT_PHOTOSETS = 'contact-photosets';
 
     public const TASKS = [
         self::TASK_CONTACT_FAVORITES,
@@ -55,27 +57,18 @@ class FlickrService
 
     public function processContacts(int $page = 1): void
     {
+        $service = app(FlickrContactService::class);
         $contactsService = $this->contacts;
-        $contactsService->getList(['page' => $page])->each(function ($contact) {
-            $this->create($contact);
+        $contactsService->getList(['page' => $page])->each(function ($contact) use ($service) {
+            $service->create($contact);
         });
 
         if ($page === $contactsService->totalPages()) {
+            Event::dispatch(new FetchContactsCompletedEvent());
             return;
         }
 
         ContactJob::dispatch($this->integration, $page + 1)->onQueue('flickr');
-    }
-
-    public function create(array $contact): FlickrContact
-    {
-        $contact = app(ContactRepository::class)->create($contact);
-
-        if ($contact->wasRecentlyCreated) {
-            Event::dispatch(new ContactCreatedEvent($contact));
-        }
-
-        return $contact;
     }
 
     /**

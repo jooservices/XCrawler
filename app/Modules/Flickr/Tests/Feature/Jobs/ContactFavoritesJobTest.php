@@ -2,27 +2,31 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
+use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
-use App\Modules\Flickr\Models\FlickrPhoto;
+use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Tests\TestCase;
+use Illuminate\Support\Facades\Event;
 
 class ContactFavoritesJobTest extends TestCase
 {
     public function testGetPeopleFavorites()
     {
+        Event::fake(ContactCreatedEvent::class);
+
+        /**
+         * This user have 1487 favorites.
+         */
         $nsid = '94529704@N02';
+
+        $this->assertDatabaseCount('flickr_photos', 0);
+        $this->assertDatabaseCount('flickr_contacts', 0);
 
         $this->assertEquals(0, (int)$this->integration->refresh()->requested_times);
         ContactFavoritesJob::dispatch($this->integration, $nsid);
+        Event::assertDispatchedTimes(ContactCreatedEvent::class, 350);
 
-        $this->assertDatabaseCount('flickr_photos', 1487, 'mongodb');
-
-        $photo = FlickrPhoto::where('owner', '<>', $nsid)->first();
-        $this->assertDatabaseHas('flickr_contacts', [
-            'nsid' => $photo->contact->nsid
-        ], 'mongodb');
-
-        $this->assertCount(2, $photo->contact->tasks);
-        $this->assertEquals(4, $this->integration->refresh()->requested_times);
+        $this->assertDatabaseCount('flickr_photos', 1487);
+        $this->assertDatabaseCount('flickr_contacts', 350);
     }
 }

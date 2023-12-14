@@ -6,6 +6,17 @@ use App\Modules\Core\Services\States;
 
 trait HasStates
 {
+    public function initializeHasState()
+    {
+        $this->mergeFillable([$this->getStateName()]);
+        $this->mergeCasts([$this->getStateName() => 'string']);
+    }
+
+    public function getStateName()
+    {
+        return property_exists($this, 'stateCodeName') ? $this->stateCodeName : 'state_code';
+    }
+
     public static function getStates(): array
     {
         return [

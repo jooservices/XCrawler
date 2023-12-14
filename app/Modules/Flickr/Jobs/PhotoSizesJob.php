@@ -36,15 +36,14 @@ class PhotoSizesJob extends BaseJob
         $sizes = $adapter->getSizes($this->photo->id);
 
         if (!$sizes) {
-            $this->photo->update([
-                'state_code' => States::STATE_FAILED
-            ]);
+            /**
+             * @TODO Handle this case
+             */
             throw new \RuntimeException('Sizes not found');
         }
 
         $this->photo->update([
             'sizes' => $sizes,
-            'state_code' => States::STATE_COMPLETED
         ]);
 
         Event::dispatch(new PhotoSizedEvent($this->photo));

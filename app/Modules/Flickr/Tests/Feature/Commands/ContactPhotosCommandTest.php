@@ -6,6 +6,7 @@ use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
+use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Queue;
@@ -16,11 +17,12 @@ class ContactPhotosCommandTest extends TestCase
     {
         Queue::fake();
 
-        $contact = FlickrContact::factory()->create();
-        $task = $contact->tasks()->create([
-            'task' => FlickrService::TASK_CONTACT_PHOTOS,
-            'state_code' => States::STATE_INIT
-        ]);
+        /**
+         * Service create Contact and also create tasks
+         */
+        $contact = app(FlickrContactService::class)->create(['nsid' => $this->faker->uuid]);
+        $this->assertEquals(2, $contact->refresh()->tasks->count());
+        $this->assertEquals(1, $contact->tasks()->where('task', FlickrService::TASK_CONTACT_PHOTOS)->count());
 
         $this->artisan(PhotosCommand::COMMAND)->assertExitCode(0);
 
@@ -28,15 +30,9 @@ class ContactPhotosCommandTest extends TestCase
             return $job->nsid === $contact->nsid;
         });
 
-        $this->assertDatabaseMissing('tasks', [
-            'id' => $task->id,
-        ], 'mongodb');
-
-        $newTask = $contact->tasks()->where(
-            'task',
-            FlickrService::TASK_CONTACT_PHOTOS
-        )->first();
-
-        $this->assertFalse($newTask->is($task));
+        // Whenever task is fetched, it should be deleted.
+        $this->assertCount(0, $contact->refresh()
+            ->tasks()
+            ->where('task', FlickrService::TASK_CONTACT_PHOTOS)->get());
     }
 }
