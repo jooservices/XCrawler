@@ -53,7 +53,7 @@ class FlickrService
         /**
          * @phpstan-ignore-next-line
          */
-        $this->provider = app(ProviderFactory::class)->oauth1($provider, $integration);
+        $this->provider = app(ProviderFactory::class)->oauth1($provider, $this->integration);
 
         return $this;
     }
