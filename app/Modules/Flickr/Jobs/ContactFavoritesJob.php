@@ -31,10 +31,12 @@ class ContactFavoritesJob extends BaseJob
     {
         $flickrService->setIntegration($this->integration);
         $adapter = $flickrService->favorites;
-        $adapter->getList([
+        $items = $adapter->getList([
             'user_id' => $this->nsid,
             'page' => $this->page
-        ])->each(function ($photo) use ($contactService) {
+        ]);
+
+        $items->getItems()->each(function ($photo) use ($contactService) {
             unset($photo['date_faved']);
             $contact = $contactService->create(['nsid' => $photo['owner']]);
 
@@ -44,10 +46,11 @@ class ContactFavoritesJob extends BaseJob
             ], $photo);
         });
 
-        if ($adapter->endOfList()) {
+        if ($items->isCompleted()) {
             return;
         }
 
-        self::dispatch($this->integration, $this->nsid, $this->page + 1)->onQueue(FlickrService::QUEUE_NAME);
+        self::dispatch($this->integration, $this->nsid, $items->getNextPage())
+            ->onQueue(FlickrService::QUEUE_NAME);
     }
 }

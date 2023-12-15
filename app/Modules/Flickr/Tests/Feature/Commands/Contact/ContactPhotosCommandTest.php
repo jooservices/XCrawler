@@ -1,11 +1,9 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Commands;
+namespace App\Modules\Flickr\Tests\Feature\Commands\Contact;
 
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
-use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
@@ -21,7 +19,7 @@ class ContactPhotosCommandTest extends TestCase
          * Service create Contact and also create tasks
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => $this->faker->uuid]);
-        $this->assertEquals(2, $contact->refresh()->tasks->count());
+        $this->assertEquals(count(FlickrService::TASKS), $contact->refresh()->tasks->count());
         $this->assertEquals(1, $contact->tasks()->where('task', FlickrService::TASK_CONTACT_PHOTOS)->count());
 
         $this->artisan(PhotosCommand::COMMAND)->assertExitCode(0);

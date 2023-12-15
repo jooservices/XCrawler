@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Modules\Flickr\Services\Flickr\DTO;
+
+use Illuminate\Support\Collection;
+use InvalidArgumentException;
+
+abstract class AbstractBaseListDto
+{
+    public function __construct(private readonly array $data)
+    {
+        if (empty($this->data[$this->getEntities()])) {
+            throw new InvalidArgumentException('Invalid data');
+        }
+    }
+
+    abstract public function getEntities(): string;
+
+    abstract public function getEntity(): string;
+
+    public function getItems(): Collection
+    {
+        return collect($this->data[$this->getEntities()][$this->getEntity()]);
+    }
+
+    public function getPage(): int
+    {
+        return (int)$this->data[$this->getEntities()]['page'];
+    }
+
+    public function getPages(): int
+    {
+        return (int)$this->data[$this->getEntities()]['pages'];
+    }
+
+    public function getTotal(): int
+    {
+        return (int)$this->data[$this->getEntities()]['total'];
+    }
+
+    public function getPerPage(): int
+    {
+        return (int)$this->data[$this->getEntities()]['perpage'];
+    }
+
+    public function isCompleted(): bool
+    {
+        return $this->getPage() === $this->getPages();
+    }
+
+    public function getNextPage(): int
+    {
+        return $this->getPage() + 1;
+    }
+}

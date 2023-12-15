@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Jobs;
+namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Tests\TestCase;

@@ -23,6 +23,7 @@ class FlickrPhoto extends Model implements TaskInterface
     public $incrementing = false;
 
     protected $fillable = [
+        'id',
         'owner',
         'farm',
         'isfamily',
@@ -38,6 +39,7 @@ class FlickrPhoto extends Model implements TaskInterface
     ];
 
     protected $casts = [
+        'id' => 'integer',
         'owner' => 'string',
         'farm' => 'integer',
         'isfamily' => 'boolean',

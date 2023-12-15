@@ -36,6 +36,7 @@ class ContactCommand extends Command
 
         $integration = $repository->getItem('flickr', null, States::STATE_COMPLETED);
         $this->output->text('Processing integration: ' . $integration->name);
+
         ContactJob::dispatch($integration)->onQueue(FlickrService::QUEUE_NAME);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Commands;
+namespace App\Modules\Flickr\Tests\Feature\Commands\Contact;
 
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
@@ -19,7 +19,10 @@ class ContactFavoritesCommandTest extends TestCase
          * Service create Contact and also create tasks
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => $this->faker->uuid]);
-        $this->assertEquals(2, $contact->refresh()->tasks->count());
+        $this->assertEquals(
+            count(FlickrService::TASKS),
+            $contact->refresh()->tasks->count()
+        );
         $this->assertEquals(1, $contact->tasks()->where('task', FlickrService::TASK_CONTACT_FAVORITES)->count());
 
         $this->artisan(FavoritesCommand::COMMAND)->assertExitCode(0);

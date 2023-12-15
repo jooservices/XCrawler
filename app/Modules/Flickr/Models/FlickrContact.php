@@ -2,12 +2,9 @@
 
 namespace App\Modules\Flickr\Models;
 
-use App\Modules\Core\Models\Task;
 use App\Modules\Core\Models\TaskInterface;
-use App\Modules\Core\Models\Traits\HasStates;
 use App\Modules\Core\Models\Traits\HasTasks;
 use App\Modules\Core\Models\Traits\HasUuid;
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Database\factories\ContactFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,10 +42,23 @@ class FlickrContact extends Model implements TaskInterface
     ];
 
     protected $casts = [
+        'nsid' => 'string',
+        'username' => 'string',
+        'realname' => 'string',
         'friend' => 'boolean',
         'family' => 'boolean',
         'ignored' => 'boolean',
         'rev_ignored' => 'boolean',
+        'iconserver' => 'integer',
+        'iconfarm' => 'integer',
+        'path_alias' => 'string',
+        'has_stats' => 'boolean',
+        'gender' => 'string',
+        'location' => 'string',
+        'description' => 'string',
+        'photosurl' => 'string',
+        'profileurl' => 'string',
+        'mobileurl' => 'string',
     ];
 
     protected $table = 'flickr_contacts';
@@ -61,5 +71,10 @@ class FlickrContact extends Model implements TaskInterface
     public function photos(): HasMany
     {
         return $this->hasMany(FlickrPhoto::class, 'owner', 'nsid');
+    }
+
+    public function photosets(): HasMany
+    {
+        return $this->hasMany(FlickrPhotoSet::class, 'owner', 'nsid');
     }
 }

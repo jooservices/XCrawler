@@ -14,6 +14,7 @@ use App\Modules\Flickr\Services\Flickr\Adapters\Contacts;
 use App\Modules\Flickr\Services\Flickr\Adapters\Favorites;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
 use App\Modules\Flickr\Services\Flickr\Adapters\Photos;
+use App\Modules\Flickr\Services\Flickr\Adapters\Photosets;
 use Exception;
 use Illuminate\Support\Facades\Event;
 
@@ -22,16 +23,20 @@ use Illuminate\Support\Facades\Event;
  * @property Favorites $favorites
  * @property People $people
  * @property Photos $photos
+ * @property Photosets $photosets
  */
 class FlickrService
 {
     public const TASK_CONTACT_FAVORITES = 'contact-favorites';
     public const TASK_CONTACT_PHOTOS = 'contact-photos';
-    public const TASK_CONTACT_PHOTOSETS = 'contact-photosets';
+    public const TASK_PHOTOSETS = 'photosets';
+    public const TASK_PHOTOSET_PHOTOS = 'photoset-photos';
 
     public const TASKS = [
         self::TASK_CONTACT_FAVORITES,
         self::TASK_CONTACT_PHOTOS,
+        self::TASK_PHOTOSETS,
+        self::TASK_PHOTOSET_PHOTOS
     ];
 
     public const SERVICE_NAME = 'flickr';
@@ -40,9 +45,7 @@ class FlickrService
     private Flickr $provider;
     private Integration $integration;
 
-    /**
-     * @throws Exception
-     */
+
     public function setIntegration(Integration $integration): self
     {
         $this->integration = $integration;
@@ -53,22 +56,6 @@ class FlickrService
         $this->provider = app(ProviderFactory::class)->oauth1($provider, $integration);
 
         return $this;
-    }
-
-    public function processContacts(int $page = 1): void
-    {
-        $service = app(FlickrContactService::class);
-        $contactsService = $this->contacts;
-        $contactsService->getList(['page' => $page])->each(function ($contact) use ($service) {
-            $service->create($contact);
-        });
-
-        if ($page === $contactsService->totalPages()) {
-            Event::dispatch(new FetchContactsCompletedEvent());
-            return;
-        }
-
-        ContactJob::dispatch($this->integration, $page + 1)->onQueue('flickr');
     }
 
     /**

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Jobs;
+namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
-use App\Modules\Flickr\Tests\TestCase;
+use App\Modules\Flickr\Events\FetchContactsRecursiveEvent;
 use App\Modules\Flickr\Jobs\ContactJob;
+use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Event;
 
 class ContactJobTest extends TestCase
@@ -15,6 +16,7 @@ class ContactJobTest extends TestCase
         Event::fake([
             ContactCreatedEvent::class,
             FetchContactsCompletedEvent::class,
+            FetchContactsRecursiveEvent::class
         ]);
 
         ContactJob::dispatch($this->integration);
@@ -23,6 +25,7 @@ class ContactJobTest extends TestCase
 
         Event::assertDispatchedTimes(ContactCreatedEvent::class, 1102);
         Event::assertDispatchedTimes(FetchContactsCompletedEvent::class);
+        Event::assertDispatchedTimes(FetchContactsRecursiveEvent::class);
         $this->assertEquals(2, $this->integration->refresh()->requested_times);
     }
 }

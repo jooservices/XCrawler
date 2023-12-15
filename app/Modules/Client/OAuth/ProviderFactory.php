@@ -6,13 +6,9 @@ use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\OAuth1\Providers\ProviderInterface as OAuth1ProviderInterface;
 use App\Modules\Client\OAuth\OAuth1\Token\Token;
 use App\Modules\Core\Services\States;
-use Exception;
 
 class ProviderFactory
 {
-    /**
-     * @throws Exception
-     */
     public function oauth1(OAuth1ProviderInterface $provider, Integration $integration): OAuth1ProviderInterface
     {
         $provider->setCredentials($integration);

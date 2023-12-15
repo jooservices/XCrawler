@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Commands;
+namespace App\Modules\Flickr\Tests\Feature\Commands\Contact;
 
 use App\Modules\Flickr\Console\ContactCommand;
 use App\Modules\Flickr\Jobs\ContactJob;

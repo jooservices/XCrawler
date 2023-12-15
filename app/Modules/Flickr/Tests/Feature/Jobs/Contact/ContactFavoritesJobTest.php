@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Jobs;
+namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
-use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Event;
 

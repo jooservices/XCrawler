@@ -92,7 +92,6 @@ class XClient
                 'completed_at' => Carbon::now(),
             ]);
 
-
         } catch (Exception $e) {
             /**
              * Handle ConnectionException

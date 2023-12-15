@@ -20,6 +20,7 @@ return new class extends Migration
 
             $table->string('owner')->index()->nullable();
             $table->foreign('owner')->references('nsid')->on('flickr_contacts');
+
             $table->string('primary')->nullable();
             $table->string('secret')->nullable();
             $table->string('server')->nullable();
