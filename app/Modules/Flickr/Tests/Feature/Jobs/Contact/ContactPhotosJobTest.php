@@ -14,7 +14,7 @@ class ContactPhotosJobTest extends TestCase
 
         ContactPhotosJob::dispatch($this->integration, '73115043@N07');
 
-        $this->assertDatabaseCount('flickr_photos', 507,);
+        $this->assertDatabaseCount('flickr_photos', 507);
         $this->assertEquals(507, $contact->photos()->count());
     }
 }
