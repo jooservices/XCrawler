@@ -2,6 +2,7 @@
 
 namespace App\Modules\Client\Repositories;
 
+use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Services\States;
 use Exception;
@@ -9,6 +10,9 @@ use Illuminate\Support\Collection;
 
 class IntegrationRepository
 {
+    /**
+     * @throws NoIntegrateException
+     */
     public function getItem(string $service, ?string $name = null, ?string $stateCode = null): Integration
     {
         $integration =  Integration::where('service', $service)
@@ -22,7 +26,7 @@ class IntegrationRepository
             })->first();
 
         if (!$integration) {
-            throw new Exception('There is no integration');
+            throw new NoIntegrateException('There is no integration');
         }
 
         return $integration;
@@ -34,7 +38,7 @@ class IntegrationRepository
             ->first();
 
         if (!$integration) {
-            throw new Exception('There is no integration');
+            throw new NoIntegrateException('There is no integration');
         }
 
         return $integration;
