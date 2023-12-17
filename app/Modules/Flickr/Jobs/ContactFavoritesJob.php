@@ -30,21 +30,15 @@ class ContactFavoritesJob extends BaseJob
     public function handle(FlickrService $flickrService, FlickrContactService $contactService): void
     {
         $flickrService->setIntegration($this->integration);
+        $contactService = app(FlickrContactService::class);
+
         $adapter = $flickrService->favorites;
         $items = $adapter->getList([
             'user_id' => $this->nsid,
             'page' => $this->page
         ]);
 
-        $items->getItems()->each(function ($photo) use ($contactService) {
-            unset($photo['date_faved']);
-            $contact = $contactService->create(['nsid' => $photo['owner']]);
-
-            $contact->photos()->updateOrCreate([
-                'owner' => $photo['owner'],
-                'id' => $photo['id']
-            ], $photo);
-        });
+        $contactService->addPhotos($items->getItems());
 
         if ($items->isCompleted()) {
             return;

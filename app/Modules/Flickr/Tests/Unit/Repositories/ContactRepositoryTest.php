@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Tests\Unit\Repositories;
 
 use App\Modules\Flickr\Models\FlickrContact;
+use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Repositories\ContactRepository;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
@@ -16,6 +17,27 @@ class ContactRepositoryTest extends TestCase
         parent::setUp();
 
         $this->repository = app(ContactRepository::class);
+    }
+
+    /**
+     * Make sure we will not create duplicate contacts
+     * @return void
+     */
+    public function testCreateDuplicate()
+    {
+        $contact = $this->repository->create([
+            'nsid' => $this->faker->uuid,
+        ]);
+
+        $this->assertDatabaseHas('flickr_contacts', [
+            'nsid' => $contact->nsid,
+        ]);
+
+        $contact2 = $this->repository->create([
+            'nsid' => $contact->nsid
+        ]);
+
+        $this->assertTrue($contact2->is($contact));
     }
 
     public function testGetContactsForPhotos()

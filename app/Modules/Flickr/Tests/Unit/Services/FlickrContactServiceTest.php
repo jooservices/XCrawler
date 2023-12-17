@@ -34,4 +34,22 @@ class FlickrContactServiceTest extends TestCase
         Event::assertDispatchedTimes(ContactCreatedEvent::class);
         $this->assertDatabaseCount('flickr_contacts', 1);
     }
+
+    public function testAddPhotos()
+    {
+        $photo = [
+            'owner' => $this->faker->uuid,
+            'id' => $this->faker->numerify()
+        ];
+
+        app(FlickrContactService::class)->addPhotos(collect([$photo]));
+
+        $this->assertDatabaseHas('flickr_photos', [
+            'id' => $photo['id'],
+        ]);
+
+        $this->assertDatabaseHas('flickr_contacts', [
+            'nsid' => $photo['owner'],
+        ]);
+    }
 }
