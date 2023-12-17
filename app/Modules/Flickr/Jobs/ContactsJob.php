@@ -7,13 +7,15 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
 use App\Modules\Flickr\Events\FetchContactsRecursiveEvent;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use App\Modules\Flickr\Services\Flickr\Adapters\Contacts;
+use App\Modules\Flickr\Services\Flickr\Entities\ContactsListEntity;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Event;
 
-class ContactJob extends BaseJob
+class ContactsJob extends BaseJob
 {
     /**
      * Create a new job instance.
@@ -36,6 +38,9 @@ class ContactJob extends BaseJob
     {
         $service = app(FlickrContactService::class);
         $contactsService = $flickrService->setIntegration($this->integration)->contacts;
+        /**
+         * @var ContactsListEntity $contacts
+         */
         $contacts = $contactsService->getList(['page' => $this->page]);
 
         $contacts->getItems()->each(function ($contact) use ($service) {

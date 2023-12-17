@@ -5,11 +5,11 @@ namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
 use App\Modules\Flickr\Events\FetchContactsRecursiveEvent;
-use App\Modules\Flickr\Jobs\ContactJob;
+use App\Modules\Flickr\Jobs\ContactsJob;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Event;
 
-class ContactJobTest extends TestCase
+class ContactsJobTest extends TestCase
 {
     public function testGetContacts()
     {
@@ -19,7 +19,7 @@ class ContactJobTest extends TestCase
             FetchContactsRecursiveEvent::class
         ]);
 
-        ContactJob::dispatch($this->integration);
+        ContactsJob::dispatch($this->integration);
 
         $this->assertDatabaseCount('flickr_contacts', 1102);
 

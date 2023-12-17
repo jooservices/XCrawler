@@ -3,11 +3,11 @@
 namespace App\Modules\Flickr\Tests\Feature\Commands\Contact;
 
 use App\Modules\Flickr\Console\ContactsCommand;
-use App\Modules\Flickr\Jobs\ContactJob;
+use App\Modules\Flickr\Jobs\ContactsJob;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Bus;
 
-class ContactCommandTest extends TestCase
+class ContactsCommandTest extends TestCase
 {
     public function testCommand()
     {
@@ -15,6 +15,6 @@ class ContactCommandTest extends TestCase
 
         $this->artisan(ContactsCommand::COMMAND)->assertExitCode(0);
 
-        Bus::assertDispatched(ContactJob::class);
+        Bus::assertDispatched(ContactsJob::class);
     }
 }

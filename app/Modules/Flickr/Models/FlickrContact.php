@@ -75,9 +75,6 @@ class FlickrContact extends Model implements TaskInterface
 
     public function photosets(): HasMany
     {
-        /**
-         * @phpstan-ignore-next-line
-         */
         return $this->hasMany(FlickrPhotoset::class, 'owner', 'nsid');
     }
 }

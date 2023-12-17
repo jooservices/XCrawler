@@ -3,7 +3,7 @@
 namespace App\Modules\Flickr\Console\Album;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
-use App\Modules\Flickr\Jobs\ContactJob;
+use App\Modules\Flickr\Jobs\ContactsJob;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;

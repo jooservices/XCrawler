@@ -7,7 +7,7 @@ use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
-use App\Modules\Flickr\Jobs\ContactJob;
+use App\Modules\Flickr\Jobs\ContactsJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Repositories\ContactRepository;
 use App\Modules\Flickr\Services\Flickr\Adapters\Contacts;
