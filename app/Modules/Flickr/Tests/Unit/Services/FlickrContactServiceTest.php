@@ -20,4 +20,18 @@ class FlickrContactServiceTest extends TestCase
             return $event->contact->is($contact);
         });
     }
+
+    public function testCreateContactDuplicate()
+    {
+        Event::fake(ContactCreatedEvent::class);
+        $contact = app(FlickrContactService::class)->create([
+            'nsid' => $this->faker()->uuid,
+        ]);
+        app(FlickrContactService::class)->create([
+            'nsid' => $contact->nsid,
+        ]);
+
+        Event::assertDispatchedTimes(ContactCreatedEvent::class);
+        $this->assertDatabaseCount('flickr_contacts', 1);
+    }
 }
