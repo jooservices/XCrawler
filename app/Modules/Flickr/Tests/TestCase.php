@@ -55,7 +55,6 @@ class TestCase extends BaseTestCase
                     new Response(
                         200,
                         self::DEFAULT_CONTENT_TYPE,
-
                         $this->getFixtures('flickr_contacts_' . $index . '.json')
                     )
                 );
