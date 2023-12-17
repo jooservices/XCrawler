@@ -50,7 +50,7 @@ class PhotosetsJob extends BaseJob
             $photoset = $contact->photosets()->updateOrCreate(
                 [
                     'id' => $photoset['id'],
-                    'owner' => $photoset['id'],
+                    'owner' => $photoset['owner'],
                 ],
                 $photoset
             );
