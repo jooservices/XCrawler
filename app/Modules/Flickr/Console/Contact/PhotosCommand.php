@@ -4,7 +4,6 @@ namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\States;
 use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Services\FlickrService;
@@ -45,7 +44,9 @@ class PhotosCommand extends Command
             );
 
             foreach ($tasks as $task) {
-                $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
+                $this->info(
+                    'Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid
+                );
                 $model = $task->model;
 
                 ContactPhotosJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
