@@ -16,15 +16,4 @@ return new class extends Migration {
             $table->text('description')->change();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::table('flickr_photosets', function (Blueprint $table) {
-        });
-    }
 };
