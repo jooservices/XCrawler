@@ -170,7 +170,7 @@ class TestCase extends BaseTestCase
     private function mockFlickrOauth(MockInterface &$mock)
     {
         $mock->shouldReceive('request')
-            ->withArgs(function ($method, $url, $options) {
+            ->withArgs(function ($method, $url) {
                 return $method === 'POST'
                     && $url === 'https://www.flickr.com/services/oauth/request_token';
             })
@@ -184,7 +184,7 @@ class TestCase extends BaseTestCase
             );
 
         $mock->shouldReceive('request')
-            ->withArgs(function ($method, $url, $options) {
+            ->withArgs(function ($method, $url) {
                 return $method === 'POST'
                     && $url === 'https://www.flickr.com/services/oauth/access_token';
             })
