@@ -64,7 +64,7 @@ class TestCase extends BaseTestCase
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.contacts.getList')
-                    && $options['form_params']['exception'] == true;
+                    && $options['form_params']['exception'] === true;
             })
             ->andThrow(new Exception('Flickr error'));
     }
