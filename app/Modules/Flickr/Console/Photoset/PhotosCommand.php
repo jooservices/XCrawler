@@ -51,7 +51,7 @@ class PhotosCommand extends Command
             );
 
             foreach ($tasks as $task) {
-                $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
+                $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->id);
                 $model = $task->model;
 
                 PhotosetPhotosJob::dispatch($integration, $model->id)->onQueue(FlickrService::QUEUE_NAME);

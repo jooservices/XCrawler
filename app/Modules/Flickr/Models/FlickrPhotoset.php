@@ -61,7 +61,8 @@ class FlickrPhotoset extends Model implements TaskInterface
 
     public function relationshipPhotos(): BelongsToMany
     {
-        return $this->belongsToMany(FlickrPhoto::class, 'flickr_photosets_photos', 'photoset_id', 'photo_id');
+        return $this->belongsToMany(FlickrPhoto::class, 'flickr_photosets_photos', 'photoset_id', 'photo_id')
+            ->withTimestamps();
     }
 
     public function contact(): BelongsTo
