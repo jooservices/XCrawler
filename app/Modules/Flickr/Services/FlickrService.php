@@ -7,6 +7,8 @@ use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
+use App\Modules\Flickr\Exceptions\AdapterNotFound;
+use App\Modules\Flickr\Exceptions\ProviderNotFound;
 use App\Modules\Flickr\Jobs\ContactsJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Repositories\ContactRepository;
@@ -63,12 +65,12 @@ class FlickrService
     public function __get(string $name): mixed
     {
         if (!isset($this->provider)) {
-            throw new Exception('Provider is not loaded');
+            throw new ProviderNotFound('Provider is not loaded');
         }
 
         $className = 'App\\Modules\\Flickr\\Services\\Flickr\\Adapters\\' . ucfirst($name);
         if (!class_exists($className)) {
-            throw new Exception('Adapter not found');
+            throw new AdapterNotFound('Adapter not found');
         }
 
         return app($className, ['provider' => $this->provider]);
