@@ -4,13 +4,13 @@ namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\States;
 use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\Isolatable;
 
-class FavoritesCommand extends Command
+class FavoritesCommand extends Command implements Isolatable
 {
     public const COMMAND = 'flickr:contact-favorites';
     /**
@@ -41,7 +41,11 @@ class FavoritesCommand extends Command
 
             $tasks = $taskService->tasks(
                 FlickrService::TASK_CONTACT_FAVORITES,
-                Setting::remember('flickr', 'task_contact_favorites_limit', fn() => 10)
+                Setting::remember(
+                    'flickr',
+                    'task_contact_favorites_limit',
+                    fn() => config('flickr.task_limit', 10)
+                )
             );
 
             foreach ($tasks as $task) {
