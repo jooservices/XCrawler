@@ -23,8 +23,8 @@ class ContactCreatedEventTest extends TestCase
         Event::dispatch(new ContactCreatedEvent($contact));
 
 
-        $this->assertCount(count(FlickrService::TASKS), $contact->tasks);
-        foreach (FlickrService::TASKS as $index => $task) {
+        $this->assertCount(count(FlickrService::CONTACT_TASKS), $contact->tasks);
+        foreach (FlickrService::CONTACT_TASKS as $index => $task) {
             $this->assertEquals($task, $contact->tasks[$index]->task);
             $this->assertEquals(States::STATE_INIT, $contact->tasks[$index]->state_code);
         }

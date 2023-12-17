@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Console\Photoset;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\Core\Services\TaskService;
+use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Jobs\PhotosetsJob;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
@@ -27,7 +28,7 @@ class PhotosCommand extends Command
      *
      * @var string
      */
-    protected $description = '';
+    protected $description = 'Fetch photos for photosets';
 
     /**
      * @param TaskService $taskService
@@ -41,7 +42,7 @@ class PhotosCommand extends Command
             $this->output->text('Processing integration: ' . $integration->name);
 
             $tasks = $taskService->tasks(
-                FlickrPhotoset::TASK_PHOTOSET_PHOTOS,
+                FlickrService::TASK_PHOTOSET_PHOTOS,
                 Setting::remember(
                     'flickr',
                     'task_' . Str::slug(FlickrService::TASK_PHOTOSET_PHOTOS, '_') . '_limit',
@@ -53,7 +54,7 @@ class PhotosCommand extends Command
                 $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
                 $model = $task->model;
 
-                PhotosetsJob::dispatch($integration, $model->owner)->onQueue(FlickrService::QUEUE_NAME);
+                PhotosetPhotosJob::dispatch($integration, $model->id)->onQueue(FlickrService::QUEUE_NAME);
 
                 /**
                  * @TODO Should we take care if task completed successfully?

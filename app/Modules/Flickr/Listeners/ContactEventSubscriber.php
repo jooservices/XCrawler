@@ -13,7 +13,7 @@ class ContactEventSubscriber
 {
     public function onFlickrContactCreated(ContactCreatedEvent $event): void
     {
-        foreach (FlickrService::TASKS as $task) {
+        foreach (FlickrService::CONTACT_TASKS as $task) {
             $event->contact->tasks()->create([
                 'task' => $task,
                 'state_code' => States::STATE_INIT,

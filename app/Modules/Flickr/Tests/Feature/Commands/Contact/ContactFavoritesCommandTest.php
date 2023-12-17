@@ -20,7 +20,7 @@ class ContactFavoritesCommandTest extends TestCase
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => $this->faker->uuid]);
         $this->assertEquals(
-            count(FlickrService::TASKS),
+            count(FlickrService::CONTACT_TASKS),
             $contact->refresh()->tasks->count()
         );
         $this->assertEquals(1, $contact->tasks()->where('task', FlickrService::TASK_CONTACT_FAVORITES)->count());

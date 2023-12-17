@@ -18,9 +18,9 @@ class SyncContactTaskCommandTest extends TestCase
         /**
          * Sync again will not make duplicate
          */
-        $this->assertEquals(count(FlickrService::TASKS), $contact->tasks()->count());
+        $this->assertEquals(count(FlickrService::CONTACT_TASKS), $contact->tasks()->count());
         $this->artisan('flickr:contact-tasks')
             ->assertExitCode(0);
-        $this->assertEquals(count(FlickrService::TASKS), $contact->refresh()->tasks()->count());
+        $this->assertEquals(count(FlickrService::CONTACT_TASKS), $contact->refresh()->tasks()->count());
     }
 }

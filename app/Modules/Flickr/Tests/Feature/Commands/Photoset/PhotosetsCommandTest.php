@@ -20,7 +20,7 @@ class PhotosetsCommandTest extends TestCase
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => '99097633@N00']);
         $this->assertEquals(
-            count(FlickrService::TASKS),
+            count(FlickrService::CONTACT_TASKS),
             $contact->refresh()->tasks->count()
         );
 

@@ -19,7 +19,7 @@ class ContactPhotosCommandTest extends TestCase
          * Service create Contact and also create tasks
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => $this->faker->uuid]);
-        $this->assertEquals(count(FlickrService::TASKS), $contact->refresh()->tasks->count());
+        $this->assertEquals(count(FlickrService::CONTACT_TASKS), $contact->refresh()->tasks->count());
         $this->assertEquals(1, $contact->tasks()->where('task', FlickrService::TASK_CONTACT_PHOTOS)->count());
 
         $this->artisan(PhotosCommand::COMMAND)->assertExitCode(0);
