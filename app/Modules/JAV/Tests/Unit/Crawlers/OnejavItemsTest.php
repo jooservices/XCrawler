@@ -2,12 +2,12 @@
 
 namespace App\Modules\JAV\Tests\Unit\Crawlers;
 
-use App\Modules\JAV\Crawlers\Providers\CrawlerManager;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
+use App\Modules\JAV\Crawlers\CrawlerManager;
+use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
+use App\Modules\JAV\Crawlers\Providers\Onejav\ItemsProvider;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Collection;
 use Mockery;
 use Mockery\MockInterface;
 
@@ -33,14 +33,14 @@ class OnejavItemsTest extends TestCase
 
         $this->mockFactory();
 
-        $response = app(CrawlerManager::class)
-            ->setProvider(app(Items::class))
+        $items = app(CrawlerManager::class)
+            ->setProvider(app(ItemsProvider::class))
             ->crawl($url, [], 'GET');
 
-        $this->assertInstanceOf(Collection::class, $response);
-        $this->assertCount(10, $response);
+        $this->assertInstanceOf(ItemsEntity::class, $items);
+        $this->assertCount(10, $items->items);
 
-        $response->each(function ($item) {
+        $items->items->each(function ($item) {
             $this->assertEquals('2023-08-25', $item->date->format('Y-m-d'));
             $this->assertIsFloat($item->size);
             $this->assertTrue(filter_var($item->url, FILTER_VALIDATE_URL) !== false);

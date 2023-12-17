@@ -32,7 +32,7 @@ class FlickrService
     public const TASK_PHOTOSETS = 'photosets';
     public const TASK_PHOTOSET_PHOTOS = 'photoset-photos';
 
-    public const TASKS = [
+    public const  TASKS = [
         self::TASK_CONTACT_FAVORITES,
         self::TASK_CONTACT_PHOTOS,
         self::TASK_PHOTOSETS,

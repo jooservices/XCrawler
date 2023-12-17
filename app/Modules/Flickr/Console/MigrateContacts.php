@@ -30,36 +30,33 @@ class MigrateContacts extends Command
      */
     public function handle(): void
     {
-        $mysqlConnection = DB::connection('mysql');
-        foreach (DB::connection('mongodb')->table('flickr_contacts')->cursor() as $contact) {
-            $this->output->writeln('Processing contact ' . $contact['nsid']);
-            $mysqlConnection->table('flickr_contacts')->insert($this->mapping($contact));
-        }
-    }
-
-    private function mapping(array $contact): array
-    {
         $now = Carbon::now();
-        return [
-            'uuid' => Str::orderedUuid(),
-            'nsid' => $contact['nsid'],
-            'username' => $contact['username'] ?? null,
-            'realname' => $contact['realname'] ?? null,
-            'friend' => $contact['friend'] ?? null,
-            'family' => $contact['family'] ?? null,
-            'ignored' => $contact['ignored'] ?? null,
-            'rev_ignored' => $contact['rev_ignored'] ?? null,
-            'iconserver' => $contact['iconserver'] ?? null,
-            'iconfarm' => $contact['iconfarm'] ?? null,
-            'path_alias' => $contact['path_alias'] ?? null,
-            'location' => $contact['location'] ?? null,
-            'description' => $contact['description'] ?? null,
-            'photosurl' => $contact['photosurl'] ?? null,
-            'profileurl' => $contact['profileurl'] ?? null,
-            'mobileurl' => $contact['mobileurl'] ?? null,
+        $items = DB::connection('mongodb')->table('flickr_contacts')->limit(1000)->get();
+        $items = $items->map(function ($item) use ($now) {
+            return [
+                'uuid' => Str::orderedUuid(),
+                'nsid' => $item['nsid'],
+                'username' => $item['username'] ?? null,
+                'realname' => $item['realname'] ?? null,
+                'friend' => $item['friend'] ?? null,
+                'family' => $item['family'] ?? null,
+                'ignored' => $item['ignored'] ?? null,
+                'rev_ignored' => $item['rev_ignored'] ?? null,
+                'iconserver' => $item['iconserver'] ?? null,
+                'iconfarm' => $item['iconfarm'] ?? null,
+                'path_alias' => $item['path_alias'] ?? null,
+                'location' => $item['location'] ?? null,
+                'description' => $item['description'] ?? null,
+                'photosurl' => $item['photosurl'] ?? null,
+                'profileurl' => $item['profileurl'] ?? null,
+                'mobileurl' => $item['mobileurl'] ?? null,
 
-            'created_at' => $contact['created_at'] ? $now : null,
-            'updated_at' => $contact['updated_at'] ? $now : null,
-        ];
+                'created_at' => $item['created_at'] ? $now : null,
+                'updated_at' => $item['updated_at'] ? $now : null,
+            ];
+        });
+
+        $items = $items->unique('nsid');
+        DB::connection('mysql')->table('flickr_contacts')->insert($items->toArray());
     }
 }

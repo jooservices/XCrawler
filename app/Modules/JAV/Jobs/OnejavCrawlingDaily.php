@@ -21,8 +21,8 @@ class OnejavCrawlingDaily extends BaseJob
     public function handle(OnejavService $service)
     {
         $service->daily()
-            ->each(function ($item) use ($service) {
-                $service->create($item->getProperties());
+            ->items->each(function ($item) use ($service) {
+                $service->create($item->toArray());
             });
     }
 }

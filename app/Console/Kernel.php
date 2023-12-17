@@ -8,6 +8,7 @@ use App\Modules\Flickr\Console\ContactCommand;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Nwidart\Modules\Commands\MigrateCommand;
 
 class Kernel extends ConsoleKernel
 {
@@ -32,6 +33,8 @@ class Kernel extends ConsoleKernel
         $schedule->command(PhotosCommand::COMMAND)->everyTwoMinutes();
         $schedule->command(FavoritesCommand::COMMAND)->everyTwoMinutes();
         $schedule->command(PhotosSizesCommand::COMMAND)->everyTwoMinutes();
+
+        $schedule->command(MigrateCommand::class);
     }
 
     /**

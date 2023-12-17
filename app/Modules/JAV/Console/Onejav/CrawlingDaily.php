@@ -3,6 +3,7 @@
 namespace App\Modules\JAV\Console\Onejav;
 
 use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
+use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Console\Command;
 
 class CrawlingDaily extends Command
@@ -28,6 +29,6 @@ class CrawlingDaily extends Command
      */
     public function handle(): void
     {
-        OnejavCrawlingDaily::dispatch()->onQueue('onejav');
+        OnejavCrawlingDaily::dispatch()->onQueue(OnejavService::QUEUE_NAME);
     }
 }

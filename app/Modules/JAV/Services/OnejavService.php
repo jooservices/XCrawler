@@ -4,29 +4,28 @@ namespace App\Modules\JAV\Services;
 
 use App\Modules\Core\Facades\Setting;
 use App\Modules\Core\Services\CRUD\AbstractCrudService;
-use App\Modules\JAV\Crawlers\Providers\CrawlerManager;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Daily;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Items;
+use App\Modules\JAV\Crawlers\CrawlerManager;
+use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
+use App\Modules\JAV\Crawlers\Providers\Onejav\ItemsProvider;
 use App\Modules\JAV\Events\OnejavAllCompleted;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;
 use App\Modules\JAV\Events\OnejavRetried;
 use App\Modules\JAV\Repositories\OnejavRepository;
-use Illuminate\Support\Collection;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
 class OnejavService extends AbstractCrudService
 {
     public const SERVICE_NAME = 'onejav';
+    public const QUEUE_NAME = 'onejav';
+    public const DEFAULT_DATE_FORMAT = 'Y/m/d';
+    public const ONEJAV_URL = 'https://onejav.com';
 
-    public function __construct(private CrawlerManager $service)
+    public function __construct(private readonly CrawlerManager $service)
     {
-    }
-
-    protected function serviceName(): string
-    {
-        return self::SERVICE_NAME;
+        $this->service->setProvider(app(ItemsProvider::class));
     }
 
     protected function getRepository(): OnejavRepository
@@ -34,64 +33,64 @@ class OnejavService extends AbstractCrudService
         return app(OnejavRepository::class);
     }
 
-    public function items(string $url, array $payload = []): Collection
+    public function items(string $url, array $payload = []): ItemsEntity
     {
+        /**
+         * @var ItemsEntity $items
+         */
+        $items = $this->service->crawl($url, $payload);
+
+        Event::dispatch(new OnejavCompleted($items->items));
+
+        return $items;
+    }
+
+    public function daily(int $page = 1): ItemsEntity
+    {
+        $today = Carbon::now();
+        /**
+         * @var ItemsEntity $items
+         */
         $items = $this->service
-            ->setProvider(app(Items::class))
-            ->crawl($url, $payload);
+            ->crawl(
+                self::ONEJAV_URL . '/' . $today->format('Y/m/d'),
+                ['page' => $page],
+            );
 
-        Event::dispatch(new OnejavCompleted($items));
+        if ($page < $items->lastPage) {
+            $items->items = $items->items->merge(self::daily($page + 1)->items);
+        }
 
-        return $items;
-    }
-
-    public function daily(): Collection
-    {
-        $daily = app(Daily::class);
-        $items = $this->service
-            ->setProvider($daily)
-            ->crawl($daily->getUrl());
-
-        Event::dispatch(new OnejavCompleted($items));
-        Event::dispatch(new OnejavDailyCompleted($daily->getDay(), $items));
+        Event::dispatch(new OnejavCompleted($items->items));
+        Event::dispatch(new OnejavDailyCompleted($today, $items->items));
 
         return $items;
     }
 
-    public function all(string $prefix = 'new'): Collection
+    public function all(string $prefix = 'new'): ?ItemsEntity
     {
-        $slug = Str::slug($prefix);
-        $service = $this->service->setProvider(app(Items::class));
-
-        $items = $service->crawl(
-            Items::ONEJAV_URL . '/' . $prefix,
-            ['page' => Setting::get('onejav', $slug . '_current_page', 1)],
-        );
-        $this->nextPage($slug);
-
-        return $items;
-    }
-
-    private function nextPage(string $prefix = 'new')
-    {
+        $prefix = Str::slug($prefix);
         $currentPage = Setting::remember('onejav', $prefix . '_current_page', fn() => 1);
-        $lastPage = $this->service->getLastPage();
 
         /**
-         * Normally
+         * @var ?ItemsEntity $items
          */
-        if (!in_array($this->service->getResponse()->getStatusCode(), [404, 500])) {
-            Setting::setInt('onejav', $prefix . '_last_page', $lastPage);
-            if ($currentPage < $lastPage) {
+        $items = $this->service->crawl(
+            self::ONEJAV_URL . '/' . $prefix,
+            ['page' => $currentPage],
+        );
+
+        if ($items) {
+            Setting::setInt('onejav', $prefix . '_last_page', $items->lastPage);
+            if ($currentPage < $items->lastPage) {
                 Setting::increment('onejav', $prefix . '_current_page');
-                return;
+            } else {
+                // Reset back to first page
+                Setting::setInt('onejav', $prefix . '_current_page', 1);
+                Event::dispatch(new OnejavAllCompleted());
             }
 
-            // Reset back to first page
-            Setting::setInt('onejav', $prefix . '_current_page', 1);
-            Event::dispatch(new OnejavAllCompleted());
-
-            return;
+            return $items;
         }
 
         /**
@@ -111,7 +110,7 @@ class OnejavService extends AbstractCrudService
 
             Event::dispatch(new OnejavAllCompleted());
 
-            return;
+            return null;
         }
 
         /**
@@ -122,5 +121,7 @@ class OnejavService extends AbstractCrudService
         Setting::setInt('onejav', $prefix . '_last_page', $currentPage + 1);
 
         Event::dispatch(new OnejavRetried());
+
+        return null;
     }
 }

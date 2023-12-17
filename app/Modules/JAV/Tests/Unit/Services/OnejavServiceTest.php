@@ -2,11 +2,11 @@
 
 namespace App\Modules\JAV\Tests\Unit\Services;
 
+use App\Modules\Core\Entity\EntityInterface;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;
 use App\Modules\JAV\Events\OnejavRetried;
-use App\Modules\JAV\Models\Onejav;
 use App\Modules\JAV\Services\OnejavService;
 use App\Modules\JAV\Tests\TestCase;
 use Carbon\Carbon;
@@ -24,18 +24,12 @@ class OnejavServiceTest extends TestCase
 {
     private OnejavService $service;
 
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        Onejav::truncate();
-        \App\Modules\Core\Models\Setting::truncate();
-
-        $this->service = app(OnejavService::class);
-    }
-
     public function testGetItems()
     {
+        Event::fake([
+            OnejavCompleted::class,
+        ]);
+
         $this->instance(
             Client::class,
             Mockery::mock(Client::class, function (MockInterface $mock) {
@@ -51,10 +45,15 @@ class OnejavServiceTest extends TestCase
         );
 
         $this->mockFactory();
+        $this->service = app(OnejavService::class);
 
-        $items = $this->service->items($this->faker->url, []);
-        $this->assertInstanceOf(Collection::class, $items);
-        $this->assertCount(10, $items);
+        $items = $this->service->items($this->faker->url);
+        $this->assertInstanceOf(Collection::class, $items->items);
+        $this->assertCount(10, $items->items);
+
+        Event::assertDispatched(OnejavCompleted::class, function ($event) {
+            return $event->items->count() === 10;
+        });
     }
 
     public function testGetDaily()
@@ -86,10 +85,12 @@ class OnejavServiceTest extends TestCase
         );
 
         $this->mockFactory();
+        $this->service = app(OnejavService::class);
 
         $items = $this->service->daily();
-        $this->assertInstanceOf(Collection::class, $items);
-        $this->assertCount(60, $items);
+
+        $this->assertInstanceOf(EntityInterface::class, $items);
+        $this->assertCount(60, $items->items);
 
         Event::assertDispatched(OnejavCompleted::class);
         Event::assertDispatched(OnejavDailyCompleted::class, function ($event) {
@@ -127,12 +128,13 @@ class OnejavServiceTest extends TestCase
         );
 
         $this->mockFactory();
+        $this->service = app(OnejavService::class);
 
         Setting::set('onejav', 'new_current_page', 12215);
         $items = $this->service->all();
 
-        $this->assertInstanceOf(Collection::class, $items);
-        $this->assertEquals(10, $items->count());
+        $this->assertInstanceOf(EntityInterface::class, $items);
+        $this->assertEquals(10, $items->items->count());
         $this->assertEquals(12216, Setting::get('onejav', 'new_current_page'));
 
         // 12216
@@ -187,6 +189,7 @@ class OnejavServiceTest extends TestCase
         );
 
         $this->mockFactory();
+        $this->service = app(OnejavService::class);
 
         Setting::set('onejav', 'new_current_page', 12219);
         $this->service->all();

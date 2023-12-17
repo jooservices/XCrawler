@@ -3,6 +3,7 @@
 namespace App\Modules\JAV\Console\Onejav;
 
 use App\Modules\JAV\Jobs\OnejavCrawlingItems;
+use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Console\Command;
 
 class CrawlingItems extends Command
@@ -28,6 +29,6 @@ class CrawlingItems extends Command
      */
     public function handle(): void
     {
-        OnejavCrawlingItems::dispatch($this->argument('url'))->onQueue('onejav');
+        OnejavCrawlingItems::dispatch($this->argument('url'))->onQueue(OnejavService::QUEUE_NAME);
     }
 }
