@@ -3,6 +3,7 @@
 namespace App\Modules\Core\Entity;
 
 use App\Modules\Core\Entity\Traits\HasCasting;
+use App\Modules\Core\Exceptions\EntityCastException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
@@ -42,7 +43,7 @@ class BaseEntity implements EntityInterface
             return $this->$cast($this->data[$name]);
         }
 
-        throw new \Exception("Cast method {$cast} does not exist");
+        throw new EntityCastException("Cast method {$cast} does not exist");
     }
 
     public function set(string $name, $value): void
