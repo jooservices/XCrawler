@@ -65,16 +65,8 @@ class ItemsProvider extends AbstractProvider
                     })->unique()->toArray();
 
                     // Description
-                    $description = $el->filter('.level.has-text-grey-dark');
-                    $item->description = $description->count() ? $description->text(null, false) : null;
-                    $item->description = trim(preg_replace("/\r|\n/", '', $item->description));
-                    $item->performers = collect($el->filter('.panel .panel-block')->each(
-                        function ($performers) {
-                            return trim($performers->text(null, false));
-                        }
-                    ))->reject(function ($value) {
-                        return empty($value);
-                    })->unique()->toArray();
+                    $item->description = $this->description($el);
+                    $item->performers = $this->performers($el);
 
                     $item->torrent = OnejavService::ONEJAV_URL . trim($el->filter('.control.is-expanded a')->attr('href'));
 
@@ -95,6 +87,30 @@ class ItemsProvider extends AbstractProvider
         );
 
         return $item;
+    }
+
+    private function description(Crawler $el): ?string
+    {
+        $description = $el->filter('.level.has-text-grey-dark');
+        $description = $description->count() ? $description->text(null, false) : null;
+
+        return trim(preg_replace("/\r|\n/", '', $description));
+    }
+
+    private function performers(Crawler $el): array
+    {
+        $performers = $el->filter('.panel .panel-block');
+        if ($performers->count() === 0) {
+            return [];
+        }
+
+        return collect($performers->each(
+            function ($performers) {
+                return trim($performers->text(null, false));
+            }
+        ))->reject(function ($value) {
+            return empty($value);
+        })->unique()->toArray();
     }
 
     private function convertStringToDateTime(string $date): ?Carbon
