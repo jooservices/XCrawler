@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Modules\Flickr\Services\Flickr\DTO;
+namespace App\Modules\Flickr\Services\Flickr\Entities;
 
+use App\Modules\Core\Entity\BaseEntity;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
-abstract class AbstractBaseListDto
+abstract class AbstractBaseListEntity extends BaseEntity
 {
-    public function __construct(private readonly array $data)
+    public function __construct(protected array $data)
     {
+        parent::__construct($data);
+
         if (empty($this->data[$this->getEntities()])) {
             throw new InvalidArgumentException('Invalid data');
         }

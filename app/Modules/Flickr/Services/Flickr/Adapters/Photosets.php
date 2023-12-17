@@ -3,8 +3,8 @@
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
-use App\Modules\Flickr\Services\Flickr\DTO\PhotosetsGetListDto;
-use App\Modules\Flickr\Services\Flickr\DTO\PhotosetsGetPhotosDto;
+use App\Modules\Flickr\Services\Flickr\Entities\PhotosetsListEntity;
+use App\Modules\Flickr\Services\Flickr\Entities\PhotosetPhotosEntity;
 use App\Modules\Flickr\Services\Flickr\Traits\HasList;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -18,9 +18,9 @@ class Photosets extends BaseAdapter
      * @throws InvalidRespondException
      * @throws GuzzleException
      */
-    public function getList(array $params = []): PhotosetsGetListDto
+    public function getList(array $params = []): PhotosetsListEntity
     {
-        return new PhotosetsGetListDto(
+        return new PhotosetsListEntity(
             $this->fetchList(
                 'flickr.photosets.getList',
                 array_merge(
@@ -34,9 +34,9 @@ class Photosets extends BaseAdapter
         );
     }
 
-    public function getPhotos(array $params = []): PhotosetsGetPhotosDto
+    public function getPhotos(array $params = []): PhotosetPhotosEntity
     {
-        return new PhotosetsGetPhotosDto(
+        return new PhotosetPhotosEntity(
             $this->fetchList(
                 'flickr.photosets.getPhotos',
                 array_merge(

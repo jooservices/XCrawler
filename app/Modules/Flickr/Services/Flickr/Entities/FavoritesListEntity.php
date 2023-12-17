@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\Flickr\Services\Flickr\DTO;
+namespace App\Modules\Flickr\Services\Flickr\Entities;
 
-class PhotosetsGetPhotosDto extends AbstractBaseListDto
+class FavoritesListEntity extends AbstractBaseListEntity
 {
     public function getEntities(): string
     {
-        return 'photoset';
+        return 'photos';
     }
 
     public function getEntity(): string

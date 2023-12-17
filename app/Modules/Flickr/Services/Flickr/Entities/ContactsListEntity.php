@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Modules\Flickr\Services\Flickr\DTO;
+namespace App\Modules\Flickr\Services\Flickr\Entities;
 
-class ContactsGetListDto extends AbstractBaseListDto
+class ContactsListEntity extends AbstractBaseListEntity
 {
     public function getEntities(): string
     {

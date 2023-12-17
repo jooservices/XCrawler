@@ -4,15 +4,16 @@ namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\States;
 use App\Modules\Core\Services\TaskService;
-use App\Modules\Flickr\Jobs\ContactFavoritesJob;
+use App\Modules\Flickr\Jobs\ContactPhotosJob;
+use App\Modules\Flickr\Jobs\PhotosetsJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
 
-class FavoritesCommand extends Command
+class PhotosetsCommand extends Command
 {
-    public const COMMAND = 'flickr:contact-favorites';
+    public const COMMAND = 'flickr:contact-photosets';
+
     /**
      * The name and signature of the console command.
      *
@@ -25,30 +26,29 @@ class FavoritesCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Fetch contact\'s favorites photos';
+    protected $description = '';
 
     /**
      * @param TaskService $taskService
-     * @param IntegrationRepository $repository
      * @return void
      */
     public function handle(TaskService $taskService, IntegrationRepository $repository): void
     {
-        $this->info('Fetching favorites\' photos ...');
+        $this->info('Fetching contact\' photosets ...');
 
         $repository->getCompleted('flickr')->each(function ($integration) use ($taskService) {
             $this->output->text('Processing integration: ' . $integration->name);
 
             $tasks = $taskService->tasks(
-                FlickrService::TASK_CONTACT_FAVORITES,
-                Setting::remember('flickr', 'task_contact_favorites_limit', fn() => 10)
+                FlickrService::TASK_PHOTOSETS,
+                Setting::remember('flickr', 'task_contact_photosets_limit', fn() => 10)
             );
 
             foreach ($tasks as $task) {
                 $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
                 $model = $task->model;
 
-                ContactFavoritesJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
+                PhotosetsJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
 
                 /**
                  * @TODO Should we take care if task completed successfully?

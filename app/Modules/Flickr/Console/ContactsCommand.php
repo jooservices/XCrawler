@@ -8,7 +8,7 @@ use App\Modules\Flickr\Jobs\ContactJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
 
-class ContactCommand extends Command
+class ContactsCommand extends Command
 {
     public const COMMAND = 'flickr:contacts';
     /**
