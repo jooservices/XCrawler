@@ -92,9 +92,12 @@ class ItemsProvider extends AbstractProvider
     private function description(Crawler $el): ?string
     {
         $description = $el->filter('.level.has-text-grey-dark');
-        $description = $description->count() ? $description->text(null, false) : null;
 
-        return trim(preg_replace("/\r|\n/", '', $description));
+        if ($description->count() === 0) {
+            return null;
+        }
+
+        return trim(preg_replace("/\r|\n/", '', $description->text(null, false)));
     }
 
     private function performers(Crawler $el): array
