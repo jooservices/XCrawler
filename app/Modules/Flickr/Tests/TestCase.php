@@ -3,8 +3,7 @@
 namespace App\Modules\Flickr\Tests;
 
 use App\Modules\Client\Tests\TestCase as BaseTestCase;
-use App\Modules\Flickr\Models\FlickrContact;
-use App\Modules\Flickr\Models\FlickrPhoto;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
@@ -12,12 +11,14 @@ use Mockery\MockInterface;
 
 class TestCase extends BaseTestCase
 {
+    private const NSID = '94529704@N02';
+    private const DEFAULT_CONTENT_TYPE = [
+        'Content-Type' => 'application/json; charset=utf-8',
+    ];
+
     public function setUp(): void
     {
         parent::setUp();
-
-        FlickrContact::truncate();
-        FlickrPhoto::truncate();
 
         $this->mockFlickr();
     }
@@ -32,30 +33,28 @@ class TestCase extends BaseTestCase
                 $this->mockFlickrFavorites($mock);
                 $this->mockFlickrOauth($mock);
                 $this->mockFlickrPhotoSizes($mock);
+                $this->mockFlickrPhotosets($mock);
             })
         );
 
         $this->mockFactory();
     }
 
-    private function mockFlickrContacts(MockInterface &$mock)
+    private function mockFlickrContacts(MockInterface &$mock): void
     {
         for ($index = 1; $index <= 2; $index++) {
             $mock->shouldReceive('request')
                 ->withArgs(function ($method, $url, $options) use ($index) {
                     return $method === 'POST'
                         && str_contains($url, 'flickr.contacts.getList')
-                        && $options['form_params'] === [
-                            'per_page' => 1000,
-                            'page' => $index,
-                        ];
+                        && $options['form_params']['per_page'] === 1000
+                        && $options['form_params']['page'] === $index
+                        && !isset($options['form_params']['exception']);
                 })
                 ->andReturn(
                     new Response(
                         200,
-                        [
-                            'Content-Type' => 'application/json; charset=utf-8',
-                        ],
+                        self::DEFAULT_CONTENT_TYPE,
                         $this->getFixtures('flickr_contacts_' . $index . '.json')
                     )
                 );
@@ -65,11 +64,9 @@ class TestCase extends BaseTestCase
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.contacts.getList')
-                    && $options['form_params'] === [
-                        'exception' => 'true',
-                    ];
+                    && $options['form_params']['exception'] === true;
             })
-            ->andThrow(new \Exception('Flickr error'));
+            ->andThrow(new Exception('Flickr error'));
     }
 
     private function mockFlickrPeople(MockInterface &$mock)
@@ -79,14 +76,27 @@ class TestCase extends BaseTestCase
                 return $method === 'POST'
                     && str_contains($url, 'flickr.people.getPhotos')
                     && $options['form_params']['per_page'] === 500
-                    && $options['form_params']['user_id'] === '94529704@N02';
+                    && $options['form_params']['user_id'] === '44203036@N06';
             })
             ->andReturn(
                 new Response(
                     200,
-                    [
-                        'Content-Type' => 'application/json; charset=utf-8',
-                    ],
+                    self::DEFAULT_CONTENT_TYPE,
+                    $this->getFixtures('flickr_unknown.json')
+                )
+            );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getPhotos')
+                    && $options['form_params']['per_page'] === 500
+                    && $options['form_params']['user_id'] === self::NSID;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
                     $this->getFixtures('flickr_people_photos.json')
                 )
             );
@@ -104,9 +114,7 @@ class TestCase extends BaseTestCase
                 ->andReturn(
                     new Response(
                         200,
-                        [
-                            'Content-Type' => 'application/json; charset=utf-8',
-                        ],
+                        self::DEFAULT_CONTENT_TYPE,
                         $this->getFixtures('flickr_people_photos_' . $index . '.json')
                     )
                 );
@@ -123,14 +131,12 @@ class TestCase extends BaseTestCase
                         && str_contains($url, 'flickr.favorites.getList')
                         && $options['form_params']['per_page'] === 500
                         && $options['form_params']['page'] === $index
-                        && $options['form_params']['user_id'] === '94529704@N02';
+                        && $options['form_params']['user_id'] === self::NSID;
                 })
                 ->andReturn(
                     new Response(
                         200,
-                        [
-                            'Content-Type' => 'application/json; charset=utf-8',
-                        ],
+                        self::DEFAULT_CONTENT_TYPE,
                         $this->getFixtures('flickr_favorites_' . $index . '.json')
                     )
                 );
@@ -159,30 +165,64 @@ class TestCase extends BaseTestCase
     private function mockFlickrOauth(MockInterface &$mock)
     {
         $mock->shouldReceive('request')
-            ->withArgs(function ($method, $url, $options) {
+            ->withArgs(function ($method, $url) {
                 return $method === 'POST'
                     && $url === 'https://www.flickr.com/services/oauth/request_token';
             })
             ->andReturn(
                 new Response(
                     200,
-                    [
-                    ],
+                    self::DEFAULT_CONTENT_TYPE,
                     $this->getFixtures('flickr_request_token')
                 )
             );
 
         $mock->shouldReceive('request')
-            ->withArgs(function ($method, $url, $options) {
+            ->withArgs(function ($method, $url) {
                 return $method === 'POST'
                     && $url === 'https://www.flickr.com/services/oauth/access_token';
             })
             ->andReturn(
                 new Response(
                     200,
-                    [
-                    ],
+                    self::DEFAULT_CONTENT_TYPE,
                     $this->getFixtures('flickr_access_token')
+                )
+            );
+    }
+
+    private function mockFlickrPhotosets(MockInterface &$mock)
+    {
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getList')
+                    && $options['form_params']['per_page'] === 500
+                    && $options['form_params']['user_id'] === '99097633@N00';
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    [
+                        'Content-Type' => 'application/json; charset=utf-8',
+                    ],
+                    $this->getFixtures('flickr_photosets.json')
+                )
+            );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getPhotos')
+                    && $options['form_params']['per_page'] === 500
+                    && $options['form_params']['photoset_id'] === 72157674594210788
+                    && $options['form_params']['user_id'] === self::NSID;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    $this->getFixtures('flickr_photosets_photos.json')
                 )
             );
     }

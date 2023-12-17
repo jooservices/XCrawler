@@ -27,5 +27,5 @@ class RequestLog extends Model
         'is_success' => 'boolean',
     ];
 
-    protected $connection = 'mongodb';
+    protected $connection = 'logging';
 }

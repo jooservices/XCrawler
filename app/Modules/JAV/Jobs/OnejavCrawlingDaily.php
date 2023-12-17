@@ -3,7 +3,6 @@
 namespace App\Modules\JAV\Jobs;
 
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\JAV\Repositories\OnejavRepository;
 use App\Modules\JAV\Services\OnejavService;
 use Carbon\Carbon;
 
@@ -22,8 +21,8 @@ class OnejavCrawlingDaily extends BaseJob
     public function handle(OnejavService $service)
     {
         $service->daily()
-            ->each(function ($item) use ($service) {
-                $service->create($item->getProperties());
+            ->items->each(function ($item) use ($service) {
+                $service->create($item->toArray());
             });
     }
 }

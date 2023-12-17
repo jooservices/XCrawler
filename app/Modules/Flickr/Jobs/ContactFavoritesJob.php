@@ -5,8 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
-use App\Modules\Flickr\Models\FlickrContact as FlickrContactsModel;
-use App\Modules\Flickr\Models\FlickrPhoto as FlickrPhotosModel;
+use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 
@@ -28,38 +27,30 @@ class ContactFavoritesJob extends BaseJob
      * @throws GuzzleException
      * @throws InvalidRespondException
      */
-    public function handle(FlickrService $flickrService): void
+    public function handle(FlickrService $flickrService, FlickrContactService $contactService): void
     {
         $flickrService->setIntegration($this->integration);
         $adapter = $flickrService->favorites;
-        $adapter->getList([
+        $items = $adapter->getList([
             'user_id' => $this->nsid,
             'page' => $this->page
-        ])->each(function ($photo) use ($flickrService) {
-            unset($photo['date_faved']);
-            $flickrService->create([
-                'nsid' => $photo['owner']
-            ]);
-            /**
-             * @TODO Use relationship
-             */
-            FlickrContactsModel::firstOrCreate([
-                'nsid' => $photo['owner']
-            ]);
+        ]);
 
-            FlickrPhotosModel::updateOrCreate(
-                [
-                    'owner' => $photo['owner'],
-                    'id' => $photo['id']
-                ],
-                $photo
-            );
+        $items->getItems()->each(function ($photo) use ($contactService) {
+            unset($photo['date_faved']);
+            $contact = $contactService->create(['nsid' => $photo['owner']]);
+
+            $contact->photos()->updateOrCreate([
+                'owner' => $photo['owner'],
+                'id' => $photo['id']
+            ], $photo);
         });
 
-        if ($adapter->endOfList()) {
+        if ($items->isCompleted()) {
             return;
         }
 
-        self::dispatch($this->integration, $this->nsid, $this->page + 1)->onQueue(FlickrService::QUEUE_NAME);
+        self::dispatch($this->integration, $this->nsid, $items->getNextPage())
+            ->onQueue(FlickrService::QUEUE_NAME);
     }
 }

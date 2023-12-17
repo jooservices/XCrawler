@@ -32,8 +32,8 @@ class OnejavCrawlingItems extends BaseJob
     public function handle(OnejavService $service)
     {
         app(OnejavService::class)->items($this->url, $this->payload)
-            ->each(function ($item) use ($service) {
-                $service->create($item->getProperties());
+            ->items->each(function ($item) use ($service) {
+                $service->create($item->toArray());
             });
     }
 }

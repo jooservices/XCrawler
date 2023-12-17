@@ -17,7 +17,6 @@ class CrawlingItemsTest extends TestCase
 {
     public function testHandle()
     {
-        Onejav::truncate();
         Event::fake(OnejavItemCreated::class);
 
         $url = 'https://onejav.com/2023/08/25?page=2';

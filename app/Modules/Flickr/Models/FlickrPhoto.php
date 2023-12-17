@@ -2,22 +2,59 @@
 
 namespace App\Modules\Flickr\Models;
 
-use App\Modules\Core\Models\Traits\HasStates;
+use App\Modules\Core\Models\Task;
+use App\Modules\Core\Models\TaskInterface;
+use App\Modules\Core\Models\Traits\HasTasks;
+use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Jenssegers\Mongodb\Eloquent\Model;
 
-class FlickrPhoto extends Model
+class FlickrPhoto extends Model implements TaskInterface
 {
-    use HasStates;
+    use HasUuid;
+    use HasTasks;
     use HasFactory;
 
-    protected $guarded = [];
+    /**
+     * Mapping with Flickr photo.id
+     */
+    public $incrementing = false;
 
-    protected $connection = 'mongodb';
+    protected $fillable = [
+        'id',
+        'owner',
+        'farm',
+        'isfamily',
+        'isfriend',
+        'ispublic',
+        'secret',
+        'server',
+        'title',
+        'sizes',
+        'dateuploaded',
+        'views',
+        'media',
+    ];
 
-    protected $collection = 'flickr_photos';
+    protected $casts = [
+        'id' => 'integer',
+        'owner' => 'string',
+        'farm' => 'integer',
+        'isfamily' => 'boolean',
+        'isfriend' => 'boolean',
+        'ispublic' => 'boolean',
+        'secret' => 'string',
+        'server' => 'string',
+        'title' => 'string',
+        'sizes' => 'array',
+        'dateuploaded' => 'datetime',
+        'views' => 'integer',
+        'media' => 'string',
+    ];
+
+    protected $table = 'flickr_photos';
 
     public function contact(): BelongsTo
     {

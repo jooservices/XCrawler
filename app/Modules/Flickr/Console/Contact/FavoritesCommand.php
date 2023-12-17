@@ -25,10 +25,11 @@ class FavoritesCommand extends Command
      *
      * @var string
      */
-    protected $description = '';
+    protected $description = 'Fetch contact\'s favorites photos';
 
     /**
      * @param TaskService $taskService
+     * @param IntegrationRepository $repository
      * @return void
      */
     public function handle(TaskService $taskService, IntegrationRepository $repository): void
@@ -53,14 +54,6 @@ class FavoritesCommand extends Command
                  * @TODO Should we take care if task completed successfully?
                  */
                 $task->delete();
-                /**
-                 * Create new same task for next run.
-                 */
-
-                $model->tasks()->create([
-                    'task' => FlickrService::TASK_CONTACT_FAVORITES,
-                    'state_code' => States::STATE_INIT,
-                ]);
             }
         });
     }

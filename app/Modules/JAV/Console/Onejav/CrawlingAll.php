@@ -4,6 +4,7 @@ namespace App\Modules\JAV\Console\Onejav;
 
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Jobs\OnejavCrawlingAll;
+use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Console\Command;
 
 class CrawlingAll extends Command
@@ -30,9 +31,10 @@ class CrawlingAll extends Command
     public function handle(): void
     {
         $subpages = Setting::remember('onejav', 'subpages', fn() => ['new', 'popular']);
+
         foreach ($subpages as $page) {
             $this->output->text("Crawling {$page} pages...");
-            OnejavCrawlingAll::dispatch($page)->onQueue('onejav');
+            OnejavCrawlingAll::dispatch($page)->onQueue(OnejavService::QUEUE_NAME);
         }
     }
 }

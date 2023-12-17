@@ -2,8 +2,10 @@
 
 namespace App\Modules\Client\Tests\Unit\Services;
 
+use App\Modules\Client\Models\RequestLog;
 use App\Modules\Client\Services\Factory;
 use App\Modules\Client\Services\XClient;
+use App\Modules\Client\Tests\TestCase;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
@@ -11,7 +13,6 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\TestCase;
 
 class XClientTest extends TestCase
 {
@@ -56,7 +57,7 @@ class XClientTest extends TestCase
             'method' => strtoupper($method),
             'status_code' => $statusCode,
             'is_success' => true,
-        ], 'mongodb');
+        ], app(RequestLog::class)->getConnection()->getConfig()['name']);
     }
 
     public function requestDataProvider(): array
@@ -111,7 +112,7 @@ class XClientTest extends TestCase
             'status_code' => 500,
             'is_success' => false,
             'response' => 'Internal Server Error',
-        ], 'mongodb');
+        ], app(RequestLog::class)->getConnection()->getConfig()['name']);
 
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertFalse($response->isSuccessful());
@@ -147,7 +148,7 @@ class XClientTest extends TestCase
             'method' => 'GET',
             'is_success' => false,
             'response' => 'Fatal Error',
-        ], 'mongodb');
+        ], app(RequestLog::class)->getConnection()->getConfig()['name']);
 
         $this->assertFalse($response->isSuccessful());
         $this->assertNull($response->getBody());

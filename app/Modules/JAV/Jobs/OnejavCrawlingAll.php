@@ -24,8 +24,8 @@ class OnejavCrawlingAll extends BaseJob
     public function handle(OnejavService $service)
     {
         $service->all($this->endpoint)
-            ->each(function ($item) use ($service) {
-                $service->create($item->getProperties());
+            ->items->each(function ($item) use ($service) {
+                $service->create($item->toArray());
             });
     }
 }

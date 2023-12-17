@@ -4,11 +4,6 @@ namespace App\Modules\Client\Tests;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Models\RequestLog;
-use App\Modules\Core\Models\Task;
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Response;
-use Mockery;
-use Mockery\MockInterface;
 use App\Modules\Core\Tests\TestCase as BaseTestCase;
 
 /**
@@ -24,7 +19,6 @@ class TestCase extends BaseTestCase
 
         Integration::truncate();
         RequestLog::truncate();
-        Task::truncate();
 
         $this->integration = Integration::factory()->create();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Client\Uri;
 
+use App\Modules\Client\Exceptions\MissingUriFromGlobal;
 use RuntimeException;
 
 /**
@@ -95,11 +96,12 @@ class UriFactory implements UriFactoryInterface
      * @param array $server
      *
      * @return string
+     * @throws MissingUriFromGlobal
      */
     private function detectPath(array $server)
     {
         if (!isset($server['REQUEST_URI']) && !isset($server['REDIRECT_URL'])) {
-            throw new RuntimeException('Could not detect URI path from superglobal');
+            throw new MissingUriFromGlobal('Could not detect URI path from superglobal');
         }
 
         $uri = $server['REQUEST_URI'] ?? $server['REDIRECT_URL'];

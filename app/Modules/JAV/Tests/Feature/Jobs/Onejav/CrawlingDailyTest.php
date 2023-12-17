@@ -19,7 +19,6 @@ class CrawlingDailyTest extends TestCase
 {
     public function testHandle()
     {
-        Onejav::truncate();
         Event::fake(
             [
                 OnejavItemCreated::class,

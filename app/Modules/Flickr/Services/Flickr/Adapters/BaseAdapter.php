@@ -4,7 +4,7 @@ namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
 use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 
-class BaseAdapter implements AdapterInterface
+class BaseAdapter
 {
     public function __construct(protected Flickr $provider)
     {

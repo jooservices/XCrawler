@@ -6,7 +6,7 @@ use App\Modules\Core\Models\Setting;
 
 class SettingService
 {
-    public function __construct(private Setting $setting)
+    public function __construct(private readonly Setting $setting)
     {
     }
 

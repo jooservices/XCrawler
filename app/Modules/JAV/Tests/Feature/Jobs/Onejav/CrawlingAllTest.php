@@ -18,10 +18,6 @@ class CrawlingAllTest extends TestCase
 {
     public function testHandle()
     {
-        Onejav::truncate();
-
-        \App\Modules\Core\Models\Setting::truncate();
-
         Event::fake([
             OnejavCompleted::class,
             OnejavDailyCompleted::class,

@@ -10,15 +10,13 @@ class FavoritesTest extends TestCase
     public function testGetList()
     {
         $adapter = app(FlickrService::class)->setIntegration($this->integration)->favorites;
-        $items = $adapter->getList([
-            'user_id' => '94529704@N02'
-        ]);
+        $items = $adapter->getList(['user_id' => '94529704@N02']);
 
-        $this->assertCount(417, $items);
-        $this->assertEquals(1, $adapter->currentPage());
-        $this->assertEquals(4, $adapter->totalPages());
-        $this->assertEquals(1645, $adapter->totalItems());
-        $this->assertFalse($adapter->endOfList());
-        $this->assertEquals(2, $adapter->nextPage());
+        $this->assertCount(417, $items->getItems());
+        $this->assertEquals(1, $items->getPage());
+        $this->assertEquals(4, $items->getPages());
+        $this->assertEquals(1645, $items->getTotal());
+        $this->assertFalse($items->isCompleted());
+        $this->assertEquals(2, $items->getNextPage());
     }
 }

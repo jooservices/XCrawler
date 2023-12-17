@@ -4,7 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\Flickr\Models\FlickrPhoto as FlickrPhotosModel;
+use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrService;
 
 class ContactPhotosJob extends BaseJob
@@ -26,12 +26,15 @@ class ContactPhotosJob extends BaseJob
     public function handle(FlickrService $flickrService)
     {
         $flickrService->setIntegration($this->integration);
+        $contact = FlickrContact::where('nsid', $this->nsid)->firstOrFail();
         $adapter = $flickrService->people;
-        $adapter->getList([
+        $photos = $adapter->getPhotos([
             'user_id' => $this->nsid,
             'page' => $this->page
-        ])->each(function ($photo) {
-            FlickrPhotosModel::updateOrCreate(
+        ]);
+
+        $photos->getItems()->each(function ($photo) use ($contact) {
+            $contact->photos()->updateOrCreate(
                 [
                     'owner' => $photo['owner'],
                     'id' => $photo['id']
@@ -40,10 +43,10 @@ class ContactPhotosJob extends BaseJob
             );
         });
 
-        if ($adapter->endOfList()) {
+        if ($photos->isCompleted()) {
             return;
         }
 
-        self::dispatch($this->integration, $this->nsid, $this->page + 1);
+        self::dispatch($this->integration, $this->nsid, $photos->getNextPage());
     }
 }

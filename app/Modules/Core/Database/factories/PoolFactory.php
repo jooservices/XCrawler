@@ -4,7 +4,7 @@ namespace App\Modules\Core\Database\factories;
 
 use App\Modules\Core\Models\Pool;
 use App\Modules\Core\Services\States;
-use App\Modules\Flickr\Jobs\ContactJob;
+use App\Modules\Flickr\Jobs\ContactsJob;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PoolFactory extends Factory
@@ -19,7 +19,7 @@ class PoolFactory extends Factory
     public function definition(): array
     {
         return [
-            'job' => ContactJob::class,
+            'job' => ContactsJob::class,
             'queue' => 'flickr',
             'payload' => [],
             'state_code' => States::STATE_INIT

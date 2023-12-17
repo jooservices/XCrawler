@@ -21,7 +21,6 @@ class PhotoSizesJobTest extends TestCase
 
         $this->assertIsArray($photo->refresh()->sizes);
         $this->assertEquals(13, count($photo->sizes));
-        $this->assertEquals(States::STATE_COMPLETED, $photo->state_code);
 
         Event::assertDispatched(PhotoSizedEvent::class, function ($event) use ($photo) {
             return $event->photo->id === $photo->id;

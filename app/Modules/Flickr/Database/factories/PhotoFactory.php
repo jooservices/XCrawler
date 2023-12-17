@@ -18,8 +18,16 @@ class PhotoFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => $this->faker->numerify(),
+            'id' => $this->faker->numberBetween(),
             'owner' => FlickrContact::factory()->create()->nsid,
+            'farm' => $this->faker->numberBetween(),
+            'isfamily' => $this->faker->boolean,
+            'isfriend' => $this->faker->boolean,
+            'ispublic' => $this->faker->boolean,
+            'secret' => $this->faker->uuid,
+            'server' => $this->faker->numberBetween(),
+            'title' => $this->faker->sentence,
+            'sizes' => $this->faker->randomElements(),
         ];
     }
 }

@@ -91,8 +91,6 @@ class XClient
                 'is_success' => $xresponse->isSuccessful(),
                 'completed_at' => Carbon::now(),
             ]);
-
-
         } catch (Exception $e) {
             /**
              * Handle ConnectionException
