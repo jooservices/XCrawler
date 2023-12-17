@@ -42,7 +42,6 @@ class FlickrContactService
                 $contact = $this->create(['nsid' => $photo['owner']]);
             }
 
-            $photo['team_id'] = $contact->team_id;
             $colDiff = array_keys(array_diff(array_keys($photo), $columns));
             foreach ($colDiff as $col) {
                 unset($photo[$col]);
