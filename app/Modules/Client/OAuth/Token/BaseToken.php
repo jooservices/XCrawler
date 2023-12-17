@@ -76,7 +76,6 @@ class BaseToken implements TokenInterface
 
         if ($lifetime !== null) {
             $this->endOfLife = (int)$lifetime + time();
-            return;
         }
     }
 
