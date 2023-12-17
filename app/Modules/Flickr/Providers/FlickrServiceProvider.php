@@ -67,7 +67,6 @@ class FlickrServiceProvider extends ServiceProvider
             PhotosSizesCommand::class,
             PhotosetsCommand::class,
             PhotosetPhotosCommand::class,
-            MigrateContacts::class
         ]);
     }
 
