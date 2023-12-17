@@ -78,6 +78,6 @@ class FlickrContact extends Model implements TaskInterface
         /**
          * @phpstan-ignore-next-line
          */
-        return $this->hasMany(FlickrPhotoSet::class, 'owner', 'nsid');
+        return $this->hasMany(FlickrPhotoset::class, 'owner', 'nsid');
     }
 }
