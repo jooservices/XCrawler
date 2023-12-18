@@ -6,7 +6,7 @@ use App\Modules\Core\Services\States;
 
 trait HasStates
 {
-    public function initializeHasState()
+    public function initializeHasStates()
     {
         $this->mergeFillable([$this->getStateName()]);
         $this->mergeCasts([$this->getStateName() => 'string']);
