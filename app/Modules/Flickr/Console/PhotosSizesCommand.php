@@ -29,7 +29,6 @@ class PhotosSizesCommand extends Command
     protected $description = 'Fetch photos\' sizes from Flickr';
 
     /**
-     * @param IntegrationRepository $repository
      * @return void
      */
     public function handle(): void
