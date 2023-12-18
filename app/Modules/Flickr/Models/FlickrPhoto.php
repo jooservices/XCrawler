@@ -2,8 +2,8 @@
 
 namespace App\Modules\Flickr\Models;
 
-use App\Modules\Core\Models\Task;
 use App\Modules\Core\Models\TaskInterface;
+use App\Modules\Core\Models\Traits\HasStates;
 use App\Modules\Core\Models\Traits\HasTasks;
 use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
@@ -16,6 +16,7 @@ class FlickrPhoto extends Model implements TaskInterface
     use HasUuid;
     use HasTasks;
     use HasFactory;
+    use HasStates;
 
     /**
      * Mapping with Flickr photo.id

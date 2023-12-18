@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Flickr\Console\Photoset;
+namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
@@ -11,7 +11,7 @@ use Illuminate\Console\Command;
 
 class PhotosetsCommand extends Command
 {
-    public const COMMAND = 'flickr:photosets';
+    public const COMMAND = 'flickr:contact-photosets';
 
     /**
      * The name and signature of the console command.
@@ -39,20 +39,14 @@ class PhotosetsCommand extends Command
             $this->output->text('Processing integration: ' . $integration->name);
 
             $tasks = $taskService->tasks(
-                FlickrService::TASK_PHOTOSETS,
+                FlickrService::TASK_CONTACT_PHOTOSETS,
                 Setting::remember('flickr', 'task_contact_photos_limit', fn() => 10)
             );
 
             foreach ($tasks as $task) {
                 $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
-                $model = $task->model;
 
-                PhotosetsJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
-
-                /**
-                 * @TODO Should we take care if task completed successfully?
-                 */
-                $task->delete();
+                PhotosetsJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
             }
         });
     }

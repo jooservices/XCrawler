@@ -2,7 +2,7 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
-use App\Modules\Core\Entity\EntityInterface;
+use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Services\Flickr\Entities\ContactsListEntity;
 use App\Modules\Flickr\Services\Flickr\Traits\HasList;

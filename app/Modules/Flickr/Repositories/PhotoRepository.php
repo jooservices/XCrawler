@@ -11,8 +11,7 @@ class PhotoRepository
     public function getNoSizesPhotos(int $limit = 10): Collection
     {
         $photos = FlickrPhoto::whereNull('sizes')
-            ->where('state_code', '<>', States::STATE_COMPLETED)
-            ->where('state_code', '<>', States::STATE_IN_PROGRESS)
+            ->whereNotIn('state_code', [States::STATE_IN_PROGRESS, States::STATE_COMPLETED])
             ->limit($limit)
             ->get();
 

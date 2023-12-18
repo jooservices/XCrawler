@@ -8,8 +8,9 @@ use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\Isolatable;
 
-class PhotosCommand extends Command
+class PhotosCommand extends Command implements Isolatable
 {
     public const COMMAND = 'flickr:contact-photos';
 
@@ -25,7 +26,7 @@ class PhotosCommand extends Command
      *
      * @var string
      */
-    protected $description = '';
+    protected $description = 'Fetch contact\'s photos';
 
     /**
      * @param TaskService $taskService
@@ -40,21 +41,19 @@ class PhotosCommand extends Command
 
             $tasks = $taskService->tasks(
                 FlickrService::TASK_CONTACT_PHOTOS,
-                Setting::remember('flickr', 'task_contact_photos_limit', fn() => 10)
+                Setting::remember(
+                    'flickr',
+                    'task_contact_photos_limit',
+                    fn() => config('flickr.task_limit', 10)
+                )
             );
 
             foreach ($tasks as $task) {
                 $this->info(
                     'Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid
                 );
-                $model = $task->model;
 
-                ContactPhotosJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
-
-                /**
-                 * @TODO Should we take care if task completed successfully?
-                 */
-                $task->delete();
+                ContactPhotosJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
             }
         });
     }

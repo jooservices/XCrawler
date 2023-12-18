@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotoSizedEvent;
 use App\Modules\Flickr\Exceptions\PhotoSizesNotFound;
 use App\Modules\Flickr\Models\FlickrPhoto;
@@ -44,6 +45,7 @@ class PhotoSizesJob extends BaseJob
 
         $this->photo->update([
             'sizes' => $sizes,
+            'state_code' => States::STATE_COMPLETED
         ]);
 
         Event::dispatch(new PhotoSizedEvent($this->photo));

@@ -5,7 +5,7 @@ namespace App\Modules\JAV\Crawlers;
 use App\Modules\Client\Responses\XResponse;
 use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Services\XClient;
-use App\Modules\Core\Entity\EntityInterface;
+use App\Modules\Core\Entities\EntityInterface;
 use Illuminate\Support\Collection;
 use Symfony\Component\DomCrawler\Crawler;
 

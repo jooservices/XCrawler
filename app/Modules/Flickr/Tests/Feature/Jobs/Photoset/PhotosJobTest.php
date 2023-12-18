@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Tests\Feature\Jobs\Photoset;
 
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
+use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
 
 class PhotosJobTest extends TestCase
@@ -18,7 +19,11 @@ class PhotosJobTest extends TestCase
             'id' => '72157674594210788',
         ]);
 
-        PhotosetPhotosJob::dispatch($this->integration, $photoset->id);
+        $task = $photoset->tasks()->create([
+            'task' => FlickrService::TASK_PHOTOSET_PHOTOS,
+        ]);
+
+        PhotosetPhotosJob::dispatch($this->integration, $task);
 
         $this->assertEquals(1, $photoset->refresh()->relationshipPhotos->count());
     }

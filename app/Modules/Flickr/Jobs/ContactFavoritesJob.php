@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
@@ -16,10 +17,10 @@ class ContactFavoritesJob extends BaseJob
 {
     /**
      * @param Integration $integration
-     * @param string $nsid
+     * @param Task $task
      * @param int $page
      */
-    public function __construct(public Integration $integration, public string $nsid, public int $page = 1)
+    public function __construct(public Integration $integration, public Task $task, public int $page = 1)
     {
     }
 
@@ -30,27 +31,21 @@ class ContactFavoritesJob extends BaseJob
     public function handle(FlickrService $flickrService, FlickrContactService $contactService): void
     {
         $flickrService->setIntegration($this->integration);
+
         $adapter = $flickrService->favorites;
         $items = $adapter->getList([
-            'user_id' => $this->nsid,
+            'user_id' => $this->task->model->nsid,
             'page' => $this->page
         ]);
 
-        $items->getItems()->each(function ($photo) use ($contactService) {
-            unset($photo['date_faved']);
-            $contact = $contactService->create(['nsid' => $photo['owner']]);
-
-            $contact->photos()->updateOrCreate([
-                'owner' => $photo['owner'],
-                'id' => $photo['id']
-            ], $photo);
-        });
+        $contactService->addPhotos($items->getItems());
 
         if ($items->isCompleted()) {
+            $this->task->delete();
             return;
         }
 
-        self::dispatch($this->integration, $this->nsid, $items->getNextPage())
+        self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 }

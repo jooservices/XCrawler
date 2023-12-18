@@ -2,7 +2,7 @@
 
 namespace App\Modules\JAV\Tests\Unit\Services;
 
-use App\Modules\Core\Entity\EntityInterface;
+use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavDailyCompleted;

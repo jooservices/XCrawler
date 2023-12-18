@@ -2,18 +2,27 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Entities;
 
-use App\Modules\Core\Entity\BaseEntity;
+use App\Modules\Core\Entities\BaseEntity;
+use App\Modules\Flickr\Exceptions\MissingEntityElement;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 
 abstract class AbstractBaseListEntity extends BaseEntity
 {
+    /**
+     * @throws MissingEntityElement
+     */
     public function __construct(protected array $data)
     {
         parent::__construct($data);
 
         if (empty($this->data[$this->getEntities()])) {
-            throw new InvalidArgumentException('Invalid data');
+            throw new MissingEntityElement(
+                sprintf(
+                    'Missing element "%s" in response',
+                    $this->getEntities()
+                )
+            );
         }
     }
 

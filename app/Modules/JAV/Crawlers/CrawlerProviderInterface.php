@@ -2,7 +2,7 @@
 
 namespace App\Modules\JAV\Crawlers;
 
-use App\Modules\Core\Entity\EntityInterface;
+use App\Modules\Core\Entities\EntityInterface;
 
 interface CrawlerProviderInterface
 {

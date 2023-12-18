@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
@@ -15,7 +16,7 @@ class PhotosetPhotosJob extends BaseJob
      *
      * @return void
      */
-    public function __construct(public Integration $integration, public int $photosetId, public int $page = 1)
+    public function __construct(public Integration $integration, public Task $task, public int $page = 1)
     {
     }
 
@@ -27,7 +28,7 @@ class PhotosetPhotosJob extends BaseJob
     public function handle(FlickrService $flickrService): void
     {
         $flickrService->setIntegration($this->integration);
-        $photoset = FlickrPhotoset::where('id', $this->photosetId)->first();
+        $photoset = $this->task->model;
         $adapter = $flickrService->photosets;
 
         $items = $adapter->getPhotos([
@@ -46,10 +47,11 @@ class PhotosetPhotosJob extends BaseJob
         });
 
         if ($items->isCompleted()) {
+            $this->task->delete();
             return;
         }
 
-        self::dispatch($this->integration, $this->photosetId, $items->getNextPage())
+        self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 }

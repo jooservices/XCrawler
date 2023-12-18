@@ -6,8 +6,6 @@ use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
-use App\Modules\Flickr\Jobs\PhotosetsJob;
-use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
@@ -52,14 +50,8 @@ class PhotosCommand extends Command
 
             foreach ($tasks as $task) {
                 $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->id);
-                $model = $task->model;
 
-                PhotosetPhotosJob::dispatch($integration, $model->id)->onQueue(FlickrService::QUEUE_NAME);
-
-                /**
-                 * @TODO Should we take care if task completed successfully?
-                 */
-                $task->delete();
+                PhotosetPhotosJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
             }
         });
     }
