@@ -4,9 +4,10 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\Flickr\Models\FlickrContact;
+use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 
 class ContactPhotosJob extends BaseJob
 {
@@ -15,7 +16,7 @@ class ContactPhotosJob extends BaseJob
      *
      * @return void
      */
-    public function __construct(public Integration $integration, public string $nsid, public int $page = 1)
+    public function __construct(public Integration $integration, public Task $task, public int $page = 1)
     {
     }
 
@@ -29,20 +30,18 @@ class ContactPhotosJob extends BaseJob
         $flickrService->setIntegration($this->integration);
         $contactService = app(FlickrContactService::class);
 
-        $contact = FlickrContact::where('nsid', $this->nsid)->firstOrFail();
-        $adapter = $flickrService->people;
-
-        $photos = $adapter->getPhotos([
-            'user_id' => $this->nsid,
+        $photos = $flickrService->people->getPhotos([
+            'user_id' => $this->task->model->nsid,
             'page' => $this->page
         ]);
 
         $contactService->addPhotos($photos->getItems());
 
         if ($photos->isCompleted()) {
+            $this->task->delete();
             return;
         }
 
-        self::dispatch($this->integration, $this->nsid, $photos->getNextPage());
+        self::dispatch($this->integration, $this->task, $photos->getNextPage());
     }
 }

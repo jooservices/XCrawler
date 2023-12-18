@@ -50,14 +50,8 @@ class FavoritesCommand extends Command implements Isolatable
 
             foreach ($tasks as $task) {
                 $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
-                $model = $task->model;
 
-                ContactFavoritesJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
-
-                /**
-                 * @TODO Should we take care if task completed successfully?
-                 */
-                $task->delete();
+                ContactFavoritesJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
             }
         });
     }

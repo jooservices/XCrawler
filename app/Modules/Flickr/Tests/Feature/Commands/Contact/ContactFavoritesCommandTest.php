@@ -27,12 +27,7 @@ class ContactFavoritesCommandTest extends TestCase
 
         $this->artisan(FavoritesCommand::COMMAND)->assertExitCode(0);
         Queue::assertPushed(ContactFavoritesJob::class, function ($job) use ($contact) {
-            return $job->nsid === $contact->nsid;
+            return $job->task->model->is($contact);
         });
-
-        // Whenever task is fetched, it should be deleted.
-        $this->assertCount(0, $contact->refresh()
-            ->tasks()
-            ->where('task', FlickrService::TASK_CONTACT_FAVORITES)->get());
     }
 }

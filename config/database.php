@@ -97,7 +97,7 @@ return [
             'driver' => 'mongodb',
             'host' => env('MONGODB_HOST', '127.0.0.1'),
             'port' => env('MONGODB_PORT', 27017),
-            'database' => env('MONGODB_DATABASE', 'xcrawler'),
+            'database' => env('MONGODB_DATABASE', 'xcrawler_dev'),
             'username' => env('MONGODB_USERNAME', ''),
             'password' => env('MONGODB_PASSWORD', ''),
             'options' => [
@@ -109,7 +109,7 @@ return [
             'driver' => 'mongodb',
             'host' => env('MONGODB_LOGGING_HOST', '127.0.0.1'),
             'port' => env('MONGODB_LOGGING_PORT', 27017),
-            'database' => env('MONGODB_LOGGING_DATABASE', 'xcrawler'),
+            'database' => env('MONGODB_LOGGING_DATABASE', 'xcrawler_dev'),
             'username' => env('MONGODB_LOGGING_USERNAME', ''),
             'password' => env('MONGODB_LOGGING_PASSWORD', ''),
             'options' => [

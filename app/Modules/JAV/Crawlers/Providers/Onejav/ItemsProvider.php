@@ -2,10 +2,10 @@
 
 namespace App\Modules\JAV\Crawlers\Providers\Onejav;
 
-use App\Modules\Core\Entity\EntityInterface;
+use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\JAV\Crawlers\AbstractProvider;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemEntity;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
+use App\Modules\JAV\Entities\OnejavEntity;
 use App\Modules\JAV\Services\OnejavService;
 use Carbon\Carbon;
 use Symfony\Component\DomCrawler\Crawler;
@@ -21,7 +21,7 @@ class ItemsProvider extends AbstractProvider
         $item->items = collect()->merge(
             $crawler->filter('.container .columns')
                 ->each(function ($el) {
-                    $item = new ItemEntity();
+                    $item = new OnejavEntity();
                     if ($el->filter('h5.title a')->count()) {
                         $item->url = OnejavService::ONEJAV_URL . trim($el->filter('h5.title a')->attr('href'));
                     }
@@ -71,16 +71,7 @@ class ItemsProvider extends AbstractProvider
                     $item->torrent = OnejavService::ONEJAV_URL . trim($el->filter('.control.is-expanded a')->attr('href'));
 
                     // Gallery. Only for FC
-                    $gallery = $el->filter('.columns .column a img');
-                    if ($gallery->count()) {
-                        $item->gallery = collect($gallery->each(
-                            function ($image) {
-                                return trim($image->attr('src'));
-                            }
-                        ))->reject(function ($value) {
-                            return empty($value);
-                        })->unique()->toArray();
-                    }
+                    $item->gallery = $this->gallery($el);
 
                     return $item;
                 })
@@ -92,7 +83,6 @@ class ItemsProvider extends AbstractProvider
     private function description(Crawler $el): ?string
     {
         $description = $el->filter('.level.has-text-grey-dark');
-
         if ($description->count() === 0) {
             return null;
         }
@@ -110,6 +100,22 @@ class ItemsProvider extends AbstractProvider
         return collect($performers->each(
             function ($performers) {
                 return trim($performers->text(null, false));
+            }
+        ))->reject(function ($value) {
+            return empty($value);
+        })->unique()->toArray();
+    }
+
+    private function gallery(Crawler $el)
+    {
+        $gallery = $el->filter('.columns .column a img');
+        if ($gallery->count() === 0) {
+            return null;
+        }
+
+        return collect($gallery->each(
+            function ($image) {
+                return trim($image->attr('src'));
             }
         ))->reject(function ($value) {
             return empty($value);

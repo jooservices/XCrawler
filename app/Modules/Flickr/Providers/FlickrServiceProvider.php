@@ -4,13 +4,13 @@ namespace App\Modules\Flickr\Providers;
 
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
+use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Console\ContactsCommand;
 use App\Modules\Flickr\Console\MigrateContacts;
-use App\Modules\Flickr\Console\Photoset\PhotosetsCommand;
+use App\Modules\Flickr\Console\Photoset\PhotosCommand as PhotosetPhotosCommand;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
 use App\Modules\Flickr\Console\SyncContactTasksCommand;
 use Illuminate\Support\ServiceProvider;
-use App\Modules\Flickr\Console\Photoset\PhotosCommand as PhotosetPhotosCommand;
 
 class FlickrServiceProvider extends ServiceProvider
 {

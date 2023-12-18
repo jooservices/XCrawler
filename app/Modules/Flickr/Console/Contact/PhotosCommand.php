@@ -52,14 +52,8 @@ class PhotosCommand extends Command implements Isolatable
                 $this->info(
                     'Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid
                 );
-                $model = $task->model;
 
-                ContactPhotosJob::dispatch($integration, $model->nsid)->onQueue(FlickrService::QUEUE_NAME);
-
-                /**
-                 * @TODO Should we take care if task completed successfully?
-                 */
-                $task->delete();
+                ContactPhotosJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
             }
         });
     }

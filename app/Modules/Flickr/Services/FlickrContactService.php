@@ -26,13 +26,16 @@ class FlickrContactService
         return $contact;
     }
 
-    public function addPhotos(Collection $photos)
+    public function addPhotos(Collection $photos): void
     {
         /**
          * Need careful here. We won't create duplicate photos
          * @TODO Multi insert in same query
          */
         $contactNsids = $photos->pluck('owner')->unique()->toArray();
+        /**
+         * Get all contacts
+         */
         $contacts = FlickrContact::whereIn('nsid', $contactNsids)->get()->keyBy('nsid');
         $columns = DB::getSchemaBuilder()->getColumnListing('flickr_photos');
 

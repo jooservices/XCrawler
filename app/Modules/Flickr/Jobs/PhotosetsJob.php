@@ -4,37 +4,43 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
+use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrService;
+use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
 class PhotosetsJob extends BaseJob
 {
     /**
-     * Create a new job instance.
-     *
-     * @return void
+     * @param Integration $integration
+     * @param Task $task
+     * @param int $page
      */
-    public function __construct(public Integration $integration, public string $nsid, public int $page = 1)
+    public function __construct(public Integration $integration, public Task $task, public int $page = 1)
     {
     }
 
     /**
-     * Execute the job.
-     *
+     * @param FlickrService $flickrService
      * @return void
+     * @throws InvalidRespondException
+     * @throws GuzzleException
      */
     public function handle(FlickrService $flickrService): void
     {
         $flickrService->setIntegration($this->integration);
-        $contact = FlickrContact::where('nsid', $this->nsid)->first();
+        $contact = $this->task->model;
+
         $adapter = $flickrService->photosets;
         $columns = DB::getSchemaBuilder()->getColumnListing('flickr_photosets');
 
         $items = $adapter->getList([
-            'user_id' => $this->nsid,
+            'user_id' => $contact->nsid,
             'page' => $this->page
         ]);
 
@@ -61,10 +67,11 @@ class PhotosetsJob extends BaseJob
         });
 
         if ($items->isCompleted()) {
+            $this->task->delete();
             return;
         }
 
-        self::dispatch($this->integration, $this->nsid, $items->getNextPage())
+        self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 }

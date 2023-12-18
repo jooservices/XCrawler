@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
+namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
