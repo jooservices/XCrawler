@@ -76,14 +76,8 @@ class XClient
         $xresponse = new XResponse();
 
         try {
-            $key = md5(serialize([$method, $endpoint, $options]));
-
-            $xresponse = Cache::remember($key, 60 * 60, function () use ($method, $endpoint, $options, $xresponse) {
-                $response = $this->client->request($method, $endpoint, $options);
-                $xresponse->setResponse($response);
-
-                return $xresponse;
-            });
+            $response = $this->client->request($method, $endpoint, $options);
+            $xresponse->setResponse($response);
 
             $this->requestLog->update([
                 'status_code' => $xresponse->getStatusCode(),
