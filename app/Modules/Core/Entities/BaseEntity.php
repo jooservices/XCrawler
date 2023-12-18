@@ -63,6 +63,8 @@ class BaseEntity implements EntityInterface
         if (method_exists($this, $method)) {
             return $this->{$method}($this->data[$name]);
         }
+
+        return $default;
     }
 
     public function set(string $name, $value): void
