@@ -48,8 +48,6 @@ class PhotoSizesJob extends BaseJob
             'state_code' => States::STATE_COMPLETED
         ]);
 
-        dd($this->photo->refresh()->toArray());
-
         Event::dispatch(new PhotoSizedEvent($this->photo));
     }
 }
