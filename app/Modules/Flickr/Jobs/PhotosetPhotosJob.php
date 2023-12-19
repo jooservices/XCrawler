@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
@@ -52,7 +53,7 @@ class PhotosetPhotosJob extends BaseJob
         });
 
         if ($items->isCompleted()) {
-            $this->task->delete();
+            $this->task->updateState(States::STATE_COMPLETED);
             return;
         }
 

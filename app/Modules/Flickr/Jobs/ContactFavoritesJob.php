@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
@@ -46,7 +47,7 @@ class ContactFavoritesJob extends BaseJob
         $contactService->addPhotos($items->getItems());
 
         if ($items->isCompleted()) {
-            $this->task->delete();
+            $this->task->updateState(States::STATE_COMPLETED);
             return;
         }
 

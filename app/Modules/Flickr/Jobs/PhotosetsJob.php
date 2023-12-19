@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Models\FlickrContact;
@@ -72,7 +73,7 @@ class PhotosetsJob extends BaseJob
         });
 
         if ($items->isCompleted()) {
-            $this->task->delete();
+            $this->task->updateState(States::STATE_COMPLETED);
             return;
         }
 
