@@ -2,9 +2,9 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
-use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
@@ -14,8 +14,6 @@ class ContactFavoritesJobTest extends TestCase
 {
     public function testGetPeopleFavorites()
     {
-
-
         $this->assertDatabaseCount('flickr_photos', 0);
         $this->assertDatabaseCount('flickr_contacts', 0);
 
@@ -38,9 +36,6 @@ class ContactFavoritesJobTest extends TestCase
         $this->assertDatabaseCount('flickr_photos', 1487);
         $this->assertDatabaseCount('flickr_contacts', 351);
 
-        // Whenever task is fetched, it should be deleted.
-        $this->assertCount(0, $contact->refresh()
-            ->tasks()
-            ->where('task', FlickrService::TASK_CONTACT_FAVORITES)->get());
+        $this->assertEquals(States::STATE_COMPLETED, $task->refresh()->state_code);
     }
 }
