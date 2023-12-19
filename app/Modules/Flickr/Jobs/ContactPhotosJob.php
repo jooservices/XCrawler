@@ -8,9 +8,12 @@ use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\SerializesModels;
 
 class ContactPhotosJob extends BaseJob
 {
+    use SerializesModels;
+
     /**
      * Create a new job instance.
      *

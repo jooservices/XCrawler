@@ -9,12 +9,15 @@ use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Queue\SerializesModels;
 
 /**
  * Get all favorites of a contact.
  */
 class ContactFavoritesJob extends BaseJob
 {
+    use SerializesModels;
+
     /**
      * @param Integration $integration
      * @param Task $task

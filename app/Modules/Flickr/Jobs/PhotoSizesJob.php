@@ -10,10 +10,13 @@ use App\Modules\Flickr\Exceptions\PhotoSizesNotFound;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
 
 class PhotoSizesJob extends BaseJob
 {
+    use SerializesModels;
+
     /**
      * Create a new job instance.
      *

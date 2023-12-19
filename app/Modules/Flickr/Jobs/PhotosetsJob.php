@@ -11,11 +11,14 @@ use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 
 class PhotosetsJob extends BaseJob
 {
+    use SerializesModels;
+
     /**
      * @param Integration $integration
      * @param Task $task

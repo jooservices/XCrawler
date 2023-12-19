@@ -8,9 +8,12 @@ use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
+use Illuminate\Queue\SerializesModels;
 
 class PhotosetPhotosJob extends BaseJob
 {
+    use SerializesModels;
+
     /**
      * Create a new job instance.
      *

@@ -13,10 +13,13 @@ use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
 
 class ContactsJob extends BaseJob
 {
+    use SerializesModels;
+
     /**
      * Create a new job instance.
      *
