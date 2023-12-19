@@ -37,7 +37,6 @@ class Kernel extends ConsoleKernel
         $schedule->command(PhotosetPhotosCommand::COMMAND)->everyTwoMinutes();
 
         $schedule->command(PhotosSizesCommand::COMMAND)->everyTwoMinutes();
-
     }
 
     /**

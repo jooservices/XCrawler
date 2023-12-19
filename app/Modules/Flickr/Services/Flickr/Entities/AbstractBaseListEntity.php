@@ -5,7 +5,6 @@ namespace App\Modules\Flickr\Services\Flickr\Entities;
 use App\Modules\Core\Entities\BaseEntity;
 use App\Modules\Flickr\Exceptions\MissingEntityElement;
 use Illuminate\Support\Collection;
-use InvalidArgumentException;
 
 abstract class AbstractBaseListEntity extends BaseEntity
 {
@@ -16,7 +15,9 @@ abstract class AbstractBaseListEntity extends BaseEntity
     {
         parent::__construct($data);
 
-        if (empty($this->data[$this->getEntities()])) {
+        if (
+            empty($this->data[$this->getEntities()])
+        ) {
             throw new MissingEntityElement(
                 sprintf(
                     'Missing element "%s" in response',
@@ -32,6 +33,10 @@ abstract class AbstractBaseListEntity extends BaseEntity
 
     public function getItems(): Collection
     {
+        if ($this->getTotal() === 0) {
+            return collect();
+        }
+
         return collect($this->data[$this->getEntities()][$this->getEntity()]);
     }
 
