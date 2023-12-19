@@ -17,6 +17,8 @@ class PhotoSizesJob extends BaseJob
 {
     use SerializesModels;
 
+    public $deleteWhenMissingModels = true;
+
     /**
      * Create a new job instance.
      *

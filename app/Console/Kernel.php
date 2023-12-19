@@ -4,11 +4,12 @@ namespace App\Console;
 
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
+use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Console\ContactsCommand;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Nwidart\Modules\Commands\MigrateCommand;
+use App\Modules\Flickr\Console\Photoset\PhotosCommand as PhotosetPhotosCommand;
 
 class Kernel extends ConsoleKernel
 {
@@ -32,9 +33,11 @@ class Kernel extends ConsoleKernel
         $schedule->command(ContactsCommand::COMMAND)->weekly();
         $schedule->command(PhotosCommand::COMMAND)->everyTwoMinutes();
         $schedule->command(FavoritesCommand::COMMAND)->everyTwoMinutes();
+        $schedule->command(PhotosetsCommand::COMMAND)->everyTwoMinutes();
+        $schedule->command(PhotosetPhotosCommand::COMMAND)->everyTwoMinutes();
+
         $schedule->command(PhotosSizesCommand::COMMAND)->everyTwoMinutes();
 
-        $schedule->command(MigrateCommand::class);
     }
 
     /**

@@ -18,6 +18,8 @@ class ContactFavoritesJob extends BaseJob
 {
     use SerializesModels;
 
+    public $deleteWhenMissingModels = true;
+
     /**
      * @param Integration $integration
      * @param Task $task
