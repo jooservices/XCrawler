@@ -69,8 +69,8 @@ class OnejavService extends AbstractCrudService
 
     public function all(string $prefix = 'new'): ?ItemsEntity
     {
-        $prefix = Str::slug($prefix);
-        $currentPage = Setting::remember('onejav', $prefix . '_current_page', fn() => 1);
+        $slug = Str::slug($prefix);
+        $currentPage = Setting::remember('onejav', $slug . '_current_page', fn() => 1);
 
         /**
          * @var ?ItemsEntity $items
@@ -81,12 +81,12 @@ class OnejavService extends AbstractCrudService
         );
 
         if ($items) {
-            Setting::setInt('onejav', $prefix . '_last_page', $items->lastPage);
+            Setting::setInt('onejav', $slug . '_last_page', $items->lastPage);
             if ($currentPage < $items->lastPage) {
-                Setting::increment('onejav', $prefix . '_current_page');
+                Setting::increment('onejav', $slug . '_current_page');
             } else {
                 // Reset back to first page
-                Setting::setInt('onejav', $prefix . '_current_page', 1);
+                Setting::setInt('onejav', $slug . '_current_page', 1);
                 Event::dispatch(new OnejavAllCompleted());
             }
 
@@ -97,16 +97,16 @@ class OnejavService extends AbstractCrudService
          * Trying because sometimes the page have 404 or 500 error
          * So we will try 3 times with 3 next pages
          */
-        $retried = Setting::get('onejav', $prefix . '_retried', 0);
+        $retried = Setting::get('onejav', $slug . '_retried', 0);
         $retried = $retried < 3 ? $retried + 1 : 0;
-        Setting::setInt('onejav', $prefix . '_retried', $retried);
+        Setting::setInt('onejav', $slug . '_retried', $retried);
 
         /**
          * We already tried 3 times
          */
         if ($retried === 0) {
-            Setting::setInt('onejav', $prefix . '_current_page', 1);
-            Setting::setInt('onejav', $prefix . '_last_page', 1);
+            Setting::setInt('onejav', $slug . '_current_page', 1);
+            Setting::setInt('onejav', $slug . '_last_page', 1);
 
             Event::dispatch(new OnejavAllCompleted());
 
@@ -117,8 +117,8 @@ class OnejavService extends AbstractCrudService
          * We will try next page
          */
 
-        Setting::increment('onejav', $prefix . '_current_page');
-        Setting::setInt('onejav', $prefix . '_last_page', $currentPage + 1);
+        Setting::increment('onejav', $slug . '_current_page');
+        Setting::setInt('onejav', $slug . '_last_page', $currentPage + 1);
 
         Event::dispatch(new OnejavRetried());
 
