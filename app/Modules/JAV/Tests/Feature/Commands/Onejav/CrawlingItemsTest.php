@@ -2,20 +2,21 @@
 
 namespace App\Modules\JAV\Tests\Feature\Commands\Onejav;
 
-use App\Modules\JAV\Jobs\OnejavCrawlingItems;
-use Illuminate\Support\Facades\Bus;
+use App\Modules\JAV\Jobs\Onejav\ItemsJob;
+use App\Modules\JAV\Services\OnejavService;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CrawlingItemsTest extends TestCase
 {
     public function testCommand()
     {
-        Bus::fake();
+        Queue::fake(ItemsJob::class);
 
-        $this->artisan('onejav:crawling-items ' . $this->faker->url);
+        $url = $this->faker->url;
+        $this->artisan('onejav:items ' . $url)
+            ->assertExitCode(0);
 
-        Bus::assertDispatched(OnejavCrawlingItems::class, function ($job) {
-            return $job->queue === 'onejav';
-        });
+        Queue::assertPushedOn(OnejavService::QUEUE_NAME, ItemsJob::class);
     }
 }

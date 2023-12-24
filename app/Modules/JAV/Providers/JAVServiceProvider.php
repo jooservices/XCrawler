@@ -2,9 +2,9 @@
 
 namespace App\Modules\JAV\Providers;
 
-use App\Modules\JAV\Console\Onejav\CrawlingAll;
-use App\Modules\JAV\Console\Onejav\CrawlingDaily;
-use App\Modules\JAV\Console\Onejav\CrawlingItems;
+use App\Modules\JAV\Console\Onejav\AllCommand;
+use App\Modules\JAV\Console\Onejav\DailyCommand;
+use App\Modules\JAV\Console\Onejav\ItemsCommand;
 use Illuminate\Support\ServiceProvider;
 
 class JAVServiceProvider extends ServiceProvider
@@ -55,9 +55,9 @@ class JAVServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
         $this->commands([
-            CrawlingItems::class,
-            CrawlingDaily::class,
-            CrawlingAll::class,
+            ItemsCommand::class,
+            DailyCommand::class,
+            AllCommand::class,
         ]);
     }
 }

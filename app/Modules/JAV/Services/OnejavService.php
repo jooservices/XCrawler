@@ -7,9 +7,10 @@ use App\Modules\Core\Services\CRUD\AbstractCrudService;
 use App\Modules\JAV\Crawlers\CrawlerManager;
 use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
 use App\Modules\JAV\Crawlers\Providers\Onejav\ItemsProvider;
-use App\Modules\JAV\Events\OnejavAllCompleted;
+use App\Modules\JAV\Events\Onejav\AllCompletedEvent;
+use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
+use App\Modules\JAV\Events\Onejav\ItemsCompletedEvent;
 use App\Modules\JAV\Events\OnejavCompleted;
-use App\Modules\JAV\Events\OnejavDailyCompleted;
 use App\Modules\JAV\Events\OnejavRetried;
 use App\Modules\JAV\Repositories\OnejavRepository;
 use Carbon\Carbon;
@@ -40,7 +41,7 @@ class OnejavService extends AbstractCrudService
          */
         $items = $this->service->crawl($url, $payload);
 
-        Event::dispatch(new OnejavCompleted($items->items));
+        Event::dispatch(new ItemsCompletedEvent($items->items));
 
         return $items;
     }
@@ -61,8 +62,7 @@ class OnejavService extends AbstractCrudService
             $items->items = $items->items->merge(self::daily($page + 1)->items);
         }
 
-        Event::dispatch(new OnejavCompleted($items->items));
-        Event::dispatch(new OnejavDailyCompleted($today, $items->items));
+        Event::dispatch(new DailyCompletedEvent($today, $items->items));
 
         return $items;
     }
@@ -80,6 +80,9 @@ class OnejavService extends AbstractCrudService
             ['page' => $currentPage],
         );
 
+        /**
+         * All good. We will move to next page
+         */
         if ($items) {
             Setting::setInt('onejav', $slug . '_last_page', $items->lastPage);
             if ($currentPage < $items->lastPage) {
@@ -87,7 +90,7 @@ class OnejavService extends AbstractCrudService
             } else {
                 // Reset back to first page
                 Setting::setInt('onejav', $slug . '_current_page', 1);
-                Event::dispatch(new OnejavAllCompleted());
+                Event::dispatch(new AllCompletedEvent());
             }
 
             return $items;
@@ -108,7 +111,7 @@ class OnejavService extends AbstractCrudService
             Setting::setInt('onejav', $slug . '_current_page', 1);
             Setting::setInt('onejav', $slug . '_last_page', 1);
 
-            Event::dispatch(new OnejavAllCompleted());
+            Event::dispatch(new AllCompletedEvent());
 
             return null;
         }

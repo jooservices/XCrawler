@@ -4,8 +4,7 @@ namespace App\Modules\JAV\Tests\Feature\Jobs\Onejav;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\JAV\Events\OnejavItemCreated;
-use App\Modules\JAV\Jobs\OnejavCrawlingItems;
-use App\Modules\JAV\Models\Onejav;
+use App\Modules\JAV\Jobs\Onejav\ItemsJob;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Event;
 use Mockery;
 use Mockery\MockInterface;
 
-class CrawlingItemsTest extends TestCase
+class ItemsTest extends TestCase
 {
     public function testHandle()
     {
@@ -45,7 +44,7 @@ class CrawlingItemsTest extends TestCase
             $mock->shouldReceive('enableLogging');
         }));
 
-        OnejavCrawlingItems::dispatch($url);
+        ItemsJob::dispatch($url);
 
         Event::assertDispatched(OnejavItemCreated::class, 10);
         $this->assertDatabaseCount('onejav', 10, 'mongodb');

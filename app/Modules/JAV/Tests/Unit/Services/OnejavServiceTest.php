@@ -4,8 +4,8 @@ namespace App\Modules\JAV\Tests\Unit\Services;
 
 use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\JAV\Events\OnejavCompleted;
-use App\Modules\JAV\Events\OnejavDailyCompleted;
+use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
+use App\Modules\JAV\Events\Onejav\ItemsCompletedEvent;
 use App\Modules\JAV\Events\OnejavRetried;
 use App\Modules\JAV\Services\OnejavService;
 use App\Modules\JAV\Tests\TestCase;
@@ -27,7 +27,7 @@ class OnejavServiceTest extends TestCase
     public function testGetItems()
     {
         Event::fake([
-            OnejavCompleted::class,
+            ItemsCompletedEvent::class,
         ]);
 
         $this->instance(
@@ -51,7 +51,7 @@ class OnejavServiceTest extends TestCase
         $this->assertInstanceOf(Collection::class, $items->items);
         $this->assertCount(10, $items->items);
 
-        Event::assertDispatched(OnejavCompleted::class, function ($event) {
+        Event::assertDispatched(ItemsCompletedEvent::class, function ($event) {
             return $event->items->count() === 10;
         });
     }
@@ -59,8 +59,7 @@ class OnejavServiceTest extends TestCase
     public function testGetDaily()
     {
         Event::fake([
-            OnejavCompleted::class,
-            OnejavDailyCompleted::class,
+            DailyCompletedEvent::class,
         ]);
 
         $this->instance(
@@ -92,8 +91,7 @@ class OnejavServiceTest extends TestCase
         $this->assertInstanceOf(EntityInterface::class, $items);
         $this->assertCount(60, $items->items);
 
-        Event::assertDispatched(OnejavCompleted::class);
-        Event::assertDispatched(OnejavDailyCompleted::class, function ($event) {
+        Event::assertDispatched(DailyCompletedEvent::class, function ($event) {
             return $event->date->format('Y-m-d') === Carbon::now()->format('Y-m-d')
                 && $event->items->count() === 60;
         });
@@ -102,8 +100,7 @@ class OnejavServiceTest extends TestCase
     public function testGetAll()
     {
         Event::fake([
-            OnejavCompleted::class,
-            OnejavDailyCompleted::class,
+            DailyCompletedEvent::class,
         ]);
 
         $this->instance(

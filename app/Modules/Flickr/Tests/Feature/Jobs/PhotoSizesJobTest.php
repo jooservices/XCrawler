@@ -4,7 +4,7 @@ namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotoSizedEvent;
-use App\Modules\Flickr\Jobs\PhotoSizesJob;
+use App\Modules\Flickr\Jobs\PhotosizesJob;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
@@ -17,7 +17,7 @@ class PhotoSizesJobTest extends TestCase
         Event::fake(PhotoSizedEvent::class);
         $photo = FlickrPhoto::factory()->create();
 
-        PhotoSizesJob::dispatch($this->integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
+        PhotosizesJob::dispatch($this->integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
 
         $this->assertIsArray($photo->refresh()->sizes);
         $this->assertEquals(13, count($photo->sizes));

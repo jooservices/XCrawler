@@ -2,18 +2,20 @@
 
 namespace App\Modules\JAV\Console\Onejav;
 
-use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
+use App\Modules\JAV\Jobs\Onejav\DailyJob;
 use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Console\Command;
 
-class CrawlingDaily extends Command
+class DailyCommand extends Command
 {
+    public const COMMAND = 'onejav:daily';
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'onejav:crawling-daily';
+    protected $signature = self::COMMAND;
 
     /**
      * The console command description.
@@ -29,6 +31,6 @@ class CrawlingDaily extends Command
      */
     public function handle(): void
     {
-        OnejavCrawlingDaily::dispatch()->onQueue(OnejavService::QUEUE_NAME);
+        DailyJob::dispatch()->onQueue(OnejavService::QUEUE_NAME);
     }
 }

@@ -3,18 +3,20 @@
 namespace App\Modules\JAV\Console\Onejav;
 
 use App\Modules\Core\Facades\Setting;
-use App\Modules\JAV\Jobs\OnejavCrawlingAll;
+use App\Modules\JAV\Jobs\Onejav\AllJob;
 use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Console\Command;
 
-class CrawlingAll extends Command
+class AllCommand extends Command
 {
+    public const COMMAND = 'onejav:all';
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'onejav:crawling-all';
+    protected $signature = self::COMMAND;
 
     /**
      * The console command description.
@@ -34,7 +36,7 @@ class CrawlingAll extends Command
 
         foreach ($subpages as $page) {
             $this->output->text("Crawling {$page} pages...");
-            OnejavCrawlingAll::dispatch($page)->onQueue(OnejavService::QUEUE_NAME);
+            AllJob::dispatch($page)->onQueue(OnejavService::QUEUE_NAME);
         }
     }
 }

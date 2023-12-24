@@ -2,19 +2,21 @@
 
 namespace App\Modules\JAV\Tests\Feature\Commands\Onejav;
 
-use App\Modules\JAV\Jobs\OnejavCrawlingAll;
-use Illuminate\Support\Facades\Bus;
+use App\Modules\JAV\Console\Onejav\AllCommand;
+use App\Modules\JAV\Jobs\Onejav\AllJob;
+use App\Modules\JAV\Services\OnejavService;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CrawlingAllTest extends TestCase
 {
     public function testCommand()
     {
-        Bus::fake();
+        Queue::fake(AllJob::class);
 
-        $this->artisan('onejav:crawling-all')
+        $this->artisan(AllCommand::COMMAND)
             ->assertExitCode(0);
 
-        Bus::assertDispatched(OnejavCrawlingAll::class);
+        Queue::assertPushedOn(OnejavService::QUEUE_NAME, AllJob::class);
     }
 }

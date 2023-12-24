@@ -13,7 +13,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
 
-class PhotoSizesJob extends BaseJob
+class PhotosizesJob extends BaseJob
 {
     use SerializesModels;
 

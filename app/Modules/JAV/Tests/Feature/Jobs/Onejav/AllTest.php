@@ -4,25 +4,17 @@ namespace App\Modules\JAV\Tests\Feature\Jobs\Onejav;
 
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Events\OnejavCompleted;
-use App\Modules\JAV\Events\OnejavDailyCompleted;
-use App\Modules\JAV\Jobs\OnejavCrawlingAll;
-use App\Modules\JAV\Models\Onejav;
+use App\Modules\JAV\Jobs\Onejav\AllJob;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
-use Illuminate\Support\Facades\Event;
 use Mockery;
 use Mockery\MockInterface;
 
-class CrawlingAllTest extends TestCase
+class AllTest extends TestCase
 {
     public function testHandle()
     {
-        Event::fake([
-            OnejavCompleted::class,
-            OnejavDailyCompleted::class,
-        ]);
-
         $this->instance(
             Client::class,
             Mockery::mock(Client::class, function (MockInterface $mock) {
@@ -50,10 +42,11 @@ class CrawlingAllTest extends TestCase
 
         Setting::setInt('onejav', 'new_current_page', 12215);
 
-        OnejavCrawlingAll::dispatch('new');
+        AllJob::dispatch('new');
 
         $this->assertDatabaseCount('onejav', 10, 'mongodb');
         // Move to next page
         $this->assertEquals(12216, Setting::getInt('onejav', 'new_current_page'));
+        $this->assertEquals(12218, Setting::getInt('onejav', 'new_last_page'));
     }
 }

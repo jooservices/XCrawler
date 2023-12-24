@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Modules\JAV\Events;
+namespace App\Modules\JAV\Events\Onejav;
 
+use Carbon\Carbon;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 
-class OnejavCompleted
+class DailyCompletedEvent
 {
     use SerializesModels;
 
@@ -14,7 +15,8 @@ class OnejavCompleted
      *
      * @return void
      */
-    public function __construct(public Collection $items)
+    public function __construct(public Carbon $date, public Collection $items)
     {
+        //
     }
 }

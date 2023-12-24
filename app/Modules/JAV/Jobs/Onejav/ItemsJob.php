@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Modules\JAV\Jobs;
+namespace App\Modules\JAV\Jobs\Onejav;
 
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 
-class OnejavCrawlingItems extends BaseJob
+class ItemsJob extends BaseJob
 {
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(private string $url, private array $payload = [])
+    public function __construct( readonly string $url, private array $payload = [])
     {
     }
 

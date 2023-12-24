@@ -2,21 +2,21 @@
 
 namespace App\Modules\JAV\Tests\Feature\Commands\Onejav;
 
-use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
-use Illuminate\Support\Facades\Bus;
+use App\Modules\JAV\Console\Onejav\DailyCommand;
+use App\Modules\JAV\Jobs\Onejav\DailyJob;
+use App\Modules\JAV\Services\OnejavService;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class CrawlingDailyTest extends TestCase
 {
     public function testCommand()
     {
-        Bus::fake();
+        Queue::fake(DailyJob::class);
 
-        $this->artisan('onejav:crawling-daily')
+        $this->artisan(DailyCommand::class)
             ->assertExitCode(0);
 
-        Bus::assertDispatched(OnejavCrawlingDaily::class, function ($job) {
-            return $job->queue === 'onejav';
-        });
+        Queue::assertPushedOn(OnejavService::QUEUE_NAME, DailyJob::class);
     }
 }

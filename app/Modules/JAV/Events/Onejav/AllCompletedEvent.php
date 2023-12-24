@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\JAV\Events;
+namespace App\Modules\JAV\Events\Onejav;
 
 use Illuminate\Queue\SerializesModels;
 
-class OnejavAllCompleted
+class AllCompletedEvent
 {
     use SerializesModels;
 

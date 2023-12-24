@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Modules\JAV\Jobs;
+namespace App\Modules\JAV\Jobs\Onejav;
 
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\JAV\Services\OnejavService;
 
-class OnejavCrawlingAll extends BaseJob
+class AllJob extends BaseJob
 {
     /**
      * Create a new job instance.

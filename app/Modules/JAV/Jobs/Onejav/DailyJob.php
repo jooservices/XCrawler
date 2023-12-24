@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Modules\JAV\Jobs;
+namespace App\Modules\JAV\Jobs\Onejav;
 
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\JAV\Services\OnejavService;
 use Carbon\Carbon;
 
-class OnejavCrawlingDaily extends BaseJob
+class DailyJob extends BaseJob
 {
     public function uniqueId(): string
     {

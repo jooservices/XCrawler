@@ -3,10 +3,10 @@
 namespace App\Modules\JAV\Tests\Feature\Jobs\Onejav;
 
 use App\Modules\Client\Services\Factory;
-use App\Modules\JAV\Events\OnejavCompleted;
+use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
 use App\Modules\JAV\Events\OnejavItemCreated;
 use App\Modules\JAV\Events\OnejavItemUpdated;
-use App\Modules\JAV\Jobs\OnejavCrawlingDaily;
+use App\Modules\JAV\Jobs\Onejav\DailyJob;
 use App\Modules\JAV\Models\Onejav;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
@@ -15,14 +15,14 @@ use Illuminate\Support\Facades\Event;
 use Mockery;
 use Mockery\MockInterface;
 
-class CrawlingDailyTest extends TestCase
+class DailyTest extends TestCase
 {
     public function testHandle()
     {
         Event::fake(
             [
+                DailyCompletedEvent::class,
                 OnejavItemCreated::class,
-                OnejavCompleted::class,
                 OnejavItemUpdated::class,
             ]
         );
@@ -74,10 +74,15 @@ class CrawlingDailyTest extends TestCase
             ],
         ]);
 
-        OnejavCrawlingDaily::dispatch();
+        DailyJob::dispatch();
 
+        Event::assertDispatched(DailyCompletedEvent::class, function ($event) {
+            return $event->items->count() === 60;
+        });
         Event::assertDispatched(OnejavItemCreated::class, 59);
-        Event::assertDispatched(OnejavCompleted::class);
+        /**
+         * This item already exists so update only
+         */
         Event::assertDispatched(OnejavItemUpdated::class, function ($event) {
             return $event->model->url === 'https://onejav.com/torrent/stars908';
         });
