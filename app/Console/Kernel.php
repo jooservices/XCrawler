@@ -7,6 +7,8 @@ use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Console\ContactsCommand;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
+use App\Modules\JAV\Console\Onejav\AllCommand;
+use App\Modules\JAV\Console\Onejav\DailyCommand;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Modules\Flickr\Console\Photoset\PhotosCommand as PhotosetPhotosCommand;
@@ -24,8 +26,8 @@ class Kernel extends ConsoleKernel
         /**
          * JAV
          */
-        $schedule->command('onejav:crawling-daily')->daily();
-        $schedule->command('onejav:crawling-all');
+        $schedule->command(DailyCommand::COMMAND)->daily();
+        $schedule->command(AllCommand::COMMAND);
 
         /**
          * Flickr
@@ -33,6 +35,7 @@ class Kernel extends ConsoleKernel
         $schedule->command(ContactsCommand::COMMAND)->weekly();
         $schedule->command(PhotosCommand::COMMAND)->everyTwoMinutes();
         $schedule->command(FavoritesCommand::COMMAND)->everyTwoMinutes();
+
         $schedule->command(PhotosetsCommand::COMMAND)->everyTwoMinutes();
         $schedule->command(PhotosetPhotosCommand::COMMAND)->everyTwoMinutes();
 
