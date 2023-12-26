@@ -88,13 +88,18 @@ class BaseEntity implements EntityInterface
 
     public function __isset(string $name)
     {
-        return isset($this->data[$name]);
+        return $this->has($name);
     }
 
     public function __unset(string $name)
     {
         unset($this->data[$name]);
         unset($this->initialData[$name]);
+    }
+
+    public function has(string $name): bool
+    {
+        return isset($this->data[$name]);
     }
 
     public function toArray(): array
