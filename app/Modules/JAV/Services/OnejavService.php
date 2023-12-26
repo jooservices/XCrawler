@@ -10,8 +10,8 @@ use App\Modules\JAV\Crawlers\Providers\Onejav\ItemsProvider;
 use App\Modules\JAV\Events\Onejav\AllCompletedEvent;
 use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
 use App\Modules\JAV\Events\Onejav\ItemsCompletedEvent;
-use App\Modules\JAV\Events\OnejavCompleted;
 use App\Modules\JAV\Events\OnejavRetried;
+use App\Modules\JAV\Exceptions\OnejavRetryFailed;
 use App\Modules\JAV\Repositories\OnejavRepository;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Event;
@@ -67,10 +67,13 @@ class OnejavService extends AbstractCrudService
         return $items;
     }
 
-    public function all(string $prefix = 'new'): ?ItemsEntity
+    /**
+     * @throws OnejavRetryFailed
+     */
+    public function all(string $prefix = 'new'): ItemsEntity
     {
         $slug = Str::slug($prefix);
-        $currentPage = Setting::remember('onejav', $slug . '_current_page', fn() => 1);
+        $currentPage = Setting::remember(self::SERVICE_NAME, $slug . '_current_page', fn() => 1);
 
         /**
          * @var ?ItemsEntity $items
@@ -100,31 +103,32 @@ class OnejavService extends AbstractCrudService
          * Trying because sometimes the page have 404 or 500 error
          * So we will try 3 times with 3 next pages
          */
-        $retried = Setting::get('onejav', $slug . '_retried', 0);
+        $retried = Setting::get(self::SERVICE_NAME, $slug . '_retried', 0);
         $retried = $retried < 3 ? $retried + 1 : 0;
         Setting::setInt('onejav', $slug . '_retried', $retried);
 
         /**
          * We already tried 3 times
+         * Than reset back to first page
          */
         if ($retried === 0) {
-            Setting::setInt('onejav', $slug . '_current_page', 1);
-            Setting::setInt('onejav', $slug . '_last_page', 1);
+            Setting::setInt(self::SERVICE_NAME, $slug . '_current_page', 1);
+            Setting::setInt(self::SERVICE_NAME, $slug . '_last_page', 1);
 
             Event::dispatch(new AllCompletedEvent());
 
-            return null;
+            throw new OnejavRetryFailed();
         }
 
         /**
          * We will try next page
          */
 
-        Setting::increment('onejav', $slug . '_current_page');
-        Setting::setInt('onejav', $slug . '_last_page', $currentPage + 1);
+        Setting::increment(self::SERVICE_NAME, $slug . '_current_page');
+        Setting::setInt(self::SERVICE_NAME, $slug . '_last_page', $currentPage + 1);
 
         Event::dispatch(new OnejavRetried());
 
-        return null;
+        return new ItemsEntity();
     }
 }

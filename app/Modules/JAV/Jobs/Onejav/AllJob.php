@@ -23,9 +23,13 @@ class AllJob extends BaseJob
      */
     public function handle(OnejavService $service)
     {
-        $service->all($this->endpoint)
-            ->items->each(function ($item) use ($service) {
-                $service->create($item->toArray());
-            });
+        $items = $service->all($this->endpoint);
+        if (!$items->has('items')) {
+            return;
+        }
+
+        $items->items->each(function ($item) use ($service) {
+            $service->create($item->toArray());
+        });
     }
 }
