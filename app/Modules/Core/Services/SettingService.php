@@ -13,10 +13,9 @@ class SettingService
     public function remember(string $group, string $key, callable $callback): mixed
     {
         if (
-            $this->setting->newQuery()
-                ->group($group)->key($key)->exists()
+            $this->has($group, $key)
         ) {
-            return $this->setting->where('group', $group)->where('key', $key)->first()?->value;
+            return $this->setting->where('group', $group)->where('key', $key)->first()->value;
         }
 
         $value = $callback();
@@ -69,5 +68,10 @@ class SettingService
         $this->setting->where('group', $group)->where('key', $key)->increment('value', $value);
 
         return $this;
+    }
+
+    public function has(string $group, string $key): bool
+    {
+        return $this->setting->newQuery()->group($group)->key($key)->exists();
     }
 }
