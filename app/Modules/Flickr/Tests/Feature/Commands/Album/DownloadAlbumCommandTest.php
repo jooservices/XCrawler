@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Queue;
 class DownloadAlbumCommandTest extends TestCase
 {
     private const PHOTOSET_ID = '72157674594210788';
+    private const NSID = '94529704@N02';
 
     public function setUp(): void
     {
@@ -36,11 +37,11 @@ class DownloadAlbumCommandTest extends TestCase
         // One request to fetch photoset info
         $this->assertEquals(1, $this->integration->fresh()->requested_times);
         // Contact created for relationship
-        $this->assertDatabaseHas('flickr_contacts', ['nsid' => '94529704@N02']);
+        $this->assertDatabaseHas('flickr_contacts', ['nsid' => self::NSID]);
         // Photoset created for relationship
         $this->assertDatabaseHas('flickr_photosets', [
             'id' => self::PHOTOSET_ID,
-            'owner' => '94529704@N02',
+            'owner' => self::NSID,
             'title' => 'Phương Trần',
             'photos' => 1
         ]);
@@ -52,7 +53,7 @@ class DownloadAlbumCommandTest extends TestCase
         ]);
 
         // Make sure payload is corrected
-        $task = Task::where('model_id', 72157674594210788)
+        $task = Task::where('model_id', self::PHOTOSET_ID)
             ->where('model_type', FlickrPhotoset::class)
             ->first();
         $this->assertEquals(1, $task->payload['photos']);
@@ -79,7 +80,7 @@ class DownloadAlbumCommandTest extends TestCase
         ]);
 
         $photoset = FlickrPhotoset::factory()->create([
-            'id' => '72157674594210788',
+            'id' => self::PHOTOSET_ID,
             'owner' => $contact->nsid
         ]);
 
@@ -90,15 +91,15 @@ class DownloadAlbumCommandTest extends TestCase
 
         $this->assertFalse($photoset->tasks()->exists());
 
-        $this->artisan('flickr:download-album --photoset_id=72157674594210788');
+        $this->artisan('flickr:download-album --photoset_id=' . self::PHOTOSET_ID);
         // One request to fetch photoset info
         $this->assertEquals(1, $this->integration->fresh()->requested_times);
         $this->assertDatabaseHas('flickr_contacts', [
-            'nsid' => '94529704@N02'
+            'nsid' => self::NSID
         ]);
         $this->assertDatabaseHas('flickr_photosets', [
             'id' => self::PHOTOSET_ID,
-            'owner' => '94529704@N02',
+            'owner' => self::NSID,
             'title' => 'Phương Trần',
             'photos' => 1
         ]);
