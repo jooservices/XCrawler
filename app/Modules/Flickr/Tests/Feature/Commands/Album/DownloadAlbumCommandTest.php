@@ -76,7 +76,7 @@ class DownloadAlbumCommandTest extends TestCase
          * Prepare init data
          */
         $contact = FlickrContact::factory()->create([
-            'nsid' => '94529704@N02'
+            'nsid' => self::NSID
         ]);
 
         $photoset = FlickrPhotoset::factory()->create([
