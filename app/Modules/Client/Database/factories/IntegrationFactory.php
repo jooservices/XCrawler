@@ -39,7 +39,7 @@ class IntegrationFactory extends Factory
 
     public function service(string $service): Factory
     {
-        return $this->state(function (array $attributes) use ($service) {
+        return $this->state(function () use ($service) {
             return [
                 'service' => $service,
             ];
@@ -48,7 +48,7 @@ class IntegrationFactory extends Factory
 
     public function primary(bool $isPrimary = true): Factory
     {
-        return $this->state(function (array $attributes) use ($isPrimary) {
+        return $this->state(function () use ($isPrimary) {
             return [
                 'is_primary' => $isPrimary,
             ];
@@ -57,7 +57,7 @@ class IntegrationFactory extends Factory
 
     public function init(): Factory
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'state_code' => States::STATE_INIT,
             ];
