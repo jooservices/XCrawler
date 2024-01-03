@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Queue;
 
 class DownloadAlbumCommandTest extends TestCase
 {
+    private const PHOTOSET_ID = '72157674594210788';
+
     public function setUp(): void
     {
         parent::setUp();
@@ -30,21 +32,21 @@ class DownloadAlbumCommandTest extends TestCase
     {
         Queue::fake(PhotosetPhotosJob::class);
 
-        $this->artisan('flickr:download-album --photoset_id=72157674594210788');
+        $this->artisan('flickr:download-album --photoset_id=' . self::PHOTOSET_ID);
         // One request to fetch photoset info
         $this->assertEquals(1, $this->integration->fresh()->requested_times);
         // Contact created for relationship
         $this->assertDatabaseHas('flickr_contacts', ['nsid' => '94529704@N02']);
         // Photoset created for relationship
         $this->assertDatabaseHas('flickr_photosets', [
-            'id' => '72157674594210788',
+            'id' => self::PHOTOSET_ID,
             'owner' => '94529704@N02',
             'title' => 'Phương Trần',
             'photos' => 1
         ]);
         $this->assertDatabaseHas('tasks', [
             'model_type' => FlickrPhotoset::class,
-            'model_id' => 72157674594210788,
+            'model_id' => self::PHOTOSET_ID,
             'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET,
             'state_code' => States::STATE_INIT
         ]);
@@ -58,7 +60,7 @@ class DownloadAlbumCommandTest extends TestCase
         // Task to fetch photoset's photos
         $this->assertDatabaseHas('tasks', [
             'model_type' => FlickrPhotoset::class,
-            'model_id' => 72157674594210788,
+            'model_id' => self::PHOTOSET_ID,
             'task' => FlickrService::TASK_PHOTOSET_PHOTOS
         ]);
 
@@ -95,7 +97,7 @@ class DownloadAlbumCommandTest extends TestCase
             'nsid' => '94529704@N02'
         ]);
         $this->assertDatabaseHas('flickr_photosets', [
-            'id' => '72157674594210788',
+            'id' => self::PHOTOSET_ID,
             'owner' => '94529704@N02',
             'title' => 'Phương Trần',
             'photos' => 1
