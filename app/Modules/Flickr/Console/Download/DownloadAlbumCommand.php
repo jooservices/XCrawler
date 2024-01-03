@@ -46,9 +46,6 @@ class DownloadAlbumCommand extends Command
         $adapter = $flickrService->setIntegration($integration)->photosets;
         $photosetInfo = $adapter->getInfo((int) $this->option('photoset_id'));
 
-        /**
-         * @phpstan-ignore-next-line
-         */
         $this->info('Photoset info: ' . $photosetInfo->title . ' [' . $photosetInfo->id . ']');
 
         if (!$photosetInfo) {
