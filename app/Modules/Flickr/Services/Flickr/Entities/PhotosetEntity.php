@@ -8,8 +8,8 @@ use App\Modules\Core\Entities\BaseEntity;
  * @property int $id
  * @property string $owner
  * @property string $username
- * @property string title
- * @property string description
+ * @property string $title
+ * @property string $description
  * @property int $photos
  */
 class PhotosetEntity extends BaseEntity
