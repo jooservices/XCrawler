@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $nsid
  * @property string $username
  * @property string $realname
+ * @property bool $friend
  */
 class FlickrContact extends Model implements TaskInterface
 {
