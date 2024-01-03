@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property string $owner
+ * @property int $photos
  */
 class FlickrPhotoset extends Model implements TaskInterface
 {

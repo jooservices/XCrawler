@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property int $model_id
  * @property string $task
  * @property string $state_code
+ * @property array $payload
  */
 class Task extends Model
 {

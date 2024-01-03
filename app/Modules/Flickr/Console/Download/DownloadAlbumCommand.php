@@ -44,8 +44,11 @@ class DownloadAlbumCommand extends Command
         $this->info('Integration: ' . $integration->name);
 
         $adapter = $flickrService->setIntegration($integration)->photosets;
-        $photosetInfo = $adapter->getInfo($this->option('photoset_id'));
+        $photosetInfo = $adapter->getInfo((int) $this->option('photoset_id'));
 
+        /**
+         * @phpstan-ignore-next-line
+         */
         $this->info('Photoset info: ' . $photosetInfo->title . ' [' . $photosetInfo->id . ']');
 
         if (!$photosetInfo) {
@@ -63,6 +66,9 @@ class DownloadAlbumCommand extends Command
 
         $this->info('Contact: ' . $contact->nsid);
 
+        /**
+         * @var FlickrPhotoset $photoset
+         */
         $photoset = FlickrPhotoset::updateOrCreate([
             'id' => $photosetInfo->id,
             'owner' => $contact->nsid,

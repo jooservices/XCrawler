@@ -4,6 +4,14 @@ namespace App\Modules\Flickr\Services\Flickr\Entities;
 
 use App\Modules\Core\Entities\BaseEntity;
 
+/**
+ * @property int $id
+ * @property string $owner
+ * @property string $username
+ * @property string title
+ * @property string description
+ * @property int $photos
+ */
 class PhotosetEntity extends BaseEntity
 {
     protected array $fields = [

@@ -5,7 +5,7 @@ namespace App\Modules\JAV\Console\Onejav;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Crawlers\CrawlerManager;
 use App\Modules\JAV\Crawlers\Providers\Onejav\TagsProvider;
-use App\Modules\JAV\Jobs\Onejav\DailyJob;
+use App\Modules\JAV\Entities\Onejav\TagsEntity;
 use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Console\Command;
 
@@ -36,10 +36,16 @@ class TagsCommand extends Command
     {
         $url = 'https://onejav.com/tag/';
 
+        /**
+         * @var TagsEntity $items
+         */
         $items = app(CrawlerManager::class)
             ->setProvider(app(TagsProvider::class))
             ->crawl($url, [], 'GET');
 
+        /**
+         * @phpstan-ignore-next-line
+         */
         if (!$items) {
             return;
         }
