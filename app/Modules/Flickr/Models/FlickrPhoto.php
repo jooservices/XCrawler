@@ -13,6 +13,7 @@ use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class FlickrPhoto extends Model implements TaskInterface
 {
@@ -65,8 +66,9 @@ class FlickrPhoto extends Model implements TaskInterface
         return $this->belongsTo(FlickrContact::class, 'owner', 'nsid');
     }
 
-    public function photosets()
+    public function photosets(): BelongsToMany
     {
+        return $this->belongsToMany(FlickrPhotoset::class, 'flickr_photosets_photos', 'photo_id', 'photoset_id');
     }
 
     protected static function newFactory(): PhotoFactory
