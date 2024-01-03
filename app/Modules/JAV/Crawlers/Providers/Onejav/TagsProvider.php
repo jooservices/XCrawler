@@ -2,20 +2,17 @@
 
 namespace App\Modules\JAV\Crawlers\Providers\Onejav;
 
-use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\JAV\Crawlers\AbstractProvider;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\TagEntity;
-use App\Modules\JAV\Entities\OnejavEntity;
-use App\Modules\JAV\Services\OnejavService;
-use Carbon\Carbon;
+use App\Modules\JAV\Entities\Onejav\MoviesEntity;
+use App\Modules\JAV\Entities\Onejav\TagEntity;
+use App\Modules\JAV\Entities\Onejav\TagsEntity;
 use Symfony\Component\DomCrawler\Crawler;
 
 class TagsProvider extends AbstractProvider
 {
-    protected function parse(Crawler $crawler): EntityInterface
+    protected function parse(Crawler $crawler): TagsEntity
     {
-        $item = new ItemsEntity();
+        $item = new TagsEntity();
         $item->items = collect()->merge(
             $crawler->filter('.card-content .columns a.is-link') ->each(function ($el) {
                 $item = new TagEntity();

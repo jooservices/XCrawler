@@ -4,7 +4,7 @@ namespace App\Modules\Client\Events;
 
 use Illuminate\Queue\SerializesModels;
 
-class AfterFlickrRequest
+class AfterFlickrRequestedEvent
 {
     use SerializesModels;
 

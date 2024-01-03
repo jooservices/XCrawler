@@ -5,8 +5,8 @@ namespace App\Modules\JAV\Services;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\Core\Services\CRUD\AbstractCrudService;
 use App\Modules\JAV\Crawlers\CrawlerManager;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
 use App\Modules\JAV\Crawlers\Providers\Onejav\ItemsProvider;
+use App\Modules\JAV\Entities\Onejav\MoviesEntity;
 use App\Modules\JAV\Events\Onejav\AllCompletedEvent;
 use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
 use App\Modules\JAV\Events\Onejav\ItemsCompletedEvent;
@@ -34,10 +34,10 @@ class OnejavService extends AbstractCrudService
         return app(OnejavRepository::class);
     }
 
-    public function items(string $url, array $payload = []): ItemsEntity
+    public function items(string $url, array $payload = []): MoviesEntity
     {
         /**
-         * @var ItemsEntity $items
+         * @var MoviesEntity $items
          */
         $items = $this->service->crawl($url, $payload);
 
@@ -46,11 +46,11 @@ class OnejavService extends AbstractCrudService
         return $items;
     }
 
-    public function daily(int $page = 1): ItemsEntity
+    public function daily(int $page = 1): MoviesEntity
     {
         $today = Carbon::now();
         /**
-         * @var ItemsEntity $items
+         * @var MoviesEntity $items
          */
         $items = $this->service
             ->crawl(
@@ -70,13 +70,13 @@ class OnejavService extends AbstractCrudService
     /**
      * @throws OnejavRetryFailed
      */
-    public function all(string $prefix = 'new'): ItemsEntity
+    public function all(string $prefix = 'new'): MoviesEntity
     {
         $slug = Str::slug($prefix);
         $currentPage = Setting::remember(self::SERVICE_NAME, $slug . '_current_page', fn() => 1);
 
         /**
-         * @var ?ItemsEntity $items
+         * @var ?MoviesEntity $items
          */
         $items = $this->service->crawl(
             self::ONEJAV_URL . '/' . $prefix,
@@ -129,6 +129,6 @@ class OnejavService extends AbstractCrudService
 
         Event::dispatch(new OnejavRetried());
 
-        return new ItemsEntity();
+        return new MoviesEntity();
     }
 }

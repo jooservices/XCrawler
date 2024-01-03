@@ -225,5 +225,19 @@ class TestCase extends BaseTestCase
                     $this->getFixtures('flickr_photosets_photos.json')
                 )
             );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getInfo')
+                    && $options['form_params']['photoset_id'] === 72157674594210788;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    $this->getFixtures('flickr_photosets_info.json')
+                )
+            );
     }
 }

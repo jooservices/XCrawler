@@ -2,7 +2,6 @@
 
 namespace App\Modules\JAV\Console\Onejav;
 
-
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Crawlers\CrawlerManager;
 use App\Modules\JAV\Crawlers\Providers\Onejav\TagsProvider;
@@ -49,5 +48,7 @@ class TagsCommand extends Command
         $subpages = array_merge($subpages, $items->items->pluck('url')->toArray());
 
         Setting::set(OnejavService::SERVICE_NAME, 'subpages', array_unique($subpages));
+
+        $this->info('Total subpages: ' . count($subpages));
     }
 }

@@ -36,23 +36,24 @@ class FavoritesCommand extends Command implements Isolatable
     {
         $this->info('Fetching favorites\' photos ...');
 
-        $repository->getCompleted('flickr')->each(function ($integration) use ($taskService) {
-            $this->output->text('Processing integration: ' . $integration->name);
+        $repository->getCompleted(FlickrService::SERVICE_NAME)
+            ->each(function ($integration) use ($taskService) {
+                $this->output->text('Processing integration: ' . $integration->name);
 
-            $tasks = $taskService->tasks(
-                FlickrService::TASK_CONTACT_FAVORITES,
-                Setting::remember(
-                    'flickr',
-                    'task_contact_favorites_limit',
-                    fn() => config('flickr.task_limit', 10)
-                )
-            );
+                $tasks = $taskService->tasks(
+                    FlickrService::TASK_CONTACT_FAVORITES,
+                    Setting::remember(
+                        'flickr',
+                        'task_contact_favorites_limit',
+                        fn() => config('flickr.task_limit', 10)
+                    )
+                );
 
-            foreach ($tasks as $task) {
-                $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
+                foreach ($tasks as $task) {
+                    $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid);
 
-                ContactFavoritesJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
-            }
-        });
+                    ContactFavoritesJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
+                }
+            });
     }
 }

@@ -36,4 +36,32 @@ class IntegrationFactory extends Factory
             'state_code' => States::STATE_COMPLETED,
         ];
     }
+
+    public function service(string $service): Factory
+    {
+        return $this->state(function (array $attributes) use ($service) {
+            return [
+                'service' => $service,
+            ];
+        });
+    }
+
+    public function primary(bool $isPrimary = true): Factory
+    {
+        return $this->state(function (array $attributes) use ($isPrimary) {
+            return [
+                'is_primary' => $isPrimary,
+            ];
+        });
+    }
+
+    public function init(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'state_code' => States::STATE_INIT,
+            ];
+        });
+    }
+
 }
