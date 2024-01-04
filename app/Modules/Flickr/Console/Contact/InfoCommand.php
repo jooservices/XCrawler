@@ -12,6 +12,7 @@ use Illuminate\Contracts\Console\Isolatable;
 class InfoCommand extends Command implements Isolatable
 {
     public const COMMAND = 'flickr:contact-info {--nsid=}';
+
     /**
      * The name and signature of the console command.
      *
