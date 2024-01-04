@@ -26,7 +26,6 @@ class Task extends Model
     use HasUuid;
 
     public const STATE_INIT = States::STATE_INIT;
-    public const STATE_IN_PROGRESS = States::STATE_IN_PROGRESS;
 
     protected $table = 'tasks';
 
@@ -61,5 +60,14 @@ class Task extends Model
     public function parentTask(): BelongsTo
     {
         return $this->belongsTo(Task::class, 'task_id');
+    }
+
+    public function updatePayload(array $payload): self
+    {
+        $this->update([
+            'payload' => array_merge($this->payload, $payload)
+        ]);
+
+        return $this;
     }
 }

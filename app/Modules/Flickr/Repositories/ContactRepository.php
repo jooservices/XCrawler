@@ -3,9 +3,7 @@
 namespace App\Modules\Flickr\Repositories;
 
 use App\Modules\Core\Repositories\CrudRepository;
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Models\FlickrContact;
-use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Support\Collection;
 
 class ContactRepository extends CrudRepository

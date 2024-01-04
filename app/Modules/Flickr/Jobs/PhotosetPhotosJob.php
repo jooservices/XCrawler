@@ -5,7 +5,9 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
+use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Queue\SerializesModels;
@@ -57,6 +59,15 @@ class PhotosetPhotosJob extends BaseJob
             Event::dispatch(new FetchPhotosetPhotosCompletedEvent($this->task));
             return;
         }
+
+        $this->task->update([
+            'state_code' => States::STATE_RECURRING,
+            'payload' => [
+                'page' => $items->getNextPage()
+            ]
+        ]);
+
+        Event::dispatch(new RecurredTaskEvent($this->task));
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
