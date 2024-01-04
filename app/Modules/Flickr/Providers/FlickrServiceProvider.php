@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Providers;
 
 use App\Modules\Flickr\Console\Album\DownloadPhotosCommand;
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
+use App\Modules\Flickr\Console\Contact\InfoCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Console\ContactsCommand;
@@ -71,6 +72,8 @@ class FlickrServiceProvider extends ServiceProvider
             PhotosetPhotosCommand::class,
 
             DownloadAlbumCommand::class,
+
+            InfoCommand::class
         ]);
     }
 
