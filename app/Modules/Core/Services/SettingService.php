@@ -2,20 +2,24 @@
 
 namespace App\Modules\Core\Services;
 
-use App\Modules\Core\Models\Setting;
+use App\Modules\Core\Repositories\SettingRepository;
 
 class SettingService
 {
-    public function __construct(private readonly Setting $setting)
+    public function __construct(private readonly SettingRepository $setting)
     {
     }
 
+    /**
+     * @param string $group
+     * @param string $key
+     * @param callable $callback
+     * @return mixed
+     */
     public function remember(string $group, string $key, callable $callback): mixed
     {
-        if (
-            $this->has($group, $key)
-        ) {
-            return $this->setting->where('group', $group)->where('key', $key)->first()->value;
+        if ($this->setting->has($group, $key)) {
+            return $this->setting->item($group, $key)->value;
         }
 
         $value = $callback();
@@ -26,7 +30,7 @@ class SettingService
 
     public function set(string $group, string $key, $value): self
     {
-        $this->setting->updateOrCreate(compact('group', 'key'), compact('value'));
+        $this->setting->updateOrCreate($group, $key, $value);
 
         return $this;
     }
@@ -43,19 +47,19 @@ class SettingService
 
     public function forget(string $group, string $key): self
     {
-        $this->setting->where('group', $group)->where('key', $key)->forceDelete();
+        $this->setting->delete($group, $key);
 
         return $this;
+    }
+
+    public function get(string $group, string $key, $default = null)
+    {
+        return $this->setting->item($group, $key)?->value ?? $default;
     }
 
     public function getInt(string $group, string $key, $default = null): int
     {
         return (int)$this->get($group, $key, $default);
-    }
-
-    public function get(string $group, string $key, $default = null)
-    {
-        return $this->setting->where('group', $group)->where('key', $key)->first()?->value ?? $default;
     }
 
     public function getArray(string $group, string $key, $default = null): array
@@ -65,13 +69,13 @@ class SettingService
 
     public function increment(string $group, string $key, int $value = 1): self
     {
-        $this->setting->where('group', $group)->where('key', $key)->increment('value', $value);
+        $this->setting->increment($group, $key, $value);
 
         return $this;
     }
 
     public function has(string $group, string $key): bool
     {
-        return $this->setting->newQuery()->group($group)->key($key)->exists();
+        return $this->setting->has($group, $key);
     }
 }

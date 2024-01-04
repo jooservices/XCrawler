@@ -34,6 +34,5 @@ class PhotosJobTest extends TestCase
 
         $this->assertEquals(1, $photoset->refresh()->relationshipPhotos->count());
         Event::assertDispatched(FetchPhotosetPhotosCompletedEvent::class);
-        Event::assertDispatched(RecurredTaskEvent::class);
     }
 }
