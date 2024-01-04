@@ -4,7 +4,6 @@ namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Exceptions\HaveNoIntegration;
-use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
@@ -28,12 +27,11 @@ class InfoCommand extends Command implements Isolatable
     protected $description = 'Fetch contact\'s information';
 
     /**
-     * @param TaskService $taskService
      * @param IntegrationRepository $repository
      * @return void
      * @throws HaveNoIntegration
      */
-    public function handle(TaskService $taskService, IntegrationRepository $repository): void
+    public function handle(IntegrationRepository $repository): void
     {
         $this->info('Fetching contact\' info ...');
 
