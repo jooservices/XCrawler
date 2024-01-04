@@ -45,6 +45,6 @@ class InfoCommand extends Command implements Isolatable
             'nsid' => $info->nsid
         ], $info->toArray());
 
-        $this->output->text('Updated contact: ' . $contact->username);
+        $this->output->text('Updated contact ['. $info->nsid .']: ' . $contact->username);
     }
 }
