@@ -9,8 +9,6 @@ class FileManager
 {
     public function __construct(
         private Filesystem $storage,
-        private Filesystem $tempStorage,
-        private ?Filesystem $staticFiles = null
     ) {
     }
 
