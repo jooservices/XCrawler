@@ -4,6 +4,9 @@ namespace App\Modules\Flickr\Services\Flickr\Entities;
 
 use App\Modules\Core\Entities\BaseEntity;
 
+/**
+ * @property string $nsid
+ */
 class PeopleInfoEntity extends BaseEntity
 {
     protected array $fields = [

@@ -35,8 +35,17 @@ class SettingRepository extends BaseRepository
             ->exists();
     }
 
+    /**
+     * @param string $group
+     * @param string $key
+     * @param $value
+     * @return Setting
+     */
     public function updateOrCreate(string $group, string $key, $value): Setting
     {
+        /**
+         * @phpstan-ignore-next-line
+         */
         return $this->getModel()->newQuery()
             ->updateOrCreate(compact('group', 'key'), compact('value'));
     }
