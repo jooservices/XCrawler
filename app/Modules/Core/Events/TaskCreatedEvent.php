@@ -15,6 +15,5 @@ class TaskCreatedEvent
      */
     public function __construct()
     {
-        //
     }
 }

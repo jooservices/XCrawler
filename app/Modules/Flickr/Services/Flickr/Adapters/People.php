@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
+use App\Modules\Flickr\Exceptions\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
 use App\Modules\Flickr\Services\Flickr\Entities\PeoplePhotosEntity;
 use App\Modules\Flickr\Services\Flickr\Traits\HasList;
@@ -28,9 +29,13 @@ class People extends BaseAdapter
         );
     }
 
-    public function getInfo(string $nsid)
+    public function getInfo(string $nsid): PeopleInfoEntity
     {
         $response = $this->provider->request('flickr.people.getInfo', ['user_id' => $nsid]);
+
+        if (!$response->isSuccessful() || !isset($response->getData()['person'])) {
+            throw new MissingEntityElement('Can not get person info: ' . $nsid);
+        }
 
         return new PeopleInfoEntity($response->getData()['person']);
     }

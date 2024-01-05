@@ -4,18 +4,19 @@ namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
 use App\Modules\Flickr\Exceptions\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
+use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
-use InvalidArgumentException;
 
 class PeopleTest extends TestCase
 {
     private People $adapter;
+
     public function setUp(): void
     {
         parent::setUp();
 
-        $this->adapter =  app(FlickrService::class)->setIntegration($this->integration)->people;
+        $this->adapter = app(FlickrService::class)->setIntegration($this->integration)->people;
     }
 
     public function testGetPhotosUnknownUser()
@@ -48,5 +49,15 @@ class PeopleTest extends TestCase
         $this->assertEquals(507, $items->getTotal());
         $this->assertFalse($items->isCompleted());
         $this->assertEquals(2, $items->getNextPage());
+    }
+
+    public function testGetPeopleInfo()
+    {
+        $nsid = '16842686@N04';
+
+        $peopleInfo = $this->adapter->getInfo($nsid);
+        $this->assertInstanceOf(PeopleInfoEntity::class, $peopleInfo);
+        $this->assertEquals($nsid, $peopleInfo->nsid);
+        $this->assertEquals('Michigan, USA', $peopleInfo->location);
     }
 }

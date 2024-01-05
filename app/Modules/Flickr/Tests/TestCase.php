@@ -119,6 +119,20 @@ class TestCase extends BaseTestCase
                     )
                 );
         }
+
+        // Get info
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getInfo');
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    $this->getFixtures('flickr_people_getinfo.json')
+                )
+            );
     }
 
     private function mockFlickrFavorites(MockInterface &$mock)
