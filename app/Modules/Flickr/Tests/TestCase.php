@@ -122,7 +122,7 @@ class TestCase extends BaseTestCase
 
         // Get info
         $mock->shouldReceive('request')
-            ->withArgs(function ($method, $url, $options) {
+            ->withArgs(function ($method, $url) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.people.getInfo');
             })
