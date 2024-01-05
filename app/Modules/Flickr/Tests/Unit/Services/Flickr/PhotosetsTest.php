@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
+use App\Modules\Flickr\Exceptions\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Adapters\Photosets;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetEntity;
 use App\Modules\Flickr\Services\FlickrService;
@@ -52,5 +53,11 @@ class PhotosetsTest extends TestCase
         $this->assertInstanceOf(PhotosetEntity::class, $info);
         $this->assertEquals(1, $info->photos);
         $this->assertEquals('Phương Trần', $info->title);
+    }
+
+    public function testGetInfoWithException()
+    {
+        $this->expectException(MissingEntityElement::class);
+        $this->adapter->getInfo(-1);
     }
 }

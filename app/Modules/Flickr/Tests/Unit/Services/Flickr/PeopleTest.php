@@ -60,4 +60,10 @@ class PeopleTest extends TestCase
         $this->assertEquals($nsid, $peopleInfo->nsid);
         $this->assertEquals('Michigan, USA', $peopleInfo->location);
     }
+
+    public function testGetPeopleInfoWithException()
+    {
+        $this->expectException(MissingEntityElement::class);
+        $this->adapter->getInfo('exception');
+    }
 }

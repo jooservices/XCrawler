@@ -32,4 +32,9 @@ class SettingTest extends TestCase
         Setting::setInt('home', 'int', false);
         $this->assertEquals(0, Setting::getInt('home', 'int'));
     }
+
+    public function testHas()
+    {
+        $this->assertFalse(Setting::has('home', $this->faker->title));
+    }
 }

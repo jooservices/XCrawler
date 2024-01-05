@@ -122,9 +122,10 @@ class TestCase extends BaseTestCase
 
         // Get info
         $mock->shouldReceive('request')
-            ->withArgs(function ($method, $url) {
+            ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
-                    && str_contains($url, 'flickr.people.getInfo');
+                    && str_contains($url, 'flickr.people.getInfo')
+                    && $options['form_params']['user_id'] === '16842686@N04';
             })
             ->andReturn(
                 new Response(
@@ -133,6 +134,13 @@ class TestCase extends BaseTestCase
                     $this->getFixtures('flickr_people_getinfo.json')
                 )
             );
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getInfo')
+                    && $options['form_params']['user_id'] === 'exception';
+            })
+            ->andThrow(new Exception('Flickr error'));
     }
 
     private function mockFlickrFavorites(MockInterface &$mock)
@@ -253,5 +261,12 @@ class TestCase extends BaseTestCase
                     $this->getFixtures('flickr_photosets_info.json')
                 )
             );
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getInfo')
+                    && $options['form_params']['photoset_id'] === -1;
+            })
+            ->andThrow(new Exception('Flickr error'));
     }
 }
