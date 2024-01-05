@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Models;
 
+use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Models\TaskInterface;
 use App\Modules\Core\Models\Traits\HasStates;
@@ -15,6 +16,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property int $id
+ * @property array $sizes
+ */
 class FlickrPhoto extends Model implements TaskInterface
 {
     use HasUuid;
@@ -82,5 +87,22 @@ class FlickrPhoto extends Model implements TaskInterface
             'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
             'state_code' => States::STATE_INIT
         ]);
+    }
+
+    public function getSizes(): array
+    {
+        if ($this->sizes) {
+            return $this->sizes;
+        }
+
+        $integration = app(IntegrationRepository::class)
+            ->getNonPrimary(FlickrService::SERVICE_NAME);
+
+        $sizes = app(FlickrService::class)
+            ->setIntegration($integration)
+            ->photos->getSizes($this->id);
+        $this->update(['sizes' => $sizes,]);
+
+        return $sizes;
     }
 }

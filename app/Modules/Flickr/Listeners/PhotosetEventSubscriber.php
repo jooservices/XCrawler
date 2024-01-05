@@ -7,7 +7,7 @@ use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetReadyForDownload;
-use App\Modules\Flickr\Jobs\DownloadPhoto;
+use App\Modules\Flickr\Jobs\DownloadPhotoJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Event;
@@ -49,7 +49,7 @@ class PhotosetEventSubscriber
 
             ]);
 
-            DownloadPhoto::dispatch($task)->onQueue(FlickrService::QUEUE_NAME);
+            DownloadPhotoJob::dispatch($task)->onQueue(FlickrService::QUEUE_NAME);
         });
     }
 
