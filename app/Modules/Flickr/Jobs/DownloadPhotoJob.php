@@ -28,7 +28,7 @@ class DownloadPhotoJob extends BaseJob
         $sizes = $photo->getSizes();
         $size = end($sizes);
 
-        $savedFile = $fileManager->download($size['source']);
+        $fileManager->download($size['source']);
 
         $this->task->update(['state_code' => States::STATE_COMPLETED]);
 
