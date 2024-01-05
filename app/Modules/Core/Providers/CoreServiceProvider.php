@@ -54,9 +54,7 @@ class CoreServiceProvider extends ServiceProvider
     {
         $this->app->register(RouteServiceProvider::class);
         $this->app->bind(FileManager::class, fn () => new FileManager(
-            app(Filesystem::class),
-            app(Filesystem::class),
-            app(Filesystem::class),
+            app(Filesystem::class)
         ));
     }
 }
