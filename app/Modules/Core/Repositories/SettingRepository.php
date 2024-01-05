@@ -11,8 +11,16 @@ class SettingRepository extends BaseRepository
         $this->setModel(app(Setting::class));
     }
 
+    /**
+     * @param string $group
+     * @param string $key
+     * @return Setting|null
+     */
     public function item(string $group, string $key): ?Setting
     {
+        /**
+         * @phpstan-ignore-next-line
+         */
         return $this->getModel()->newQuery()
             ->where('group', $group)
             ->where('key', $key)
