@@ -5,7 +5,7 @@ namespace App\Modules\Flickr\Events;
 use App\Modules\Core\Models\Task;
 use Illuminate\Queue\SerializesModels;
 
-class PhotosetReadyForDownload
+class PhotosetReadyForDownloadEvent
 {
     use SerializesModels;
 
@@ -16,6 +16,5 @@ class PhotosetReadyForDownload
      */
     public function __construct(public Task $task)
     {
-        //
     }
 }

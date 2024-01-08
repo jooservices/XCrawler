@@ -3,13 +3,13 @@
 namespace App\Modules\Flickr\Console\Download;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
-use App\Modules\Flickr\Events\PhotosetReadyForDownload;
+use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
-use Doctrine\DBAL\Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
 
@@ -31,9 +31,12 @@ class DownloadAlbumCommand extends Command
     protected $description = 'Download all photos\'s album.';
 
     /**
-     * Execute the console command.
-     *
+     * @param IntegrationRepository $repository
+     * @param FlickrService $flickrService
      * @return void
+     * @throws \App\Modules\Core\Exceptions\HaveNoIntegration
+     * @throws \App\Modules\Flickr\Exceptions\MissingEntityElement
+     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle(
         IntegrationRepository $repository,
@@ -73,7 +76,10 @@ class DownloadAlbumCommand extends Command
 
         $this->info('Photoset: ' . $photoset->id);
 
-        // This task should be done or completed after all photos are downloaded
+        /**
+         * This task should be done or completed after all photos are downloaded
+         * @var Task $task
+         */
         $task = $photoset->tasks()->create([
             'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET,
             'state_code' => States::STATE_INIT,
@@ -101,6 +107,6 @@ class DownloadAlbumCommand extends Command
             return;
         }
 
-        Event::dispatch(new PhotosetReadyForDownload($task));
+        Event::dispatch(new PhotosetReadyForDownloadEvent($task));
     }
 }

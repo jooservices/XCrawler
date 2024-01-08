@@ -5,7 +5,7 @@ namespace App\Modules\Flickr\Tests\Feature\Commands\Album;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
-use App\Modules\Flickr\Events\PhotosetReadyForDownload;
+use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Models\FlickrPhotoset;
@@ -70,7 +70,7 @@ class DownloadAlbumCommandTest extends TestCase
 
     public function testWithPhotosetPhotosFetched()
     {
-        Event::fake(PhotosetReadyForDownload::class);
+        Event::fake(PhotosetReadyForDownloadEvent::class);
 
         /**
          * Prepare init data
@@ -109,6 +109,6 @@ class DownloadAlbumCommandTest extends TestCase
                 ->where('task', FlickrService::TASK_DOWNLOAD_PHOTOSET)
                 ->exists()
         );
-        Event::assertDispatched(PhotosetReadyForDownload::class);
+        Event::assertDispatched(PhotosetReadyForDownloadEvent::class);
     }
 }

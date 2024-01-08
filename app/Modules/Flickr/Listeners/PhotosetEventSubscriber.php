@@ -6,7 +6,7 @@ use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
-use App\Modules\Flickr\Events\PhotosetReadyForDownload;
+use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Events\Dispatcher;
@@ -29,11 +29,11 @@ class PhotosetEventSubscriber
         ]);
 
         if ($event->task->parentTask && $event->task->parentTask->task === FlickrService::TASK_DOWNLOAD_PHOTOSET) {
-            Event::dispatch(new PhotosetReadyForDownload($event->task->parentTask));
+            Event::dispatch(new PhotosetReadyForDownloadEvent($event->task->parentTask));
         }
     }
 
-    public function onPhotosetReadyForDownload(PhotosetReadyForDownload $event)
+    public function onPhotosetReadyForDownload(PhotosetReadyForDownloadEvent $event)
     {
         $event->task->update([
             'state_code' => States::STATE_IN_PROGRESS
@@ -83,7 +83,7 @@ class PhotosetEventSubscriber
         );
 
         $events->listen(
-            PhotosetReadyForDownload::class,
+            PhotosetReadyForDownloadEvent::class,
             [self::class, 'onPhotosetReadyForDownload']
         );
 
