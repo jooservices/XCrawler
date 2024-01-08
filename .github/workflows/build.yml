@@ -9,6 +9,17 @@ on:
     types: [ opened, synchronize ]
 
 jobs:
+  clean_up:
+    runs-on:
+      - self-hosted
+      - ubuntu
+    steps:
+      name: Clean up build folder
+      run: |
+        ls -la ./
+        rm -rf ./* || true
+        rm -rf ./.??* || true
+        ls -la ./
 
   sonar_cloud:
     name: SonarCloud
