@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Tests;
 
 use App\Modules\Client\Tests\TestCase as BaseTestCase;
+use App\Modules\Flickr\Database\factories\PhotoFactory;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -12,6 +13,8 @@ use Mockery\MockInterface;
 class TestCase extends BaseTestCase
 {
     private const NSID = '94529704@N02';
+    private const PHOTOSET_ID = 72157674594210788;
+
     private const DEFAULT_CONTENT_TYPE = [
         'Content-Type' => 'application/json; charset=utf-8',
     ];
@@ -172,7 +175,7 @@ class TestCase extends BaseTestCase
                 return $method === 'POST'
                     && str_contains($url, 'flickr.photos.getSizes')
                     && isset($options['form_params']['photo_id'])
-                    && $options['form_params']['photo_id'] === 53312842788;
+                    && $options['form_params']['photo_id'] === PhotoFactory::ID_WITH_SIZES;
             })
             ->andReturn(
                 new Response(
@@ -262,7 +265,7 @@ class TestCase extends BaseTestCase
                 return $method === 'POST'
                     && str_contains($url, 'flickr.photosets.getPhotos')
                     && $options['form_params']['per_page'] === 500
-                    && $options['form_params']['photoset_id'] === 72157674594210788
+                    && $options['form_params']['photoset_id'] === self::PHOTOSET_ID
                     && $options['form_params']['user_id'] === self::NSID;
             })
             ->andReturn(
@@ -277,7 +280,7 @@ class TestCase extends BaseTestCase
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.photosets.getInfo')
-                    && $options['form_params']['photoset_id'] === 72157674594210788;
+                    && $options['form_params']['photoset_id'] === self::PHOTOSET_ID;
             })
             ->andReturn(
                 new Response(

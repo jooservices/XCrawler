@@ -10,6 +10,9 @@ class PhotoFactory extends Factory
 {
     protected $model = FlickrPhoto::class;
 
+    public const ID_WITH_SIZES = 51035586588;
+
+
     /**
      * Define the model's default state.
      *
@@ -27,7 +30,26 @@ class PhotoFactory extends Factory
             'secret' => $this->faker->uuid,
             'server' => $this->faker->numberBetween(),
             'title' => $this->faker->sentence,
-            'sizes' => $this->faker->randomElements(),
+            'sizes' => null
         ];
+    }
+
+    public function withSizes(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'id' => self::ID_WITH_SIZES,
+                'sizes' => [
+                    [
+                        'label' => 'Square',
+                        'width' => 75,
+                        'height' => 75,
+                        'source' => 'https://live.staticflickr.com/65535/51035586588_1a6b0e2b9e_s.jpg',
+                        'url' => 'https://www.flickr.com/photos/192911046@N06/51035586588/sizes/sq/',
+                        'media' => 'photo'
+                    ],
+                ]
+            ];
+        });
     }
 }
