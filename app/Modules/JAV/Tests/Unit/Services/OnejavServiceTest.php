@@ -6,7 +6,7 @@ use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
 use App\Modules\JAV\Events\Onejav\ItemsCompletedEvent;
-use App\Modules\JAV\Events\OnejavRetried;
+use App\Modules\JAV\Events\Onejav\RetriedEvent;
 use App\Modules\JAV\Exceptions\OnejavRetryFailed;
 use App\Modules\JAV\Services\OnejavService;
 use App\Modules\JAV\Tests\TestCase;
@@ -146,7 +146,7 @@ class OnejavServiceTest extends TestCase
     public function testGetAllWithException()
     {
         Event::fake([
-            OnejavRetried::class,
+            RetriedEvent::class,
         ]);
 
         $this->instance(
@@ -212,6 +212,6 @@ class OnejavServiceTest extends TestCase
         $this->assertEquals(1, Setting::get(OnejavService::SERVICE_NAME, 'new_current_page'));
         $this->assertEquals(1, Setting::get(OnejavService::SERVICE_NAME, 'new_last_page'));
 
-        Event::assertDispatchedTimes(OnejavRetried::class, 3);
+        Event::assertDispatchedTimes(RetriedEvent::class, 3);
     }
 }

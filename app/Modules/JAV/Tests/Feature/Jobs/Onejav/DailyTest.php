@@ -4,8 +4,8 @@ namespace App\Modules\JAV\Tests\Feature\Jobs\Onejav;
 
 use App\Modules\Client\Services\Factory;
 use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
-use App\Modules\JAV\Events\OnejavItemCreated;
-use App\Modules\JAV\Events\OnejavItemUpdated;
+use App\Modules\JAV\Events\Onejav\ItemCreatedEvent;
+use App\Modules\JAV\Events\Onejav\ItemUpdatedEvent;
 use App\Modules\JAV\Jobs\Onejav\DailyJob;
 use App\Modules\JAV\Models\Onejav;
 use App\Modules\JAV\Tests\TestCase;
@@ -22,8 +22,8 @@ class DailyTest extends TestCase
         Event::fake(
             [
                 DailyCompletedEvent::class,
-                OnejavItemCreated::class,
-                OnejavItemUpdated::class,
+                ItemCreatedEvent::class,
+                ItemUpdatedEvent::class,
             ]
         );
 
@@ -79,11 +79,11 @@ class DailyTest extends TestCase
         Event::assertDispatched(DailyCompletedEvent::class, function ($event) {
             return $event->items->count() === 60;
         });
-        Event::assertDispatched(OnejavItemCreated::class, 59);
+        Event::assertDispatched(ItemCreatedEvent::class, 59);
         /**
          * This item already exists so update only
          */
-        Event::assertDispatched(OnejavItemUpdated::class, function ($event) {
+        Event::assertDispatched(ItemUpdatedEvent::class, function ($event) {
             return $event->model->url === 'https://onejav.com/torrent/stars908';
         });
         $this->assertDatabaseCount('onejav', 60, 'mongodb');

@@ -10,7 +10,7 @@ use App\Modules\JAV\Entities\Onejav\MoviesEntity;
 use App\Modules\JAV\Events\Onejav\AllCompletedEvent;
 use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
 use App\Modules\JAV\Events\Onejav\ItemsCompletedEvent;
-use App\Modules\JAV\Events\OnejavRetried;
+use App\Modules\JAV\Events\Onejav\RetriedEvent;
 use App\Modules\JAV\Exceptions\OnejavRetryFailed;
 use App\Modules\JAV\Repositories\OnejavRepository;
 use Carbon\Carbon;
@@ -127,7 +127,7 @@ class OnejavService extends AbstractCrudService
         Setting::increment(self::SERVICE_NAME, $slug . '_current_page');
         Setting::setInt(self::SERVICE_NAME, $slug . '_last_page', $currentPage + 1);
 
-        Event::dispatch(new OnejavRetried());
+        Event::dispatch(new RetriedEvent());
 
         return new MoviesEntity();
     }

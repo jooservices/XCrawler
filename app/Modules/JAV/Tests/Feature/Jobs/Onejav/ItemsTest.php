@@ -3,7 +3,7 @@
 namespace App\Modules\JAV\Tests\Feature\Jobs\Onejav;
 
 use App\Modules\Client\Services\Factory;
-use App\Modules\JAV\Events\OnejavItemCreated;
+use App\Modules\JAV\Events\Onejav\ItemCreatedEvent;
 use App\Modules\JAV\Jobs\Onejav\ItemsJob;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
@@ -16,7 +16,7 @@ class ItemsTest extends TestCase
 {
     public function testHandle()
     {
-        Event::fake(OnejavItemCreated::class);
+        Event::fake(ItemCreatedEvent::class);
 
         $url = 'https://onejav.com/2023/08/25?page=2';
         $this->instance(
@@ -46,7 +46,7 @@ class ItemsTest extends TestCase
 
         ItemsJob::dispatch($url);
 
-        Event::assertDispatched(OnejavItemCreated::class, 10);
+        Event::assertDispatched(ItemCreatedEvent::class, 10);
         $this->assertDatabaseCount('onejav', 10, 'mongodb');
     }
 }

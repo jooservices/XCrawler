@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Modules\JAV\Events;
+namespace App\Modules\JAV\Events\Onejav;
 
-use App\Modules\JAV\Models\Onejav;
 use Illuminate\Queue\SerializesModels;
 
-class OnejavItemUpdated
+class RetriedEvent
 {
     use SerializesModels;
 
@@ -14,7 +13,7 @@ class OnejavItemUpdated
      *
      * @return void
      */
-    public function __construct(public Onejav $model)
+    public function __construct()
     {
         //
     }

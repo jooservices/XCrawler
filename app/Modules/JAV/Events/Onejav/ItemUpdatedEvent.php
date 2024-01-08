@@ -2,9 +2,10 @@
 
 namespace App\Modules\JAV\Events\Onejav;
 
+use App\Modules\JAV\Models\Onejav;
 use Illuminate\Queue\SerializesModels;
 
-class AllCompletedEvent
+class ItemUpdatedEvent
 {
     use SerializesModels;
 
@@ -13,7 +14,7 @@ class AllCompletedEvent
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(public Onejav $model)
     {
         //
     }
