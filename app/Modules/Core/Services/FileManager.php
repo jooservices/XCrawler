@@ -2,7 +2,7 @@
 
 namespace App\Modules\Core\Services;
 
-use _PHPStan_cb6cd3c76\Nette\Neon\Exception;
+use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
 
 class FileManager
@@ -12,6 +12,9 @@ class FileManager
     ) {
     }
 
+    /**
+     * @throws Exception
+     */
     public function download(string $url): string
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
