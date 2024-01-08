@@ -30,6 +30,13 @@ jobs:
           - 27017:27017
 
     steps:
+      - name: Clean up build folder
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
       - name: Clean up .scannerwork folder
         run: sudo rm -rf .scannerwork
 
