@@ -23,11 +23,13 @@ jobs:
 
   sonar_cloud:
     name: SonarCloud
+    needs: [ clean_up ]
     uses: ./.github/workflows/sonar_cloud.yml
     secrets: inherit
 
   security_check:
     name: Security check
+    needs: [ clean_up ]
     uses: ./.github/workflows/security_check.yml
     secrets: inherit
 
