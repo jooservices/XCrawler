@@ -37,9 +37,6 @@ jobs:
           rm -rf ./.??* || true
           ls -la ./
 
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
-
       - uses: actions/checkout@v4
 
       - name: Setup PHP with pre-release PECL extension
