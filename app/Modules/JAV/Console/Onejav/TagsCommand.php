@@ -41,7 +41,7 @@ class TagsCommand extends Command
          */
         $items = app(CrawlerManager::class)
             ->setProvider(app(TagsProvider::class))
-            ->crawl($url, [], 'GET');
+            ->crawl($url);
 
         /**
          * @phpstan-ignore-next-line
