@@ -15,7 +15,9 @@ class PhotoSizesJobTest extends TestCase
     public function testGetPhotoSizes()
     {
         Event::fake(PhotoSizedEvent::class);
-        $photo = FlickrPhoto::factory()->create();
+        $photo = FlickrPhoto::factory()->create([
+            'id' => 53312842788
+        ]);
 
         PhotosizesJob::dispatch($this->integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
 
