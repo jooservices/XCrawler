@@ -171,7 +171,8 @@ class TestCase extends BaseTestCase
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.photos.getSizes')
-                    && isset($options['form_params']['photo_id']);
+                    && isset($options['form_params']['photo_id'])
+                    && $options['form_params']['photo_id'] !== -1;
             })
             ->andReturn(
                 new Response(
@@ -182,6 +183,14 @@ class TestCase extends BaseTestCase
                     $this->getFixtures('flickr_photo_sizes.json')
                 )
             );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photos.getSizes')
+                    && $options['form_params']['photo_id'] = -1;
+            })
+            ->andThrow(new Exception('Flickr error'));
     }
 
     private function mockFlickrOauth(MockInterface &$mock)
