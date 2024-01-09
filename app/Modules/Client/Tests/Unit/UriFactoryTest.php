@@ -14,6 +14,7 @@ class UriFactoryTest extends TestCase
         $uri = $factory->createFromAbsolute('https://example.com');
 
         $this->assertUri($uri);
+        $this->assertEquals('https://example.com', $uri->getAbsoluteUri());
     }
 
     public function testCreateFromParts()
@@ -22,6 +23,7 @@ class UriFactoryTest extends TestCase
         $uri = $factory->createFromParts('https', '', 'example.com', 443, '/', '');
 
         $this->assertUri($uri);
+        $this->assertEquals('https://example.com/', $uri->getAbsoluteUri());
     }
 
     private function assertUri(Uri $uri)
@@ -34,6 +36,6 @@ class UriFactoryTest extends TestCase
         $this->assertEquals('', $uri->getUserInfo());
         $this->assertEquals('example.com', $uri->getAuthority());
         $this->assertEquals(443, $uri->getPort());
-        $this->assertEquals('https://example.com/', $uri->getAbsoluteUri());
+
     }
 }
