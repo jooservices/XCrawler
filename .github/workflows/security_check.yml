@@ -11,6 +11,9 @@ jobs:
       - ubuntu
 
     steps:
+      - name: Clean up .scannerwork folder
+        run: sudo rm -rf .scannerwork
+
       - name: Clean up build folder
         run: |
           ls -la ./
