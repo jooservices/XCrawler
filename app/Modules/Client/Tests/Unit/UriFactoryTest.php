@@ -36,6 +36,5 @@ class UriFactoryTest extends TestCase
         $this->assertEquals('', $uri->getUserInfo());
         $this->assertEquals('example.com', $uri->getAuthority());
         $this->assertEquals(443, $uri->getPort());
-
     }
 }
