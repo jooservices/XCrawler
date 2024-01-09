@@ -36,7 +36,7 @@ class PhotoFactory extends Factory
 
     public function withSizes(): Factory
     {
-        return $this->state(function (array $attributes) {
+        return $this->state(function () {
             return [
                 'id' => self::ID_WITH_SIZES,
                 'sizes' => [
