@@ -7,6 +7,7 @@ use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Flickr\Exceptions\AdapterNotFound;
+use App\Modules\Flickr\Exceptions\IntegrationNotFoundException;
 use App\Modules\Flickr\Services\Flickr\Adapters\Contacts;
 use App\Modules\Flickr\Services\Flickr\Adapters\Favorites;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
@@ -60,7 +61,7 @@ class FlickrService
                 ->getCompleted(self::SERVICE_NAME)
                 ->first();
             if (!$this->integration) {
-                throw new Exception('Integration not found');
+                throw new IntegrationNotFoundException('Integration not found');
             }
         }
 
