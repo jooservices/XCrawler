@@ -11,9 +11,6 @@ jobs:
       - ubuntu
 
     steps:
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
-
       - name: Checkout
         uses: actions/checkout@v4
 
