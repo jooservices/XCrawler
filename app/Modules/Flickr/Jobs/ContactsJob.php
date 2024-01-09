@@ -32,24 +32,22 @@ class ContactsJob extends BaseJob
     }
 
     /**
-     * Execute the job.
-     *
      * @param FlickrService $flickrService
+     * @param FlickrContactService $contactService
      * @return void
      * @throws GuzzleException
      * @throws InvalidRespondException
      */
-    public function handle(FlickrService $flickrService): void
+    public function handle(FlickrService $flickrService, FlickrContactService $contactService): void
     {
-        $service = app(FlickrContactService::class);
-        $contactsService = $flickrService->setIntegration($this->integration)->contacts;
+        $adapter = $flickrService->setIntegration($this->integration)->contacts;
         /**
          * @var ContactsListEntity $contacts
          */
-        $contacts = $contactsService->getList(['page' => $this->page]);
+        $contacts = $adapter->getList(['page' => $this->page]);
 
-        $contacts->getItems()->each(function ($contact) use ($service) {
-            $service->create($contact);
+        $contacts->getItems()->each(function ($contact) use ($contactService) {
+            $contactService->create($contact);
         });
 
         if ($contacts->isCompleted()) {
