@@ -17,6 +17,6 @@ class CrawlingTagsTest extends TestCase
         ->assertExitCode(0);
 
         $subpages = Setting::get(OnejavService::SERVICE_NAME, 'subpages', []);
-        $this->assertCount(348, $subpages);
+        $this->assertCount(349, $subpages);
     }
 }
