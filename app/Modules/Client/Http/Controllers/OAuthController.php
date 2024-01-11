@@ -25,10 +25,9 @@ class OAuthController extends Controller
         $client->setIncludeGrantedScopes(true);   // incremental auth
 
         $client->fetchAccessTokenWithAuthCode($request->input('code'));
-        $access_token = $client->getAccessToken();
 
         $integration->update([
-            'refresh_token' => $access_token['refresh_token'],
+            'refresh_token' => $client->getRefreshToken(),
             'state_code' => States::STATE_COMPLETED
         ]);
     }
