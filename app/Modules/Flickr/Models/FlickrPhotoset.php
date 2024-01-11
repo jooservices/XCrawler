@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property string $owner
  * @property int $photos
+ * @property string $title
  */
 class FlickrPhotoset extends Model implements TaskInterface
 {

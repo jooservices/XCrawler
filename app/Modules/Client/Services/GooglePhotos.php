@@ -25,6 +25,9 @@ class GooglePhotos
 
     public function __construct()
     {
+        /**
+         * @var Integration $integration
+         */
         $integration = Integration::where('service', self::SERVICE_NAME)
             ->where('state_code', States::STATE_COMPLETED)
             ->first();
