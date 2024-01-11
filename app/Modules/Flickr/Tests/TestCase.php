@@ -69,7 +69,7 @@ class TestCase extends BaseTestCase
                     && str_contains($url, 'flickr.contacts.getList')
                     && $options['form_params']['exception'] === true;
             })
-            ->andThrow(new Exception('Flickr error'));
+            ->andThrow($this->exception());
     }
 
     private function mockFlickrPeople(MockInterface &$mock)
@@ -143,7 +143,7 @@ class TestCase extends BaseTestCase
                     && str_contains($url, 'flickr.people.getInfo')
                     && $options['form_params']['user_id'] === 'exception';
             })
-            ->andThrow(new Exception('Flickr error'));
+            ->andThrow($this->exception());
     }
 
     private function mockFlickrFavorites(MockInterface &$mock)
@@ -193,7 +193,7 @@ class TestCase extends BaseTestCase
                     && str_contains($url, 'flickr.photos.getSizes')
                     && $options['form_params']['photo_id'] === -1;
             })
-            ->andThrow(new Exception('Flickr error'));
+            ->andThrow($this->exception());
 
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
@@ -295,6 +295,11 @@ class TestCase extends BaseTestCase
                     && str_contains($url, 'flickr.photosets.getInfo')
                     && $options['form_params']['photoset_id'] === -1;
             })
-            ->andThrow(new Exception('Flickr error'));
+            ->andThrow($this->exception());
+    }
+
+    private function exception(): Exception
+    {
+        return new Exception('Flickr error');
     }
 }
