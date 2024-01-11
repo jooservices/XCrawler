@@ -19,16 +19,12 @@ class MovieService
 
     public function items(Collection $options): Collection
     {
-        $repository = app(MovieRepository::class);
-
-        return $repository->items($options);
+        return app(MovieRepository::class)->items($options);
     }
 
     public function pagination(Collection $options): LengthAwarePaginator
     {
-        $repository = app(MovieRepository::class);
-
-        return $repository->pagination($options);
+        return app(MovieRepository::class)->pagination($options);
     }
 
     public function genres(): Collection

@@ -2,8 +2,9 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Adapters\Photosets;
+use App\Modules\Flickr\Services\Flickr\Entities\PhotosetEntity;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
 
@@ -15,8 +16,9 @@ class PhotosetsTest extends TestCase
     {
         parent::setUp();
 
-        $this->adapter  = app(FlickrService::class)->setIntegration($this->integration)->photosets;
+        $this->adapter = app(FlickrService::class)->setIntegration($this->integration)->photosets;
     }
+
     public function testGetList()
     {
         $items = $this->adapter->getList([
@@ -42,5 +44,20 @@ class PhotosetsTest extends TestCase
         $this->assertEquals(1, $items->getPages());
         $this->assertEquals(1, $items->getTotal());
         $this->assertTrue($items->isCompleted());
+    }
+
+    public function testGetInfo()
+    {
+        $info = $this->adapter->getInfo(72157674594210788);
+
+        $this->assertInstanceOf(PhotosetEntity::class, $info);
+        $this->assertEquals(1, $info->photos);
+        $this->assertEquals('Phương Trần', $info->title);
+    }
+
+    public function testGetInfoWithException()
+    {
+        $this->expectException(MissingEntityElement::class);
+        $this->adapter->getInfo(-1);
     }
 }

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Modules\JAV\Events;
+namespace App\Modules\JAV\Events\Onejav;
 
 use App\Modules\JAV\Models\Onejav;
 use Illuminate\Queue\SerializesModels;
 
-class OnejavItemCreated
+class ItemCreatedEvent
 {
     use SerializesModels;
 

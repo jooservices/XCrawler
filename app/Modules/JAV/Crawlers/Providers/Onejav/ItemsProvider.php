@@ -4,8 +4,8 @@ namespace App\Modules\JAV\Crawlers\Providers\Onejav;
 
 use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\JAV\Crawlers\AbstractProvider;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
-use App\Modules\JAV\Entities\OnejavEntity;
+use App\Modules\JAV\Entities\Onejav\MovieEntity;
+use App\Modules\JAV\Entities\Onejav\MoviesEntity;
 use App\Modules\JAV\Services\OnejavService;
 use Carbon\Carbon;
 use Symfony\Component\DomCrawler\Crawler;
@@ -14,14 +14,14 @@ class ItemsProvider extends AbstractProvider
 {
     protected function parse(Crawler $crawler): EntityInterface
     {
-        $item = new ItemsEntity();
+        $item = new MoviesEntity();
         $pageNode = $crawler->filter('a.pagination-link')->last();
 
         $item->lastPage = $pageNode->count() === 0 ? 1 : (int)$pageNode->text();
         $item->items = collect()->merge(
             $crawler->filter('.container .columns')
                 ->each(function ($el) {
-                    $item = new OnejavEntity();
+                    $item = new MovieEntity();
                     if ($el->filter('h5.title a')->count()) {
                         $item->url = OnejavService::ONEJAV_URL . trim($el->filter('h5.title a')->attr('href'));
                     }

@@ -3,6 +3,7 @@
 namespace App\Modules\JAV\Jobs\Onejav;
 
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\JAV\Exceptions\OnejavRetryFailed;
 use App\Modules\JAV\Services\OnejavService;
 
 class AllJob extends BaseJob
@@ -17,9 +18,9 @@ class AllJob extends BaseJob
     }
 
     /**
-     * Execute the job.
-     *
+     * @param OnejavService $service
      * @return void
+     * @throws OnejavRetryFailed
      */
     public function handle(OnejavService $service)
     {

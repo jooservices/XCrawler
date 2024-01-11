@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Tests;
 
 use App\Modules\Client\Tests\TestCase as BaseTestCase;
+use App\Modules\Flickr\Database\factories\PhotoFactory;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -12,6 +13,8 @@ use Mockery\MockInterface;
 class TestCase extends BaseTestCase
 {
     private const NSID = '94529704@N02';
+    private const PHOTOSET_ID = 72157674594210788;
+
     private const DEFAULT_CONTENT_TYPE = [
         'Content-Type' => 'application/json; charset=utf-8',
     ];
@@ -66,7 +69,7 @@ class TestCase extends BaseTestCase
                     && str_contains($url, 'flickr.contacts.getList')
                     && $options['form_params']['exception'] === true;
             })
-            ->andThrow(new Exception('Flickr error'));
+            ->andThrow($this->exception());
     }
 
     private function mockFlickrPeople(MockInterface &$mock)
@@ -119,6 +122,28 @@ class TestCase extends BaseTestCase
                     )
                 );
         }
+
+        // Get info
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getInfo')
+                    && $options['form_params']['user_id'] === '16842686@N04';
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    $this->getFixtures('flickr_people_getinfo.json')
+                )
+            );
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getInfo')
+                    && $options['form_params']['user_id'] === 'exception';
+            })
+            ->andThrow($this->exception());
     }
 
     private function mockFlickrFavorites(MockInterface &$mock)
@@ -149,7 +174,8 @@ class TestCase extends BaseTestCase
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.photos.getSizes')
-                    && isset($options['form_params']['photo_id']);
+                    && isset($options['form_params']['photo_id'])
+                    && $options['form_params']['photo_id'] === PhotoFactory::ID_WITH_SIZES;
             })
             ->andReturn(
                 new Response(
@@ -158,6 +184,30 @@ class TestCase extends BaseTestCase
                         'Content-Type' => 'application/json; charset=utf-8',
                     ],
                     $this->getFixtures('flickr_photo_sizes.json')
+                )
+            );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photos.getSizes')
+                    && $options['form_params']['photo_id'] === -1;
+            })
+            ->andThrow($this->exception());
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photos.getSizes')
+                    && $options['form_params']['photo_id'] === -2;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    [
+                        'Content-Type' => 'application/json; charset=utf-8',
+                    ],
+                    $this->getFixtures('flickr_photo_without_sizes.json')
                 )
             );
     }
@@ -215,7 +265,7 @@ class TestCase extends BaseTestCase
                 return $method === 'POST'
                     && str_contains($url, 'flickr.photosets.getPhotos')
                     && $options['form_params']['per_page'] === 500
-                    && $options['form_params']['photoset_id'] === 72157674594210788
+                    && $options['form_params']['photoset_id'] === self::PHOTOSET_ID
                     && $options['form_params']['user_id'] === self::NSID;
             })
             ->andReturn(
@@ -225,5 +275,31 @@ class TestCase extends BaseTestCase
                     $this->getFixtures('flickr_photosets_photos.json')
                 )
             );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getInfo')
+                    && $options['form_params']['photoset_id'] === self::PHOTOSET_ID;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    $this->getFixtures('flickr_photosets_info.json')
+                )
+            );
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getInfo')
+                    && $options['form_params']['photoset_id'] === -1;
+            })
+            ->andThrow($this->exception());
+    }
+
+    private function exception(): Exception
+    {
+        return new Exception('Flickr error');
     }
 }

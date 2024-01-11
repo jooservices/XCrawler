@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Modules\JAV\Events;
+namespace App\Modules\Client\Events;
 
 use Illuminate\Queue\SerializesModels;
 
-class OnejavRetried
+class AfterFlickrRequestedEvent
 {
     use SerializesModels;
 

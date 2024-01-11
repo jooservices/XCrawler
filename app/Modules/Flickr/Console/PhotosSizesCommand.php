@@ -2,9 +2,8 @@
 
 namespace App\Modules\Flickr\Console;
 
-use App\Modules\Client\Models\Integration;
+use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Jobs\PhotosizesJob;
 use App\Modules\Flickr\Repositories\PhotoRepository;
 use App\Modules\Flickr\Services\FlickrService;
@@ -35,13 +34,12 @@ class PhotosSizesCommand extends Command
         $this->info('Fetching photos\' sizes...');
 
         $photoRepository = app(PhotoRepository::class);
+
         /**
          * Only process on non-primary integrations
          */
-        Integration::where('service', FlickrService::SERVICE_NAME)
-            ->where('state_code', States::STATE_COMPLETED)
-            ->where('is_primary', false)
-            ->get()->each(function ($integration) use ($photoRepository) {
+        app(IntegrationRepository::class)->getNonPrimaryItems(FlickrService::SERVICE_NAME)
+            ->each(function ($integration) use ($photoRepository) {
                 $this->output->text('Processing integration: ' . $integration->name);
 
                 $photoRepository->getNoSizesPhotos(Setting::remember('flickr', 'task_photos_sizes_limit', fn() => 10))

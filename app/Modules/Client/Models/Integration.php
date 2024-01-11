@@ -13,6 +13,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $key
  * @property string $token
  * @property string $token_secret
+ * @property string $refresh_token
  * @property string $name
  * @property string $secret
  * @property string $callback
@@ -36,6 +37,7 @@ class Integration extends Model implements CredentialsInterface
         'is_primary',
         'token',
         'token_secret',
+        'refresh_token',
         'state_code',
         'requested_at',
         'requested_times'
@@ -50,6 +52,7 @@ class Integration extends Model implements CredentialsInterface
         'is_primary' => 'string',
         'token' => 'string',
         'token_secret' => 'string',
+        'refresh_token' => 'string',
         'state_code' => 'string',
         'requested_at' => 'datetime',
     ];

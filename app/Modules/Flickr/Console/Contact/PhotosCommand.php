@@ -36,25 +36,26 @@ class PhotosCommand extends Command implements Isolatable
     {
         $this->info('Fetching contact\' photos ...');
 
-        $repository->getCompleted('flickr')->each(function ($integration) use ($taskService) {
-            $this->output->text('Processing integration: ' . $integration->name);
+        $repository->getCompleted(FlickrService::SERVICE_NAME)
+            ->each(function ($integration) use ($taskService) {
+                $this->output->text('Processing integration: ' . $integration->name);
 
-            $tasks = $taskService->tasks(
-                FlickrService::TASK_CONTACT_PHOTOS,
-                Setting::remember(
-                    'flickr',
-                    'task_contact_photos_limit',
-                    fn() => config('flickr.task_limit', 10)
-                )
-            );
-
-            foreach ($tasks as $task) {
-                $this->info(
-                    'Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid
+                $tasks = $taskService->tasks(
+                    FlickrService::TASK_CONTACT_PHOTOS,
+                    Setting::remember(
+                        'flickr',
+                        'task_contact_photos_limit',
+                        fn() => config('flickr.task_limit', 10)
+                    )
                 );
 
-                ContactPhotosJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
-            }
-        });
+                foreach ($tasks as $task) {
+                    $this->info(
+                        'Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->nsid
+                    );
+
+                    ContactPhotosJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
+                }
+            });
     }
 }

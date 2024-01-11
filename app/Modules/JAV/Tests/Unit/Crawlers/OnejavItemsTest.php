@@ -3,8 +3,9 @@
 namespace App\Modules\JAV\Tests\Unit\Crawlers;
 
 use App\Modules\JAV\Crawlers\CrawlerManager;
-use App\Modules\JAV\Crawlers\Providers\Onejav\Entities\ItemsEntity;
 use App\Modules\JAV\Crawlers\Providers\Onejav\ItemsProvider;
+use App\Modules\JAV\Crawlers\Providers\Onejav\TagsProvider;
+use App\Modules\JAV\Entities\Onejav\MoviesEntity;
 use App\Modules\JAV\Tests\TestCase;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -37,7 +38,7 @@ class OnejavItemsTest extends TestCase
             ->setProvider(app(ItemsProvider::class))
             ->crawl($url, [], 'GET');
 
-        $this->assertInstanceOf(ItemsEntity::class, $items);
+        $this->assertInstanceOf(MoviesEntity::class, $items);
         $this->assertCount(10, $items->items);
 
         $items->items->each(function ($item) {

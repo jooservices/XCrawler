@@ -2,10 +2,13 @@
 
 namespace App\Modules\Flickr\Providers;
 
+use App\Modules\Flickr\Console\Album\DownloadPhotosCommand;
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
+use App\Modules\Flickr\Console\Contact\InfoCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Console\ContactsCommand;
+use App\Modules\Flickr\Console\Download\DownloadAlbumCommand;
 use App\Modules\Flickr\Console\MigrateContacts;
 use App\Modules\Flickr\Console\Photoset\PhotosCommand as PhotosetPhotosCommand;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
@@ -67,6 +70,10 @@ class FlickrServiceProvider extends ServiceProvider
             PhotosSizesCommand::class,
             PhotosetsCommand::class,
             PhotosetPhotosCommand::class,
+
+            DownloadAlbumCommand::class,
+
+            InfoCommand::class
         ]);
     }
 

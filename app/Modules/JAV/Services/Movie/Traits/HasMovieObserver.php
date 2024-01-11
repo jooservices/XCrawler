@@ -11,7 +11,7 @@ trait HasMovieObserver
         static::observe(MovieObserver::class);
     }
 
-    public function initializeHasMovie(): void
+    public function initializeHasMovieObserver(): void
     {
         $this->mergeFillable([
             'dvd_id',

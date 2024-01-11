@@ -2,6 +2,8 @@
 
 namespace App\Modules\Core\Providers;
 
+use App\Modules\Core\Services\FileManager;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\ServiceProvider;
 
 class CoreServiceProvider extends ServiceProvider
@@ -51,5 +53,8 @@ class CoreServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->register(RouteServiceProvider::class);
+        $this->app->bind(FileManager::class, fn () => new FileManager(
+            app(Filesystem::class)
+        ));
     }
 }

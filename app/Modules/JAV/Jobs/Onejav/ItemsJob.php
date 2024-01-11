@@ -13,7 +13,7 @@ class ItemsJob extends BaseJob
      *
      * @return void
      */
-    public function __construct(readonly string $url, private array $payload = [])
+    public function __construct(readonly string $url, private readonly array $payload = [])
     {
     }
 

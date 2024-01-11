@@ -38,7 +38,6 @@ class PhotosizesJob extends BaseJob
     {
         $flickrService->setIntegration($this->integration);
         $adapter = $flickrService->photos;
-
         $sizes = $adapter->getSizes($this->photo->id);
 
         if (!$sizes) {

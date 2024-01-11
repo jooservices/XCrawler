@@ -18,5 +18,8 @@
         "psr-4": {
             "App\\Modules\\Client\\": ""
         }
-    }
+    },
+  "require": {
+    "ext-curl": "*"
+  }
 }

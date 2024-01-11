@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
 use App\Modules\Core\Services\States;
+use App\Modules\Flickr\Database\factories\PhotoFactory;
 use App\Modules\Flickr\Events\PhotoSizedEvent;
 use App\Modules\Flickr\Jobs\PhotosizesJob;
 use App\Modules\Flickr\Models\FlickrPhoto;
@@ -15,9 +16,12 @@ class PhotoSizesJobTest extends TestCase
     public function testGetPhotoSizes()
     {
         Event::fake(PhotoSizedEvent::class);
-        $photo = FlickrPhoto::factory()->create();
+        $photo = FlickrPhoto::factory()->create([
+            'id' => PhotoFactory::ID_WITH_SIZES
+        ]);
 
-        PhotosizesJob::dispatch($this->integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
+        PhotosizesJob::dispatch($this->integration, $photo)
+            ->onQueue(FlickrService::QUEUE_NAME);
 
         $this->assertIsArray($photo->refresh()->sizes);
         $this->assertEquals(13, count($photo->sizes));

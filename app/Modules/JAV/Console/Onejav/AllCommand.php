@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 class AllCommand extends Command
 {
-    public const COMMAND = 'onejav:all';
+    public const COMMAND = 'onejav:all {--all}';
 
     /**
      * The name and signature of the console command.
@@ -32,7 +32,11 @@ class AllCommand extends Command
      */
     public function handle(): void
     {
-        $subpages = Setting::remember('onejav', 'subpages', fn() => ['new', 'popular']);
+        $subpages = ['new', 'popular'];
+
+        if ($this->option('all')) {
+            $subpages = Setting::remember('onejav', 'subpages', fn() => ['new', 'popular']);
+        }
 
         foreach ($subpages as $page) {
             $this->output->text("Crawling {$page} pages...");

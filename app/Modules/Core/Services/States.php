@@ -10,4 +10,5 @@ class States
     public const STATE_COMPLETED = 'COMPLETED';
     public const STATE_FAILED = 'FAILED';
     public const STATE_RECURRING = 'RECURRING';
+    public const STATE_DOWNLOADED = 'DOWNLOADED';
 }

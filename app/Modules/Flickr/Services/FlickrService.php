@@ -5,20 +5,15 @@ namespace App\Modules\Flickr\Services;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
-use App\Modules\Flickr\Events\ContactCreatedEvent;
-use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
+use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Flickr\Exceptions\AdapterNotFound;
-use App\Modules\Flickr\Exceptions\ProviderNotFound;
-use App\Modules\Flickr\Jobs\ContactsJob;
-use App\Modules\Flickr\Models\FlickrContact;
-use App\Modules\Flickr\Repositories\ContactRepository;
+use App\Modules\Flickr\Exceptions\IntegrationNotFoundException;
 use App\Modules\Flickr\Services\Flickr\Adapters\Contacts;
 use App\Modules\Flickr\Services\Flickr\Adapters\Favorites;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
 use App\Modules\Flickr\Services\Flickr\Adapters\Photos;
 use App\Modules\Flickr\Services\Flickr\Adapters\Photosets;
 use Exception;
-use Illuminate\Support\Facades\Event;
 
 /**
  * @property Contacts $contacts
@@ -33,11 +28,13 @@ class FlickrService
     public const TASK_CONTACT_PHOTOS = 'contact-photos';
     public const TASK_CONTACT_PHOTOSETS = 'contact-photosets';
     public const TASK_PHOTOSET_PHOTOS = 'photoset-photos';
+    public const TASK_DOWNLOAD_PHOTOSET = 'download-photoset';
+    public const TASK_DOWNLOAD_PHOTOSET_PHOTO = 'download-photoset-photo';
 
     public const CONTACT_TASKS = [
         self::TASK_CONTACT_FAVORITES,
         self::TASK_CONTACT_PHOTOS,
-        self::TASK_CONTACT_PHOTOSETS,
+        self::TASK_CONTACT_PHOTOSETS
     ];
 
     public const SERVICE_NAME = 'flickr';
@@ -50,11 +47,6 @@ class FlickrService
     public function setIntegration(Integration $integration): self
     {
         $this->integration = $integration;
-        $provider = app(Flickr::class);
-        /**
-         * @phpstan-ignore-next-line
-         */
-        $this->provider = app(ProviderFactory::class)->oauth1($provider, $this->integration);
 
         return $this;
     }
@@ -64,9 +56,20 @@ class FlickrService
      */
     public function __get(string $name): mixed
     {
-        if (!isset($this->provider)) {
-            throw new ProviderNotFound('Provider is not loaded');
+        if (!isset($this->integration)) {
+            $this->integration = app(IntegrationRepository::class)
+                ->getCompleted(self::SERVICE_NAME)
+                ->first();
+            if (!$this->integration) {
+                throw new IntegrationNotFoundException('Integration not found');
+            }
         }
+
+        $provider = app(Flickr::class);
+        /**
+         * @phpstan-ignore-next-line
+         */
+        $this->provider = app(ProviderFactory::class)->oauth1($provider, $this->integration);
 
         $className = 'App\\Modules\\Flickr\\Services\\Flickr\\Adapters\\' . ucfirst($name);
         if (!class_exists($className)) {

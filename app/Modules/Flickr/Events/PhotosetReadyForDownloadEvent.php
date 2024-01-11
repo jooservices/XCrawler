@@ -2,10 +2,10 @@
 
 namespace App\Modules\Flickr\Events;
 
-use App\Modules\Flickr\Models\FlickrContact;
+use App\Modules\Core\Models\Task;
 use Illuminate\Queue\SerializesModels;
 
-class BeforeProcessContact
+class PhotosetReadyForDownloadEvent
 {
     use SerializesModels;
 
@@ -14,7 +14,7 @@ class BeforeProcessContact
      *
      * @return void
      */
-    public function __construct(public FlickrContact $contact)
+    public function __construct(public Task $task)
     {
     }
 }

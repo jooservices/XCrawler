@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
 use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Entities\ContactsListEntity;
 use App\Modules\Flickr\Services\Flickr\Traits\HasList;
 use GuzzleHttp\Exception\GuzzleException;
@@ -17,6 +18,7 @@ class Contacts extends BaseAdapter
     /**
      * @throws InvalidRespondException
      * @throws GuzzleException
+     * @throws MissingEntityElement
      */
     public function getList(array $params = []): EntityInterface
     {

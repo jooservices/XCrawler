@@ -9,7 +9,6 @@ on:
     types: [ opened, synchronize ]
 
 jobs:
-
   sonar_cloud:
     name: SonarCloud
     uses: ./.github/workflows/sonar_cloud.yml

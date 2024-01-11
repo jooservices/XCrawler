@@ -10,8 +10,15 @@ jobs:
       - self-hosted
       - ubuntu
     steps:
-      - name: Clean up .scannerwork folder
-        run: sudo rm -rf .scannerwork
+      - name: Clean up build folder
+        run: |
+          ls -la ./
+          rm -rf ./* || true
+          rm -rf ./.??* || true
+          ls -la ./
+
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master

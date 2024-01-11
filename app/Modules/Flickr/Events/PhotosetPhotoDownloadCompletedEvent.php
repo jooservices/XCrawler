@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Modules\JAV\Events;
+namespace App\Modules\Flickr\Events;
 
-use App\Modules\JAV\Models\Onejav;
+use App\Modules\Core\Models\Task;
 use Illuminate\Queue\SerializesModels;
 
-class OnejavItemUpdated
+class PhotosetPhotoDownloadCompletedEvent
 {
     use SerializesModels;
 
@@ -14,8 +14,7 @@ class OnejavItemUpdated
      *
      * @return void
      */
-    public function __construct(public Onejav $model)
+    public function __construct(public Task $task)
     {
-        //
     }
 }

@@ -1,0 +1,64 @@
+{
+    "person": {
+        "id": "16842686@N04",
+        "nsid": "16842686@N04",
+        "ispro": 1,
+        "is_deleted": 0,
+        "iconserver": "65535",
+        "iconfarm": 66,
+        "path_alias": "portraitsandstories-art",
+        "has_stats": 0,
+        "pro_badge": "standard",
+        "expire": "0",
+        "gender": "M",
+        "ignored": 0,
+        "contact": 0,
+        "friend": 0,
+        "family": 0,
+        "revcontact": 0,
+        "revfriend": 0,
+        "revfamily": 0,
+        "username": {
+            "_content": "Portraits and Stories - Art"
+        },
+        "realname": {
+            "_content": "Mike"
+        },
+        "location": {
+            "_content": "Michigan, USA"
+        },
+        "timezone": {
+            "label": "Eastern Time (US & Canada)",
+            "offset": "-05:00",
+            "timezone_id": "Etc\/GMT+5",
+            "timezone": 14
+        },
+        "description": {
+            "_content": ""
+        },
+        "photosurl": {
+            "_content": "https:\/\/www.flickr.com\/photos\/portraitsandstories-art\/"
+        },
+        "profileurl": {
+            "_content": "https:\/\/www.flickr.com\/people\/portraitsandstories-art\/"
+        },
+        "mobileurl": {
+            "_content": "https:\/\/m.flickr.com\/photostream.gne?id=16810547"
+        },
+        "photos": {
+            "firstdatetaken": {
+                "_content": "2003-01-05 04:42:14"
+            },
+            "firstdate": {
+                "_content": "1201201044"
+            },
+            "count": {
+                "_content": 5391
+            }
+        },
+        "has_adfree": 0,
+        "has_free_standard_shipping": 0,
+        "has_free_educational_resources": 0
+    },
+    "stat": "ok"
+}

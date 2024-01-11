@@ -6,10 +6,12 @@ use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
+use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Event;
 
 class ContactPhotosJob extends BaseJob
 {
@@ -47,6 +49,15 @@ class ContactPhotosJob extends BaseJob
             $this->task->updateState(States::STATE_COMPLETED);
             return;
         }
+
+        $this->task->update([
+            'state_code' => States::STATE_RECURRING,
+            'payload' => [
+                'page' => $photos->getNextPage()
+            ]
+        ]);
+
+        Event::dispatch(new RecurredTaskEvent($this->task));
 
         self::dispatch($this->integration, $this->task, $photos->getNextPage());
     }

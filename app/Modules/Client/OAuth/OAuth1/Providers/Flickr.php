@@ -2,8 +2,8 @@
 
 namespace App\Modules\Client\OAuth\OAuth1\Providers;
 
-use App\Modules\Client\Events\AfterFlickrRequest;
-use App\Modules\Client\Events\BeforeFlickrRequest;
+use App\Modules\Client\Events\AfterFlickrRequestedEvent;
+use App\Modules\Client\Events\BeforeFlickrRequestEvent;
 use App\Modules\Client\OAuth\Exceptions\TokenResponseException;
 use App\Modules\Client\OAuth\OAuth1\Token\Token;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface;
@@ -97,7 +97,7 @@ class Flickr extends AbstractProvider
         array $extraHeaders = [],
         string $method = 'POST',
     ): XResponseInterface {
-        Event::dispatch(new BeforeFlickrRequest());
+        Event::dispatch(new BeforeFlickrRequestEvent());
 
         $uri = $this->determineRequestUriFromPath('/', $this->baseApiUri);
         $uri->addToQuery('method', $path);
@@ -138,7 +138,7 @@ class Flickr extends AbstractProvider
             }
         }
 
-        Event::dispatch(new AfterFlickrRequest());
+        Event::dispatch(new AfterFlickrRequestedEvent());
 
         return $response;
     }

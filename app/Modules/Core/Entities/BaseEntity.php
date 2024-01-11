@@ -111,12 +111,7 @@ class BaseEntity implements EntityInterface
         $data = [];
 
         foreach ($this->fields as $field) {
-            if (isset($this->data[$field])) {
-                $data[$field] = $this->data[$field];
-                continue;
-            }
-
-            $data[$field] = null;
+            $data[$field] = $this->get($field);
         }
 
         return $data;

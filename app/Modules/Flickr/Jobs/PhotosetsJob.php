@@ -7,6 +7,7 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
+use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\InvalidRespondException;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\FlickrService;
@@ -76,6 +77,15 @@ class PhotosetsJob extends BaseJob
             $this->task->updateState(States::STATE_COMPLETED);
             return;
         }
+
+        $this->task->update([
+            'state_code' => States::STATE_RECURRING,
+            'payload' => [
+                'page' => $items->getNextPage()
+            ]
+        ]);
+
+        Event::dispatch(new RecurredTaskEvent($this->task));
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);

@@ -14,6 +14,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $nsid
  * @property string $username
  * @property string $realname
+ * @property bool $friend
+ * @property bool $family
+ * @property bool $ignored
+ * @property bool $rev_ignored
+ * @property int $iconserver
+ * @property int $iconfarm
+ * @property string $path_alias
+ * @property bool $has_stats
+ * @property string $gender
+ * @property string $location
+ * @property string $description
+ * @property string $photosurl
+ * @property string $profileurl
+ * @property string $mobileurl
+ * @property FlickrPhoto[] $photos
+ * @property FlickrPhotoset[] $photosets
  */
 class FlickrContact extends Model implements TaskInterface
 {

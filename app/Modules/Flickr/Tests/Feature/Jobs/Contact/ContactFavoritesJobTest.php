@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
+use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
@@ -25,17 +26,22 @@ class ContactFavoritesJobTest extends TestCase
         $this->assertEquals(0, (int)$this->integration->refresh()->requested_times);
         $this->assertEquals(3, $contact->refresh()->tasks->count());
 
-        Event::fake(ContactCreatedEvent::class);
+        Event::fake([
+            ContactCreatedEvent::class,
+            RecurredTaskEvent::class
+        ]);
 
         $task = $contact->refresh()->tasks()->where('task', FlickrService::TASK_CONTACT_FAVORITES)->first();
 
         ContactFavoritesJob::dispatch($this->integration, $task);
 
         Event::assertDispatchedTimes(ContactCreatedEvent::class, 350);
+        Event::assertDispatchedTimes(RecurredTaskEvent::class, 3);
 
         $this->assertDatabaseCount('flickr_photos', 1487);
         $this->assertDatabaseCount('flickr_contacts', 351);
 
-        $this->assertEquals(States::STATE_COMPLETED, $task->refresh()->state_code);
+        $this->assertEquals(4, (int)$task->refresh()->payload['page']);
+        $this->assertEquals(States::STATE_COMPLETED, $task->state_code);
     }
 }

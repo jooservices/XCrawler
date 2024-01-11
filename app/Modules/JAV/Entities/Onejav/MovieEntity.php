@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\JAV\Entities;
+namespace App\Modules\JAV\Entities\Onejav;
 
 use App\Modules\Core\Entities\BaseEntity;
 use Carbon\Carbon;
@@ -17,7 +17,7 @@ use Carbon\Carbon;
  * @property string $torrent
  * @property array $gallery
  */
-class OnejavEntity extends BaseEntity
+class MovieEntity extends BaseEntity
 {
     protected array $fields = [
         'url',
