@@ -2,6 +2,8 @@
 
 namespace App\Modules\Client\Services;
 
+use App\Modules\Client\Exceptions\DownloadFailedException;
+use App\Modules\Client\Exceptions\InvalidUrlException;
 use Exception;
 
 class Downloader
@@ -12,7 +14,7 @@ class Downloader
     public function download(string $url, string $saveTo, string $method = 'GET'): false|int
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new Exception('Invalid URL');
+            throw new InvalidUrlException('Invalid URL');
         }
 
         $ch = curl_init();
@@ -33,7 +35,7 @@ class Downloader
         $respond = curl_exec($ch);
 
         if (curl_errno($ch)) {
-            throw new Exception('Download error: ' . curl_error($ch));
+            throw new DownloadFailedException('Download error: ' . curl_error($ch));
         }
 
         return file_put_contents($saveTo, $respond);

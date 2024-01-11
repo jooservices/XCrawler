@@ -2,6 +2,7 @@
 
 namespace App\Modules\Core\Services;
 
+use App\Modules\Client\Exceptions\DownloadFailedException;
 use App\Modules\Client\Services\Downloader;
 use App\Modules\Core\Events\FileDownloaded;
 use Exception;
@@ -32,7 +33,7 @@ class FileManager
         $return = app(Downloader::class)->download($url, $this->storage->path($saveTo));
 
         if ($return === false) {
-            throw new Exception('Download error');
+            throw new DownloadFailedException('Download error');
         }
 
         Event::dispatch(new FileDownloaded($url, $saveTo));
