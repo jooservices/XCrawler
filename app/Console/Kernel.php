@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
          * JAV
          */
         $schedule->command(DailyCommand::COMMAND)->daily();
-        $schedule->command(AllCommand::COMMAND);
+        $schedule->command('onejav:all');
 
         /**
          * Flickr
