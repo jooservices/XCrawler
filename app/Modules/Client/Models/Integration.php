@@ -13,6 +13,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $key
  * @property string $token
  * @property string $token_secret
+ * @property string $refresh_token
  * @property string $name
  * @property string $secret
  * @property string $callback

@@ -20,7 +20,7 @@ class FileManager
     /**
      * @throws Exception
      */
-    public function download(string $url, ?string $fileName = null): string
+    public function download(string $url, ?string $fileName = null): int
     {
         if (!$this->storage->exists(self::DOWNLOAD_PATH)) {
             $this->storage->makeDirectory(self::DOWNLOAD_PATH);
