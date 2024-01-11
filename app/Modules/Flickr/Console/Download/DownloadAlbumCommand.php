@@ -9,6 +9,7 @@ use App\Modules\Core\Exceptions\HaveNoIntegration;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
+use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Models\GooglePhotoAlbum;
@@ -52,9 +53,9 @@ class DownloadAlbumCommand extends Command
 
         /**
          * Create contact if needed for relationship with photoset
-         * @TODO Register task to fetch detail information
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => $photosetInfo->owner]);
+        PeopleInfoJob::dispatch($contact->nsid)->onQueue(FlickrService::QUEUE_NAME);
 
         $this->info('Contact: ' . $contact->nsid);
 
