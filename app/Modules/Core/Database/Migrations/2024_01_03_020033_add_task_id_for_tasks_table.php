@@ -14,10 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->foreignId('task_id')
-                ->nullable()
-                ->after('id')
-                ->constrained('tasks')->onDelete('cascade');
+            $table->id('task_id');
+            $table->foreign('task_id')
+                ->references('id')
+                ->on('tasks')
+                ->onDelete('cascade');
         });
     }
 };
