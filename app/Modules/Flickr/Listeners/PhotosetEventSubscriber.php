@@ -77,7 +77,7 @@ class PhotosetEventSubscriber
 
         if ($totalPhotos === $downloadedPhotos) {
             $parentTask->update([
-                'state_code' => States::STATE_DOWNLOADED
+                'state_code' => States::STATE_COMPLETED
             ]);
         }
     }
