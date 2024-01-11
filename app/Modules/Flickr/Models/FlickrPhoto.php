@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Models;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Models\TaskInterface;
 use App\Modules\Core\Models\Traits\HasStates;
@@ -11,6 +12,7 @@ use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
 use App\Modules\Flickr\Services\FlickrService;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -104,5 +106,39 @@ class FlickrPhoto extends Model implements TaskInterface
         $this->update(['sizes' => $sizes,]);
 
         return $sizes;
+    }
+
+    public function getSize()
+    {
+        return $this->sizes[count($this->sizes) - 1];
+    }
+
+    public function getOriginalSizeUrl()
+    {
+        return $this->getSize()['source'];
+    }
+
+    public function getOriginalSizeFile(): string
+    {
+        return explode(
+            '?',
+            pathinfo(
+                $this->getOriginalSizeUrl(),
+                PATHINFO_BASENAME
+            )
+        )[0];
+    }
+
+    public function uploadToGooglePhotos(string $googleAlbumId)
+    {
+        $storage = app(Filesystem::class);
+        $filePath = $storage->path($this->getOriginalSizeFile());
+
+        $googlePhotoService = app(GooglePhotos::class);
+        $googlePhotoService->createPhoto(
+            $filePath,
+            $this->getOriginalSizeFile(),
+            $googleAlbumId
+        );
     }
 }

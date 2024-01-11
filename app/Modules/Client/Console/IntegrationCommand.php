@@ -6,7 +6,10 @@ use App\Modules\Client\OAuth\OAuth1\IntegrationService;
 use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
 use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Client\Services\GooglePhotos;
+use App\Modules\Flickr\Services\FlickrService;
 use Exception;
+use Google\Client;
 use Illuminate\Console\Command;
 
 class IntegrationCommand extends Command
@@ -54,37 +57,49 @@ class IntegrationCommand extends Command
         $id = $this->output->ask('Choose integration: ', $integrations->first()->id);
         $integration = $integrations->where('id', $id)->first();
 
-        $provider = app(ProviderFactory::class)->oauth1(
-            app(Flickr::class),
-            $integration
-        );
+        if ($service === FlickrService::SERVICE_NAME) {
+            $provider = app(ProviderFactory::class)->oauth1(
+                app(Flickr::class),
+                $integration
+            );
 
-        $integrateService = app(
-            IntegrationService::class,
-            [
-                'provider' => $provider,
-                'integration' => $integration
-            ]
-        );
-
-        $this->output->title('Integrate with ' . ucfirst($service) . ' with ' . $integration->name);
-
-        $this->output->text($integrateService->getAuthorizationUri());
-
-        $accessToken = $integrateService->retrieveAccessToken($this->output->ask('Enter code: '));
-
-        $this->output->table(
-            ['Service', 'Name', 'ID', 'Token', 'Token Secret'],
-            [
+            $integrateService = app(
+                IntegrationService::class,
                 [
-                    ucfirst($service),
-                    $integration->name,
-                    $integration->id,
-                    $accessToken->getAccessToken(),
-                    $accessToken->getAccessTokenSecret()
-                ],
-            ]
-        );
+                    'provider' => $provider,
+                    'integration' => $integration
+                ]
+            );
+
+            $this->output->title('Integrate with ' . ucfirst($service) . ' with ' . $integration->name);
+
+            $this->output->text($integrateService->getAuthorizationUri());
+
+            $accessToken = $integrateService->retrieveAccessToken($this->output->ask('Enter code: '));
+
+            $this->output->table(
+                ['Service', 'Name', 'ID', 'Token', 'Token Secret'],
+                [
+                    [
+                        ucfirst($service),
+                        $integration->name,
+                        $integration->id,
+                        $accessToken->getAccessToken(),
+                        $accessToken->getAccessTokenSecret()
+                    ],
+                ]
+            );
+        } elseif ($service === GooglePhotos::SERVICE_NAME) {
+            $client = new Client();
+            $client->setClientId($integration->key);
+            $client->setClientSecret($integration->secret);
+            $client->addScope(GooglePhotos::GOOGLE_PHOTOS_SCOPES);
+            $client->setRedirectUri(route('client.oauth.google'));
+            $client->setAccessType('offline');        // offline access
+            $client->setIncludeGrantedScopes(true);   // incremental auth
+            $auth_url = $client->createAuthUrl();
+            $this->output->info($auth_url);
+        }
 
         return 0;
     }

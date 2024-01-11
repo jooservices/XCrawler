@@ -33,11 +33,13 @@ class PhotosetEventSubscriber
         }
     }
 
+    /**
+     * @param PhotosetReadyForDownloadEvent $event
+     * @return void
+     */
     public function onPhotosetReadyForDownload(PhotosetReadyForDownloadEvent $event)
     {
-        $event->task->update([
-            'state_code' => States::STATE_IN_PROGRESS
-        ]);
+        $event->task->update(['state_code' => States::STATE_IN_PROGRESS]);
 
         $photoset = $event->task->model;
 
@@ -55,17 +57,27 @@ class PhotosetEventSubscriber
 
     public function onPhotosetPhotoDownloadCompletedEvent(PhotosetPhotoDownloadCompletedEvent $event)
     {
+        $event->task->update([
+            'state_code' => States::STATE_DOWNLOADED
+        ]);
+
         $parentTask = $event->task->parentTask;
         $totalPhotos = $parentTask->payload['photos'];
         $downloadedPhotos = $parentTask
             ->subTasks()
             ->where('task', FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO)
-            ->where('state_code', States::STATE_COMPLETED)
+            ->where('state_code', States::STATE_DOWNLOADED)
             ->count();
+
+        /**
+         * @TODO Move to another job
+         */
+        $photo = $event->task->model;
+        $photo->uploadToGooglePhotos($parentTask->model->googlePhotoAlbum->album_id);
 
         if ($totalPhotos === $downloadedPhotos) {
             $parentTask->update([
-                'state_code' => States::STATE_COMPLETED
+                'state_code' => States::STATE_DOWNLOADED
             ]);
         }
     }

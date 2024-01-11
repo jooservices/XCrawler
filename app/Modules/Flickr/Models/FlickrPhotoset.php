@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string $owner
@@ -69,5 +70,10 @@ class FlickrPhotoset extends Model implements TaskInterface
     public function contact(): BelongsTo
     {
         return $this->belongsTo(FlickrContact::class, 'owner', 'nsid');
+    }
+
+    public function googlePhotoAlbum(): HasOne
+    {
+        return $this->hasOne(GooglePhotoAlbum::class, 'flickr_photoset_id', 'id');
     }
 }

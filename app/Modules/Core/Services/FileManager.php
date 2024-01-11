@@ -2,11 +2,16 @@
 
 namespace App\Modules\Core\Services;
 
+use App\Modules\Client\Services\Downloader;
+use App\Modules\Core\Events\FileDownloaded;
 use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 
 class FileManager
 {
+    public const DOWNLOAD_PATH = 'downloads';
+
     public function __construct(
         private Filesystem $storage,
     ) {
@@ -15,23 +20,23 @@ class FileManager
     /**
      * @throws Exception
      */
-    public function download(string $url): string
+    public function download(string $url, ?string $fileName = null): string
     {
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new Exception('Invalid URL');
+        if (!$this->storage->exists(self::DOWNLOAD_PATH)) {
+            $this->storage->makeDirectory(self::DOWNLOAD_PATH);
         }
 
-        $basenameWithoutParameters = explode(
-            '?',
-            pathinfo(
-                $url,
-                PATHINFO_BASENAME
-            )
-        )[0];
+        $fileName = $fileName ?? explode('?', pathinfo($url, PATHINFO_BASENAME))[0];
+        $saveTo = self::DOWNLOAD_PATH . '/' . $fileName;
 
-        $content = file_get_contents($url);
-        $this->storage->put($basenameWithoutParameters, $content);
+        $return = app(Downloader::class)->download($url, $this->storage->path($saveTo));
 
-        return $basenameWithoutParameters;
+        if ($return === false) {
+            throw new Exception('Download error');
+        }
+
+        Event::dispatch(new FileDownloaded($url, $saveTo));
+
+        return $return;
     }
 }

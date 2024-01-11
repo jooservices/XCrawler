@@ -2,13 +2,17 @@
 
 namespace App\Modules\Flickr\Console\Download;
 
+use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
-use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Models\FlickrPhotoset;
+use App\Modules\Flickr\Models\GooglePhotoAlbum;
+use App\Modules\Flickr\Services\Flickr\Entities\PhotosetEntity;
+use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
@@ -39,20 +43,12 @@ class DownloadAlbumCommand extends Command
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle(
-        IntegrationRepository $repository,
-        FlickrService $flickrService
+        IntegrationRepository $repository
     ): void {
         $integration = $repository->getNonPrimary(FlickrService::SERVICE_NAME);
-
         $this->info('Integration: ' . $integration->name);
 
-        $adapter = $flickrService->setIntegration($integration)->photosets;
-        $photosetInfo = $adapter->getInfo((int) $this->option('photoset_id'));
-
-        $this->info('Photoset info: ' . $photosetInfo->title . ' [' . $photosetInfo->id . ']');
-
-        if (!$photosetInfo) {
-            $this->warn('Can not get photoset ID: ' . $this->option('photoset_id'));
+        if (!$photosetInfo = $this->fetchPhotosetInfo($integration)) {
             return;
         }
 
@@ -60,9 +56,7 @@ class DownloadAlbumCommand extends Command
          * Create contact if needed for relationship with photoset
          * @TODO Register task to fetch detail information
          */
-        $contact = FlickrContact::updateOrCreate([
-            'nsid' => $photosetInfo->owner
-        ], []);
+        $contact = app(FlickrContactService::class)->create(['nsid' => $photosetInfo->owner]);
 
         $this->info('Contact: ' . $contact->nsid);
 
@@ -74,7 +68,13 @@ class DownloadAlbumCommand extends Command
             'owner' => $contact->nsid,
         ], $photosetInfo->toArray());
 
+        $googlePhotoAlbum = $photoset->googlePhotoAlbum;
+        if (!$googlePhotoAlbum) {
+            $googlePhotoAlbum = $this->createGooglePhotoAlbum($photoset);
+        }
+
         $this->info('Photoset: ' . $photoset->id);
+        $this->info('Google Album: ' . $googlePhotoAlbum->album_id);
 
         /**
          * This task should be done or completed after all photos are downloaded
@@ -108,5 +108,33 @@ class DownloadAlbumCommand extends Command
         }
 
         Event::dispatch(new PhotosetReadyForDownloadEvent($task));
+    }
+
+    private function fetchPhotosetInfo(Integration $integration): ?PhotosetEntity
+    {
+        $adapter = app(FlickrService::class)->setIntegration($integration)->photosets;
+        $photosetEntity = $adapter->getInfo((int)$this->option('photoset_id'));
+
+        if (!$photosetEntity) {
+            $this->warn('Can not get photoset ID: ' . $this->option('photoset_id'));
+            return null;
+        }
+
+        $this->info('Photoset info: ' . $photosetEntity->title . ' [' . $photosetEntity->id . ']');
+
+        return $photosetEntity;
+    }
+
+    private function createGooglePhotoAlbum(FlickrPhotoset $photoset): GooglePhotoAlbum
+    {
+        $googlePhotoService = app(GooglePhotos::class);
+        $googleAlbumId = $googlePhotoService->createAlbum($photoset->title);
+
+        $this->info('Created Google Album: ' . $googleAlbumId);
+
+        return $photoset->googlePhotoAlbum()->create([
+            'album_id' => $googleAlbumId,
+            'title' => $photoset->title,
+        ]);
     }
 }

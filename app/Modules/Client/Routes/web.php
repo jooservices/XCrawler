@@ -11,6 +11,15 @@
 |
 */
 
-Route::prefix('client')->group(function () {
-    Route::get('/', 'ClientController@index');
-});
+use App\Modules\Client\Http\Controllers\OAuthController;
+
+\Illuminate\Support\Facades\Route::prefix('client')
+    ->name('client.')
+    ->group(function () {
+        Route::prefix('oauth')
+        ->name('oauth.')
+        ->group(function () {
+            \Illuminate\Support\Facades\Route::get('/google/callback', [OAuthController::class,'google'])
+            ->name('google');
+        });
+    });

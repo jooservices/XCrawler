@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Modules\Flickr\Events;
+namespace App\Modules\Core\Events;
 
-use App\Modules\Core\Models\Task;
 use Illuminate\Queue\SerializesModels;
 
-class PhotosetPhotoDownloadCompletedEvent
+class FileDownloaded
 {
     use SerializesModels;
 
@@ -14,7 +13,8 @@ class PhotosetPhotoDownloadCompletedEvent
      *
      * @return void
      */
-    public function __construct(public Task $task)
+    public function __construct(public string $url, public string $saveTo)
     {
+        //
     }
 }

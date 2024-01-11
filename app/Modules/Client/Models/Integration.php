@@ -36,6 +36,7 @@ class Integration extends Model implements CredentialsInterface
         'is_primary',
         'token',
         'token_secret',
+        'refresh_token',
         'state_code',
         'requested_at',
         'requested_times'
@@ -50,6 +51,7 @@ class Integration extends Model implements CredentialsInterface
         'is_primary' => 'string',
         'token' => 'string',
         'token_secret' => 'string',
+        'refresh_token' => 'string',
         'state_code' => 'string',
         'requested_at' => 'datetime',
     ];

@@ -17,21 +17,26 @@ class DownloadPhotoJob extends BaseJob
 
     public $deleteWhenMissingModels = true;
 
+    /**
+     * @description dowload-photoset-photo task
+     * @param Task $task
+     */
     public function __construct(public Task $task)
     {
     }
 
     public function handle(FileManager $fileManager)
     {
-        Storage::fake('local');
         $photo = $this->task->model;
-        $sizes = $photo->getSizes();
-        $size = end($sizes);
+        $fileName = $fileManager->download($photo->getOriginalSizeUrl());
 
-        $fileManager->download($size['source']);
-
-        $this->task->update(['state_code' => States::STATE_COMPLETED]);
+        $this->task->update([
+            'payload' => $fileName,
+        ]);
 
         Event::dispatch(new PhotosetPhotoDownloadCompletedEvent($this->task));
+        /**
+         * @TODO Instance create job for upload to cloud
+         */
     }
 }
