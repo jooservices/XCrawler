@@ -7,6 +7,7 @@ use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
+use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Models\FlickrPhotoset;
@@ -39,6 +40,8 @@ class DownloadAlbumCommandTest extends TestCase
                     ->andReturn('test');
             })
         );
+
+        Queue::fake(PeopleInfoJob::class);
     }
 
     public function testNoPhotosetPhotosFetched()
