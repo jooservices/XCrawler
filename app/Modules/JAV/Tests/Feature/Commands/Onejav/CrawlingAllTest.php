@@ -14,7 +14,7 @@ class CrawlingAllTest extends TestCase
     {
         Queue::fake(AllJob::class);
 
-        $this->artisan(AllCommand::COMMAND)
+        $this->artisan('onejav:all')
             ->assertExitCode(0);
 
         Queue::assertPushedOn(OnejavService::QUEUE_NAME, AllJob::class);
