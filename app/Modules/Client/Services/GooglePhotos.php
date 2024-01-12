@@ -3,7 +3,6 @@
 namespace App\Modules\Client\Services;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
-use App\Modules\Core\Exceptions\NoIntegrateException;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\ValidationException;
 use Google\Auth\Credentials\UserRefreshCredentials;
@@ -26,7 +25,7 @@ class GooglePhotos
 
     /**
      * @param IntegrationRepository $repository
-     * @throws NoIntegrateException
+     * @throws \App\Modules\Core\Exceptions\NoIntegrateException
      */
     public function __construct(private IntegrationRepository $repository)
     {
