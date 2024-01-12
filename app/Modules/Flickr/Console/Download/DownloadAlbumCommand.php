@@ -9,7 +9,7 @@ use App\Modules\Core\Exceptions\HaveNoIntegration;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
-use App\Modules\Flickr\Exceptions\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrPhotoset;

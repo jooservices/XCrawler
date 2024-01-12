@@ -32,6 +32,9 @@ class IntegrationRepository
             ->first();
     }
 
+    /**
+     * @throws HaveNoIntegration
+     */
     public function getNonPrimary(string $service, string $stateCode = States::STATE_COMPLETED): Integration
     {
         $integration = Integration::where('service', $service)

@@ -7,7 +7,7 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;

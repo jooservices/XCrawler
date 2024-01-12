@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Flickr\Exceptions;
+namespace App\Modules\Flickr\Exceptions\FlickrRespondedException;
 
 use Exception;
 

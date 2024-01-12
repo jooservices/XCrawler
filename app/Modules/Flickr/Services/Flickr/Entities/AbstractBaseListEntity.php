@@ -3,7 +3,7 @@
 namespace App\Modules\Flickr\Services\Flickr\Entities;
 
 use App\Modules\Core\Entities\BaseEntity;
-use App\Modules\Flickr\Exceptions\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use Illuminate\Support\Collection;
 
 abstract class AbstractBaseListEntity extends BaseEntity

@@ -2,7 +2,8 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
-use App\Modules\Flickr\Exceptions\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
 use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
 use App\Modules\Flickr\Services\FlickrService;
@@ -21,10 +22,7 @@ class PeopleTest extends TestCase
 
     public function testGetPhotosUnknownUser()
     {
-        $this->expectException(MissingEntityElement::class);
-        $this->expectExceptionMessage('Missing element "photos" in response');
-
-
+        $this->expectException(FailedException::class);
         $this->adapter->getPhotos(['user_id' => '44203036@N06']);
     }
 

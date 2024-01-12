@@ -2,7 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
-use App\Modules\Flickr\Exceptions\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Adapters\Photosets;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetEntity;
 use App\Modules\Flickr\Services\FlickrService;
