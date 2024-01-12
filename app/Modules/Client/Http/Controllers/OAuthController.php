@@ -23,11 +23,12 @@ class OAuthController extends Controller
         $client->setRedirectUri(route('client.oauth.google'));
         $client->setAccessType('offline');        // offline access
         $client->setIncludeGrantedScopes(true);   // incremental auth
-
         $client->fetchAccessTokenWithAuthCode($request->input('code'));
+        $access_token = $client->getAccessToken();
+        $client->setAccessToken($access_token);
 
         $integration->update([
-            'refresh_token' => $client->getRefreshToken(),
+            'refresh_token' => $access_token['refresh_token'],
             'state_code' => States::STATE_COMPLETED
         ]);
     }
