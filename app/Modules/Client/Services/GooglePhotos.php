@@ -2,16 +2,14 @@
 
 namespace App\Modules\Client\Services;
 
-use App\Modules\Client\Exceptions\NoIntegrateException;
-use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Repositories\IntegrationRepository;
-use App\Modules\Core\Exceptions\HaveNoIntegration;
-use App\Modules\Core\Services\States;
+use App\Modules\Core\Exceptions\NoIntegrateException;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\ValidationException;
 use Google\Auth\Credentials\UserRefreshCredentials;
 use Google\Photos\Library\V1\PhotosLibraryClient;
 use Google\Photos\Library\V1\PhotosLibraryResourceFactory;
+use GuzzleHttp\Exception\GuzzleException;
 
 class GooglePhotos
 {
@@ -27,14 +25,11 @@ class GooglePhotos
     private UserRefreshCredentials $authCredentials;
 
     /**
+     * @param IntegrationRepository $repository
      * @throws NoIntegrateException
-     * @throws HaveNoIntegration
      */
     public function __construct(private IntegrationRepository $repository)
     {
-        /**
-         * @var Integration $integration
-         */
         $integration =  $this->repository->getPrimary(self::SERVICE_NAME);
 
         $this->authCredentials = new UserRefreshCredentials(
@@ -62,6 +57,11 @@ class GooglePhotos
         return $createdAlbum->getId();
     }
 
+    /**
+     * @throws ApiException
+     * @throws ValidationException
+     * @throws GuzzleException
+     */
     public function createPhoto(string $filePath, string $fileName, string $albumId): void
     {
         $photosLibraryClient = new PhotosLibraryClient(['credentials' => $this->authCredentials]);

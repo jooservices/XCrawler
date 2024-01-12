@@ -5,7 +5,7 @@ namespace App\Modules\Flickr\Console\Download;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Client\Services\GooglePhotos;
-use App\Modules\Core\Exceptions\HaveNoIntegration;
+use App\Modules\Core\Exceptions\NoIntegrateException;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
@@ -43,7 +43,7 @@ class DownloadAlbumCommand extends Command
     /**
      * @param IntegrationRepository $repository
      * @return void
-     * @throws HaveNoIntegration
+     * @throws NoIntegrateException
      */
     public function handle(
         IntegrationRepository $repository

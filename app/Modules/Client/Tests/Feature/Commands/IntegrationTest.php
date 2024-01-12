@@ -4,6 +4,7 @@ namespace App\Modules\Client\Tests\Feature\Commands;
 
 use App\Modules\Client\Console\Integration\AddCommand;
 use App\Modules\Client\Models\Integration;
+use App\Modules\Core\Exceptions\NoIntegrateException;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
@@ -31,6 +32,7 @@ class IntegrationTest extends TestCase
     public function testNoIntegration()
     {
         Integration::truncate();
+        $this->expectException(NoIntegrateException::class);
         $this->artisan('client:integration')
             ->expectsQuestion('Enter service: ', FlickrService::SERVICE_NAME)
             ->assertExitCode(0);

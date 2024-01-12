@@ -4,6 +4,6 @@ namespace App\Modules\Core\Exceptions;
 
 use Exception;
 
-class HaveNoIntegration extends Exception
+class NoIntegrateException extends Exception
 {
 }
