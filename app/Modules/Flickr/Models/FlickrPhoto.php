@@ -9,6 +9,7 @@ use App\Modules\Core\Models\TaskInterface;
 use App\Modules\Core\Models\Traits\HasStates;
 use App\Modules\Core\Models\Traits\HasTasks;
 use App\Modules\Core\Models\Traits\HasUuid;
+use App\Modules\Core\Services\FileManager;
 use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
 use App\Modules\Flickr\Services\FlickrService;
@@ -110,7 +111,8 @@ class FlickrPhoto extends Model implements TaskInterface
 
     public function getSize()
     {
-        return $this->sizes[count($this->sizes) - 1];
+        $sizes = $this->getSizes();
+        return $sizes[count($sizes) - 1];
     }
 
     public function getOriginalSizeUrl()
@@ -132,7 +134,7 @@ class FlickrPhoto extends Model implements TaskInterface
     public function uploadToGooglePhotos(string $googleAlbumId)
     {
         $storage = app(Filesystem::class);
-        $filePath = $storage->path($this->getOriginalSizeFile());
+        $filePath = $storage->path(FileManager::DOWNLOAD_PATH . '/' . $this->getOriginalSizeFile());
 
         $googlePhotoService = app(GooglePhotos::class);
         $googlePhotoService->createPhoto(
