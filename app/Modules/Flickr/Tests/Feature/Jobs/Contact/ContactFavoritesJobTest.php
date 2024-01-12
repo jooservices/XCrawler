@@ -44,4 +44,19 @@ class ContactFavoritesJobTest extends TestCase
         $this->assertEquals(4, (int)$task->refresh()->payload['page']);
         $this->assertEquals(States::STATE_COMPLETED, $task->state_code);
     }
+
+    public function testGetPeopleFavoritesWithUserNotFound()
+    {
+        $this->assertDatabaseCount('flickr_photos', 0);
+        $this->assertDatabaseCount('flickr_contacts', 0);
+
+        $contact = app(FlickrContactService::class)->create(['nsid' => '64994773@N03']);
+        $this->assertEquals(3, $contact->refresh()->tasks->count());
+
+        $task = $contact->refresh()->tasks()->where('task', FlickrService::TASK_CONTACT_FAVORITES)->first();
+        ContactFavoritesJob::dispatch($this->integration, $task);
+
+        // Tasks deleted
+        $this->assertEquals(0, $contact->refresh()->tasks->count());
+    }
 }

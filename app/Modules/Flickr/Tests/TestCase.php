@@ -166,6 +166,26 @@ class TestCase extends BaseTestCase
                     )
                 );
         }
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) use ($index) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.favorites.getList')
+                    && $options['form_params']['per_page'] === 500
+                    && $options['form_params']['page'] === 1
+                    && $options['form_params']['user_id'] === '64994773@N03'; // User not found
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    '{
+    "stat": "fail",
+    "code": 1,
+    "message": "User not found"
+}'
+                )
+            );
     }
 
     private function mockFlickrPhotoSizes(MockInterface &$mock)

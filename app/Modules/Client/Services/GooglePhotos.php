@@ -36,7 +36,7 @@ class GooglePhotos
             ->where('state_code', States::STATE_COMPLETED)
             ->first();
 
-        if (!$integration) {
+        if ($integration === null) {
             throw new NoIntegrateException('Integration not found');
         }
 
