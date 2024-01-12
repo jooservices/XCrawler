@@ -47,8 +47,7 @@ class DownloadAlbumCommand extends Command
      */
     public function handle(
         IntegrationRepository $repository
-    ): void
-    {
+    ): void {
         $this->info('Getting integration');
 
         if (!$integration = $repository->getNonPrimary(FlickrService::SERVICE_NAME)) {
