@@ -50,9 +50,7 @@ class DownloadAlbumCommand extends Command
     ): void {
         $this->info('Getting integration');
 
-        if (!$integration = $repository->getNonPrimary(FlickrService::SERVICE_NAME)) {
-            throw new HaveNoIntegration(FlickrService::SERVICE_NAME);
-        }
+        $integration = $repository->getNonPrimary(FlickrService::SERVICE_NAME);
 
         $this->line('Integration: <info>' . $integration->id . '</info>');
 
