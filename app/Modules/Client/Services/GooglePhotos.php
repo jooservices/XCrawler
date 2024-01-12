@@ -4,6 +4,8 @@ namespace App\Modules\Client\Services;
 
 use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Models\Integration;
+use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Core\Exceptions\HaveNoIntegration;
 use App\Modules\Core\Services\States;
 use Google\ApiCore\ApiException;
 use Google\ApiCore\ValidationException;
@@ -26,19 +28,14 @@ class GooglePhotos
 
     /**
      * @throws NoIntegrateException
+     * @throws HaveNoIntegration
      */
-    public function __construct()
+    public function __construct(private IntegrationRepository $repository)
     {
         /**
          * @var Integration $integration
          */
-        $integration = Integration::where('service', self::SERVICE_NAME)
-            ->where('state_code', States::STATE_COMPLETED)
-            ->first();
-
-        if ($integration === null) {
-            throw new NoIntegrateException('Integration not found');
-        }
+        $integration =  $this->repository->getPrimary(self::SERVICE_NAME);
 
         $this->authCredentials = new UserRefreshCredentials(
             self::GOOGLE_PHOTOS_SCOPES,

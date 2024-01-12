@@ -24,7 +24,7 @@ class IntegrationRepository
             ->where('state_code', States::STATE_INIT)->get();
     }
 
-    public function getPrimary(string $service, string $stateCode = States::STATE_COMPLETED): Integration
+    public function getPrimary(string $service, string $stateCode = States::STATE_COMPLETED): ?Integration
     {
         return Integration::where('service', $service)
             ->where('is_primary', true)
