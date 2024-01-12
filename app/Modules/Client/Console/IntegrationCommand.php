@@ -36,10 +36,6 @@ class IntegrationCommand extends Command
         $service = $this->output->ask('Enter service: ');
 
         $integrations = $repository->getInit($service);
-        if ($integrations->isEmpty()) {
-            $this->output->error('No integrations found for ' . $service);
-            return 0;
-        }
 
         $integrations->each(function ($integration) {
             $this->output->table(
