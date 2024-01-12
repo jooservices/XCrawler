@@ -95,8 +95,9 @@ class IntegrationCommand extends Command
             $client->setClientSecret($integration->secret);
             $client->addScope(GooglePhotos::GOOGLE_PHOTOS_SCOPES);
             $client->setRedirectUri(route('client.oauth.google'));
-            $client->setAccessType('offline');        // offline access
-            $client->setIncludeGrantedScopes(true);   // incremental auth
+            $client->setAccessType('offline');
+            $client->setIncludeGrantedScopes(true);
+            $client->setPrompt('consent');
             $auth_url = $client->createAuthUrl();
             $this->output->info($auth_url);
         }
