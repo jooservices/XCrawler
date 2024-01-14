@@ -11,7 +11,6 @@ use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetPhotoReadyForUploadEvent;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
-use App\Modules\Flickr\Jobs\PhotoUploadJob;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Events\Dispatcher;
@@ -91,12 +90,11 @@ class PhotosetEventSubscriber
         $task->state_code->transitionTo(InProgressState::class);
 
         foreach ($photos as $photo) {
-            $subTask = $task->subTasks()->create([
+            $task->subTasks()->create([
                'model_type' => $photo->getMorphClass(),
                'model_id' => $photo->id,
                'task' => TaskService::TASK_UPLOAD_PHOTO,
             ]);
-            PhotoUploadJob::dispatch($subTask)->onQueue(FlickrService::QUEUE_NAME);
         }
     }
 

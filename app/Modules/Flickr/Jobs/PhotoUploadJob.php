@@ -6,6 +6,7 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
+use App\Modules\Flickr\Models\FlickrPhoto;
 use Exception;
 use Illuminate\Queue\SerializesModels;
 
@@ -29,6 +30,9 @@ class PhotoUploadJob extends BaseJob
         }
 
         $parentTask = $this->task->parentTask;
+        /**
+         * @var FlickrPhoto $photo
+         */
         $photo = $this->task->model;
         $photoset = $parentTask->model;
 

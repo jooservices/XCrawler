@@ -3,10 +3,10 @@
 namespace App\Modules\Flickr\Tests\Unit\Events;
 
 use App\Modules\Client\Services\GooglePhotos;
-use App\Modules\Core\Services\States;
 use App\Modules\Core\StateMachine\Task\DownloadedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
+use App\Modules\Flickr\Events\PhotosetPhotoReadyForUploadEvent;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\TaskService;
@@ -17,8 +17,11 @@ use Mockery\MockInterface;
 
 class PhotosetPhotoDownloadCompletedEventTest extends TestCase
 {
-    public function testWhenNotFinishedDownloadAllPhotos()
+    public function testWhenPhotosetPhotosDownloaded()
     {
+        Event::fake([
+            PhotosetPhotoReadyForUploadEvent::class,
+        ]);
         $photoset = FlickrPhotoset::factory()->create();
         $photo = FlickrPhoto::factory()->create([
             'sizes' => [
@@ -62,5 +65,6 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
 
         $this->assertEquals(DownloadedState::class, $subTask->refresh()->state_code->getValue());
         $this->assertEquals(DownloadedState::class, $task->refresh()->state_code->getValue());
+        Event::assertDispatched(PhotosetPhotoReadyForUploadEvent::class);
     }
 }

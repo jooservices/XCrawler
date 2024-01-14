@@ -35,8 +35,5 @@ class DownloadPhotoJob extends BaseJob
         ]);
 
         Event::dispatch(new PhotosetPhotoDownloadCompletedEvent($this->task));
-        /**
-         * @TODO Instance create job for upload to cloud
-         */
     }
 }
