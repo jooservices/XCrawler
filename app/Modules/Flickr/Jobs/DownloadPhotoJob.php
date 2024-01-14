@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\FileManager;
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
@@ -25,6 +26,7 @@ class DownloadPhotoJob extends BaseJob
 
     public function handle(FileManager $fileManager)
     {
+        $this->task->state_code->transitionTo(InProgressState::class);
         $photo = $this->task->model;
         $fileName = $fileManager->download($photo->getOriginalSizeUrl());
 

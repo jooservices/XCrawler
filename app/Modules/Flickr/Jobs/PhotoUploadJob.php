@@ -36,7 +36,7 @@ class PhotoUploadJob extends BaseJob
         $photo->uploadToGooglePhotos($photoset->googlePhotoAlbum->album_id);
         $this->task->state_code->transitionTo(CompletedState::class);
 
-        if ($parentTask->subTasks()->where('state_code', CompletedState::class)->count() === $parentTask->subTasks()->count()) {
+        if ($parentTask->subTasks()->where('state_code', CompletedState::class)->count() === $parentTask->payload['photos']) {
             $parentTask->state_code->transitionTo(CompletedState::class);
         }
     }
