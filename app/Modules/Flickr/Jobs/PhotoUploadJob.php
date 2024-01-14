@@ -24,7 +24,10 @@ class PhotoUploadJob extends BaseJob
      */
     public function handle()
     {
-        $this->task->state_code->transitionTo(InProgressState::class);
+        if ($this->task->state_code->getValue() !== InProgressState::class) {
+            $this->task->state_code->transitionTo(InProgressState::class);
+        }
+
         $parentTask = $this->task->parentTask;
         $photo = $this->task->model;
         $photoset = $parentTask->model;
