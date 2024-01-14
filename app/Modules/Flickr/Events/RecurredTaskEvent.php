@@ -16,6 +16,5 @@ class RecurredTaskEvent
      */
     public function __construct(public Task $task)
     {
-        //
     }
 }

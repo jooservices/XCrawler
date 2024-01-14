@@ -2,12 +2,16 @@
 
 namespace App\Modules\Flickr\Listeners;
 
-use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\CompletedState;
+use App\Modules\Core\StateMachine\Task\DownloadedState;
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
+use App\Modules\Flickr\Events\PhotosetPhotoReadyForUploadEvent;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
+use App\Modules\Flickr\Jobs\PhotoUploadJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Event;
@@ -18,15 +22,12 @@ class PhotosetEventSubscriber
     {
         $event->photoset->tasks()->create([
             'task' => FlickrService::TASK_PHOTOSET_PHOTOS,
-            'state_code' => States::STATE_INIT,
         ]);
     }
 
     public function onFetchPhotosetPhotosCompleted(FetchPhotosetPhotosCompletedEvent $event)
     {
-        $event->task->update([
-            'state_code' => States::STATE_COMPLETED,
-        ]);
+        $event->task->state_code->transitionTo(CompletedState::class);
 
         if ($event->task->parentTask && $event->task->parentTask->task === FlickrService::TASK_DOWNLOAD_PHOTOSET) {
             Event::dispatch(new PhotosetReadyForDownloadEvent($event->task->parentTask));
@@ -39,16 +40,11 @@ class PhotosetEventSubscriber
      */
     public function onPhotosetReadyForDownload(PhotosetReadyForDownloadEvent $event)
     {
-        $event->task->update(['state_code' => States::STATE_IN_PROGRESS]);
-
-        $photoset = $event->task->model;
-
-        $photoset->relationshipPhotos->each(function ($photo) use ($event) {
+        $event->task->state_code->transitionTo(InProgressState::class);
+        $event->task->model->relationshipPhotos->each(function ($photo) use ($event) {
             $task = $photo->tasks()->create([
                 'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
                 'task_id' => $event->task->id, // 'parent_task_id
-                'state_code' => States::STATE_INIT,
-
             ]);
 
             DownloadPhotoJob::dispatch($task)->onQueue(FlickrService::QUEUE_NAME);
@@ -57,28 +53,49 @@ class PhotosetEventSubscriber
 
     public function onPhotosetPhotoDownloadCompletedEvent(PhotosetPhotoDownloadCompletedEvent $event)
     {
-        $event->task->update([
-            'state_code' => States::STATE_DOWNLOADED
-        ]);
+        $event->task->state_code->transitionTo(DownloadedState::class);
 
         $parentTask = $event->task->parentTask;
+        $photoset = $parentTask->model;
         $totalPhotos = $parentTask->payload['photos'];
+
         $downloadedPhotos = $parentTask
             ->subTasks()
             ->where('task', FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO)
-            ->where('state_code', States::STATE_DOWNLOADED)
+            ->whereState('state_code', DownloadedState::class)
             ->count();
 
-        /**
-         * @TODO Move to another job
-         */
-        $photo = $event->task->model;
-        $photo->uploadToGooglePhotos($parentTask->model->googlePhotoAlbum->album_id);
+        if ($totalPhotos !== $downloadedPhotos) {
+            return;
+        }
 
-        if ($totalPhotos === $downloadedPhotos) {
-            $parentTask->update([
-                'state_code' => States::STATE_COMPLETED
+        $parentTask->state_code->transitionTo(DownloadedState::class);
+        Event::dispatch(new PhotosetPhotoReadyForUploadEvent($photoset));
+    }
+
+    public function onPhotosetPhotoReadyForUploadEvent(PhotosetPhotoReadyForUploadEvent $event)
+    {
+        $photoset = $event->photoset;
+        /**
+         * Create Google Photos album
+         */
+        $photoset->createGooglePhotoAlbum();
+        $photos = $photoset->relationshipPhotos;
+        $task = $photoset->tasks()->create([
+            'task' => FlickrService::TASK_UPLOAD_PHOTOSET,
+            'payload' => [
+                'photos' => $photos->count(),
+            ]
+        ]);
+        $task->state_code->transitionTo(InProgressState::class);
+
+        foreach ($photos as $photo) {
+            $subTask = $task->subTasks()->create([
+               'model_type' => $photo->getMorphClass(),
+               'model_id' => $photo->id,
+               'task' => FlickrService::TASK_UPLOAD_PHOTO,
             ]);
+            PhotoUploadJob::dispatch($subTask)->onQueue(FlickrService::QUEUE_NAME);
         }
     }
 
@@ -102,6 +119,11 @@ class PhotosetEventSubscriber
         $events->listen(
             PhotosetPhotoDownloadCompletedEvent::class,
             [self::class, 'onPhotosetPhotoDownloadCompletedEvent']
+        );
+
+        $events->listen(
+            PhotosetPhotoReadyForUploadEvent::class,
+            [self::class, 'onPhotosetPhotoReadyForUploadEvent']
         );
     }
 }

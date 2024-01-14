@@ -15,6 +15,5 @@ class ContactTasksCreatedEvent
      */
     public function __construct()
     {
-        //
     }
 }

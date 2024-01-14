@@ -3,7 +3,9 @@
 namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Core\Exceptions\NoIntegrateException;
 use App\Modules\Core\Facades\Setting;
+use App\Modules\Core\Models\Task;
 use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrService;
@@ -31,6 +33,7 @@ class FavoritesCommand extends Command implements Isolatable
      * @param TaskService $taskService
      * @param IntegrationRepository $repository
      * @return void
+     * @throws \App\Modules\Client\Exceptions\NoIntegrateException
      */
     public function handle(TaskService $taskService, IntegrationRepository $repository): void
     {

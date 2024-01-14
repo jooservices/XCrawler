@@ -3,6 +3,7 @@
 namespace App\Modules\Core\Tests\Unit\Models;
 
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\StateMachine\Task\InitState;
 use App\Modules\Core\Tests\TestCase;
 
 class TaskTest extends TestCase
@@ -16,6 +17,6 @@ class TaskTest extends TestCase
         ]);
 
         $this->assertInstanceOf(Task::class, $task);
-        $this->assertEquals(Task::STATE_INIT, $task->refresh()->state_code);
+        $this->assertEquals(InitState::class, $task->refresh()->state_code);
     }
 }

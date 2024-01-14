@@ -17,7 +17,6 @@ trait HasTasks
     {
         return $this->tasks()->create([
             'task' => $task,
-            'status' => States::STATE_INIT,
             'payload' => $payload,
         ]);
     }

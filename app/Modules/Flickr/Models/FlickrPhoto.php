@@ -6,11 +6,9 @@ use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\Models\TaskInterface;
-use App\Modules\Core\Models\Traits\HasStates;
 use App\Modules\Core\Models\Traits\HasTasks;
 use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\Core\Services\FileManager;
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -28,7 +26,6 @@ class FlickrPhoto extends Model implements TaskInterface
     use HasUuid;
     use HasTasks;
     use HasFactory;
-    use HasStates;
 
     /**
      * Mapping with Flickr photo.id
@@ -88,7 +85,6 @@ class FlickrPhoto extends Model implements TaskInterface
     {
         return $this->tasks()->create([
             'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
-            'state_code' => States::STATE_INIT
         ]);
     }
 

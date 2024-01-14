@@ -15,6 +15,5 @@ class FetchContactsRecursiveEvent
      */
     public function __construct()
     {
-        //
     }
 }

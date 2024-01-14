@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Models;
 
+use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\Models\TaskInterface;
 use App\Modules\Core\Models\Traits\HasTasks;
 use App\Modules\Core\Models\Traits\HasUuid;
@@ -76,5 +77,20 @@ class FlickrPhotoset extends Model implements TaskInterface
     public function googlePhotoAlbum(): HasOne
     {
         return $this->hasOne(GooglePhotoAlbum::class, 'flickr_photoset_id', 'id');
+    }
+
+    public function createGooglePhotoAlbum(): GooglePhotoAlbum
+    {
+        if ($this->googlePhotoAlbum) {
+            return $this->googlePhotoAlbum;
+        }
+
+        $googlePhotoService = app(GooglePhotos::class);
+        $albumId = $googlePhotoService->createAlbum($this->title);
+
+        return $this->googlePhotoAlbum()->create([
+            'title' => $this->title,
+            'album_id' => $albumId
+        ]);
     }
 }

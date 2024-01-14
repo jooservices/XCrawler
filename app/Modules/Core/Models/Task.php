@@ -2,30 +2,31 @@
 
 namespace App\Modules\Core\Models;
 
-use App\Modules\Core\Models\Traits\HasStates;
+use App\Modules\Core\Database\factories\TaskFactory;
 use App\Modules\Core\Models\Traits\HasUuid;
-use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\TaskState;
+use App\Modules\Flickr\Database\factories\PhotoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Spatie\ModelStates\HasStates;
+use Spatie\ModelStates\State;
 
 /**
  * @property string $uuid
  * @property string $model_type
  * @property int $model_id
  * @property string $task
- * @property string $state_code
+ * @property State $state_code
  * @property array $payload
  */
 class Task extends Model
 {
-    use HasStates;
     use HasFactory;
     use HasUuid;
-
-    public const STATE_INIT = States::STATE_INIT;
+    use HasStates;
 
     protected $table = 'tasks';
 
@@ -44,8 +45,14 @@ class Task extends Model
         'model_type' => 'string',
         'model_id' => 'integer',
         'task' => 'string',
-        'payload' => 'array'
+        'payload' => 'array',
+        'state_code' => TaskState::class
     ];
+
+    protected static function newFactory(): TaskFactory
+    {
+        return TaskFactory::new();
+    }
 
     public function model(): MorphTo
     {

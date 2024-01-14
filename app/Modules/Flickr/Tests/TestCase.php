@@ -280,6 +280,25 @@ class TestCase extends BaseTestCase
                 )
             );
 
+        for ($index = 1; $index <= 2; $index++) {
+            $mock->shouldReceive('request')
+                ->withArgs(function ($method, $url, $options) use ($index) {
+                    return $method === 'POST'
+                        && str_contains($url, 'flickr.photosets.getList')
+                        && $options['form_params']['page'] === $index
+                        && $options['form_params']['user_id'] === '34938526@N02';
+                })
+                ->andReturn(
+                    new Response(
+                        200,
+                        [
+                            'Content-Type' => 'application/json; charset=utf-8',
+                        ],
+                        $this->getFixtures('flickr_photosets_' . $index . '.json')
+                    )
+                );
+        }
+
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'

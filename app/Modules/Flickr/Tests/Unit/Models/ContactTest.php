@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Tests\Unit\Models;
 
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\StateMachine\Task\InitState;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Tests\TestCase;
@@ -39,6 +40,6 @@ class ContactTest extends TestCase
         ]);
 
         $this->assertInstanceOf(Task::class, $task);
-        $this->assertEquals(Task::STATE_INIT, $task->refresh()->state_code);
+        $this->assertEquals(InitState::class, $task->refresh()->state_code);
     }
 }

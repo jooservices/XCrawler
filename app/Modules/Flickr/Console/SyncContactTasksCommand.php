@@ -38,7 +38,6 @@ class SyncContactTasksCommand extends Command
             foreach (FlickrService::CONTACT_TASKS as $task) {
                 $contact->tasks()->create([
                     'task' => $task,
-                    'state_code' => States::STATE_INIT,
                 ]);
             }
         });

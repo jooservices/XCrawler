@@ -5,7 +5,8 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\CompletedState;
+use App\Modules\Core\StateMachine\Task\RecurringState;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
@@ -38,10 +39,8 @@ class PhotosetsJob extends BaseJob
      */
     public function handle(FlickrService $flickrService): void
     {
-        $flickrService->setIntegration($this->integration);
+        $adapter = $flickrService->setIntegration($this->integration)->photosets;
         $contact = $this->task->model;
-
-        $adapter = $flickrService->photosets;
         $columns = DB::getSchemaBuilder()->getColumnListing('flickr_photosets');
 
         $items = $adapter->getList([
@@ -72,12 +71,12 @@ class PhotosetsJob extends BaseJob
         });
 
         if ($items->isCompleted()) {
-            $this->task->updateState(States::STATE_COMPLETED);
+            $this->task->state_code->transitionTo(CompletedState::class);
             return;
         }
 
+        $this->task->state_code->transitionTo(RecurringState::class);
         $this->task->update([
-            'state_code' => States::STATE_RECURRING,
             'payload' => [
                 'page' => $items->getNextPage()
             ]

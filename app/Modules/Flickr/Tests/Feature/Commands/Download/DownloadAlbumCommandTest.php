@@ -4,8 +4,9 @@ namespace App\Modules\Flickr\Tests\Feature\Commands\Download;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Services\GooglePhotos;
+use App\Modules\Client\StateMachine\Integration\CompletedState;
+use App\Modules\Client\StateMachine\Integration\InProgressState;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
@@ -31,7 +32,9 @@ class DownloadAlbumCommandTest extends TestCase
         $this->integration = Integration::factory()
             ->service(FlickrService::SERVICE_NAME)
             ->primary(false)
-            ->create();
+            ->create([
+                'state_code' => CompletedState::class,
+            ]);
 
         $this->instance(
             GooglePhotos::class,
@@ -50,6 +53,7 @@ class DownloadAlbumCommandTest extends TestCase
 
         $this->artisan('flickr:download-album --photoset_id=' . self::PHOTOSET_ID);
         // One request to fetch photoset info
+
         $this->assertEquals(1, $this->integration->fresh()->requested_times);
         // Contact created for relationship
         $this->assertDatabaseHas('flickr_contacts', ['nsid' => self::NSID]);
@@ -64,7 +68,6 @@ class DownloadAlbumCommandTest extends TestCase
             'model_type' => FlickrPhotoset::class,
             'model_id' => self::PHOTOSET_ID,
             'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET,
-            'state_code' => States::STATE_INIT
         ]);
 
         // Make sure payload is corrected
@@ -86,6 +89,9 @@ class DownloadAlbumCommandTest extends TestCase
     public function testWithPhotosetPhotosFetched()
     {
         Event::fake(PhotosetReadyForDownloadEvent::class);
+        Queue::fake([
+            PeopleInfoJob::class,
+        ]);
 
         /**
          * Prepare init data
@@ -107,11 +113,14 @@ class DownloadAlbumCommandTest extends TestCase
         $this->assertFalse($photoset->tasks()->exists());
 
         $this->artisan('flickr:download-album --photoset_id=' . self::PHOTOSET_ID)
-            ->expectsOutput('Photoset: ' . self::PHOTOSET_ID)
-            ->expectsOutput('Google Album: test');
+            ->expectsOutput('Getting contact')
+            ->expectsOutput('Getting photoset')
+            ->assertExitCode(0);
+
 
         // One request to fetch photoset info
         $this->assertEquals(1, $this->integration->fresh()->requested_times);
+
         $this->assertDatabaseHas('flickr_contacts', [
             'nsid' => self::NSID
         ]);
@@ -121,9 +130,6 @@ class DownloadAlbumCommandTest extends TestCase
             'title' => 'Phương Trần',
             'photos' => 1
         ]);
-
-        // Google Album is created
-        $this->assertEquals('test', $photoset->fresh()->googlePhotoAlbum->album_id);
 
         $this->assertTrue(
             $photoset->tasks()

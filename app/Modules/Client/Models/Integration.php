@@ -4,9 +4,11 @@ namespace App\Modules\Client\Models;
 
 use App\Modules\Client\Database\factories\IntegrationFactory;
 use App\Modules\Client\OAuth\Credentials\CredentialsInterface;
+use App\Modules\Client\StateMachine\Integration\IntegrationState;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
+use Spatie\ModelStates\HasStates;
 
 /**
  * @property string $service
@@ -18,11 +20,12 @@ use Jenssegers\Mongodb\Eloquent\Model;
  * @property string $secret
  * @property string $callback
  * @property bool $is_primary
- * @property string $state_code
+ * @property IntegrationState $state_code
  */
 class Integration extends Model implements CredentialsInterface
 {
     use HasFactory;
+    use HasStates;
 
     protected $connection = 'mongodb';
 
@@ -53,7 +56,7 @@ class Integration extends Model implements CredentialsInterface
         'token' => 'string',
         'token_secret' => 'string',
         'refresh_token' => 'string',
-        'state_code' => 'string',
+        'state_code' => IntegrationState::class,
         'requested_at' => 'datetime',
     ];
 

@@ -2,9 +2,10 @@
 
 namespace App\Modules\Client\Repositories;
 
+use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Exceptions\NoIntegrateException;
-use App\Modules\Core\Services\States;
+use App\Modules\Client\StateMachine\Integration\CompletedState;
+use App\Modules\Client\StateMachine\Integration\InitState;
 use Illuminate\Support\Collection;
 
 class IntegrationRepository
@@ -15,13 +16,13 @@ class IntegrationRepository
     public function getItems(
         string $service,
         ?bool $isPrimary = null,
-        string $stateCode = States::STATE_COMPLETED
+        string $stateCode = InitState::class
     ): Collection {
         $integrations = Integration::where('service', $service)
             ->when($isPrimary !== null, function ($query) use ($isPrimary) {
                 $query->where('is_primary', $isPrimary);
             })
-            ->where('state_code', $stateCode)
+            ->whereState('state_code', $stateCode)
             ->get();
 
         if ($integrations->isEmpty()) {
@@ -31,10 +32,7 @@ class IntegrationRepository
         return $integrations;
     }
 
-    /**
-     * @throws NoIntegrateException
-     */
-    public function getCompleted(string $service, ?bool $isPrimary = null): Collection
+    public function getInit(string $service, ?bool $isPrimary = null): Collection
     {
         return $this->getItems($service, $isPrimary);
     }
@@ -42,15 +40,15 @@ class IntegrationRepository
     /**
      * @throws NoIntegrateException
      */
-    public function getInit(string $service, ?bool $isPrimary = null): Collection
+    public function getCompleted(string $service, ?bool $isPrimary = null): Collection
     {
-        return $this->getItems($service, $isPrimary, States::STATE_INIT);
+        return $this->getItems($service, $isPrimary, CompletedState::class);
     }
 
     /**
      * @throws NoIntegrateException
      */
-    public function getPrimary(string $service, string $stateCode = States::STATE_COMPLETED): Integration
+    public function getPrimary(string $service, string $stateCode = CompletedState::class): Integration
     {
         return $this->getItems($service, true, $stateCode)->first();
     }
@@ -58,7 +56,7 @@ class IntegrationRepository
     /**
      * @throws NoIntegrateException
      */
-    public function getNonPrimary(string $service, string $stateCode = States::STATE_COMPLETED): Integration
+    public function getNonPrimary(string $service, string $stateCode = CompletedState::class): Integration
     {
         return $this->getItems($service, false, $stateCode)->first();
     }
@@ -66,7 +64,7 @@ class IntegrationRepository
     /**
      * @throws NoIntegrateException
      */
-    public function getNonPrimaryItems(string $service, string $stateCode = States::STATE_COMPLETED): Collection
+    public function getNonPrimaryItems(string $service, string $stateCode = CompletedState::class): Collection
     {
         return $this->getItems($service, false, $stateCode);
     }

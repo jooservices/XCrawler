@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs\Photoset;
 
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
@@ -29,6 +30,7 @@ class PhotosJobTest extends TestCase
         $task = $photoset->tasks()->create([
             'task' => FlickrService::TASK_PHOTOSET_PHOTOS,
         ]);
+        $task->state_code->transitionTo(InProgressState::class);
 
         PhotosetPhotosJob::dispatch($this->integration, $task);
 

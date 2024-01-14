@@ -87,6 +87,7 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
 
     /**
      * {@inheritdoc}
+     * @throws TokenResponseException
      */
     public function requestAccessToken(string $token, string $verifier, string $tokenSecret): TokenInterface
     {

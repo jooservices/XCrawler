@@ -5,17 +5,19 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\CompletedState;
+use App\Modules\Core\StateMachine\Task\RecurringState;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
+use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
 
 class ContactPhotosJob extends BaseJob
 {
     use SerializesModels;
+    use HasRecurring;
 
     public $deleteWhenMissingModels = true;
 
@@ -46,18 +48,17 @@ class ContactPhotosJob extends BaseJob
         $contactService->addPhotos($photos->getItems());
 
         if ($photos->isCompleted()) {
-            $this->task->updateState(States::STATE_COMPLETED);
+            $this->task->state_code->transitionTo(CompletedState::class);
             return;
         }
 
         $this->task->update([
-            'state_code' => States::STATE_RECURRING,
             'payload' => [
                 'page' => $photos->getNextPage()
             ]
         ]);
 
-        Event::dispatch(new RecurredTaskEvent($this->task));
+        $this->recurringTask();
 
         self::dispatch($this->integration, $this->task, $photos->getNextPage());
     }

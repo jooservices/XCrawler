@@ -6,6 +6,7 @@ use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Http\Requests\GoogleAuthenticateRequest;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Services\GooglePhotos;
+use App\Modules\Client\StateMachine\Integration\CompletedState;
 use App\Modules\Core\Services\States;
 use Google\Client;
 use Illuminate\Routing\Controller;
@@ -38,7 +39,7 @@ class OAuthController extends Controller
 
         $integration->update([
             'refresh_token' => $access_token['refresh_token'],
-            'state_code' => States::STATE_COMPLETED
+            'state_code' => CompletedState::class
         ]);
     }
 }

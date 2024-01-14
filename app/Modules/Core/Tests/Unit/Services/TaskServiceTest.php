@@ -3,9 +3,8 @@
 namespace App\Modules\Core\Tests\Unit\Services;
 
 use App\Modules\Core\Events\TaskCreatedEvent;
-use App\Modules\Core\Models\Task;
-use App\Modules\Core\Services\States;
 use App\Modules\Core\Services\TaskService;
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Core\Tests\TestCase;
 use App\Modules\Flickr\Models\FlickrContact;
 use Illuminate\Support\Facades\Event;
@@ -25,8 +24,7 @@ class TaskServiceTest extends TestCase
     {
         Event::fake(TaskCreatedEvent::class);
 
-        $contact = FlickrContact::factory()->create();
-        $task = $this->service->create($contact, 'test');
+        $task = $this->service->create(FlickrContact::factory()->create(), 'test');
 
         $this->assertEquals('test', $task->task);
         Event::assertDispatched(TaskCreatedEvent::class);
@@ -34,14 +32,12 @@ class TaskServiceTest extends TestCase
 
     public function testGetTasks()
     {
-        $contact = FlickrContact::factory()->create();
-        $this->service->create($contact, 'test');
+        $this->service->create($contact = FlickrContact::factory()->create(), 'test');
         $task = $contact->tasks()
             ->where('task', 'test')
             ->first();
 
-        $tasks = $this->service->tasks('test', 1);
-        $this->assertCount(1, $tasks);
-        $this->assertEquals(States::STATE_IN_PROGRESS, $task->fresh()->state_code);
+        $this->assertCount(1, $this->service->tasks('test'));
+        $this->assertEquals(InProgressState::class, $task->fresh()->state_code);
     }
 }
