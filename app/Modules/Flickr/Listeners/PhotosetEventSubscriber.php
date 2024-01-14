@@ -13,6 +13,7 @@ use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
 use App\Modules\Flickr\Jobs\PhotoUploadJob;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Event;
 
@@ -21,7 +22,7 @@ class PhotosetEventSubscriber
     public function onPhotosetCreated(PhotosetCreatedEvent $event): void
     {
         $event->photoset->tasks()->create([
-            'task' => FlickrService::TASK_PHOTOSET_PHOTOS,
+            'task' => TaskService::TASK_PHOTOSET_PHOTOS,
         ]);
     }
 
@@ -29,7 +30,7 @@ class PhotosetEventSubscriber
     {
         $event->task->state_code->transitionTo(CompletedState::class);
 
-        if ($event->task->parentTask && $event->task->parentTask->task === FlickrService::TASK_DOWNLOAD_PHOTOSET) {
+        if ($event->task->parentTask && $event->task->parentTask->task === TaskService::TASK_DOWNLOAD_PHOTOSET) {
             Event::dispatch(new PhotosetReadyForDownloadEvent($event->task->parentTask));
         }
     }
@@ -43,7 +44,7 @@ class PhotosetEventSubscriber
         $event->task->state_code->transitionTo(InProgressState::class);
         $event->task->model->relationshipPhotos->each(function ($photo) use ($event) {
             $task = $photo->tasks()->create([
-                'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
+                'task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
                 'task_id' => $event->task->id, // 'parent_task_id
             ]);
 
@@ -61,7 +62,7 @@ class PhotosetEventSubscriber
 
         $downloadedPhotos = $parentTask
             ->subTasks()
-            ->where('task', FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO)
+            ->where('task', TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO)
             ->whereState('state_code', DownloadedState::class)
             ->count();
 
@@ -82,7 +83,7 @@ class PhotosetEventSubscriber
         $photoset->createGooglePhotoAlbum();
         $photos = $photoset->relationshipPhotos;
         $task = $photoset->tasks()->create([
-            'task' => FlickrService::TASK_UPLOAD_PHOTOSET,
+            'task' => TaskService::TASK_UPLOAD_PHOTOSET,
             'payload' => [
                 'photos' => $photos->count(),
             ]
@@ -93,7 +94,7 @@ class PhotosetEventSubscriber
             $subTask = $task->subTasks()->create([
                'model_type' => $photo->getMorphClass(),
                'model_id' => $photo->id,
-               'task' => FlickrService::TASK_UPLOAD_PHOTO,
+               'task' => TaskService::TASK_UPLOAD_PHOTO,
             ]);
             PhotoUploadJob::dispatch($subTask)->onQueue(FlickrService::QUEUE_NAME);
         }

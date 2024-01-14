@@ -7,7 +7,7 @@ use App\Modules\Core\Events\FileDownloaded;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
 use App\Modules\Flickr\Models\FlickrPhoto;
-use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Event;
@@ -37,7 +37,7 @@ class DownloadPhotoJobTest extends TestCase
         ]);
 
         $task = $photo->tasks()->create([
-            'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
+            'task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
             'payload' => [
                 'photos' => 1
             ]

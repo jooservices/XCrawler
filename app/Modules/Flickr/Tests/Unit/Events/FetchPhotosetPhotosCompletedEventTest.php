@@ -7,7 +7,7 @@ use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Models\FlickrPhotoset;
-use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Event;
 
@@ -20,7 +20,7 @@ class FetchPhotosetPhotosCompletedEventTest extends TestCase
          * @var Task $task
          */
         $task = $photoset->tasks()->create([
-            'task' => FlickrService::TASK_CONTACT_PHOTOSETS,
+            'task' => TaskService::TASK_CONTACT_PHOTOSETS,
         ]);
         $task->state_code->transitionTo(InProgressState::class);
 

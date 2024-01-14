@@ -5,7 +5,6 @@ namespace App\Modules\Flickr\Tests\Feature\Commands\Download;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Client\StateMachine\Integration\CompletedState;
-use App\Modules\Client\StateMachine\Integration\InProgressState;
 use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
@@ -13,6 +12,7 @@ use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Event;
@@ -67,7 +67,7 @@ class DownloadAlbumCommandTest extends TestCase
         $this->assertDatabaseHas('tasks', [
             'model_type' => FlickrPhotoset::class,
             'model_id' => self::PHOTOSET_ID,
-            'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET,
+            'task' => TaskService::TASK_DOWNLOAD_PHOTOSET,
         ]);
 
         // Make sure payload is corrected
@@ -80,7 +80,7 @@ class DownloadAlbumCommandTest extends TestCase
         $this->assertDatabaseHas('tasks', [
             'model_type' => FlickrPhotoset::class,
             'model_id' => self::PHOTOSET_ID,
-            'task' => FlickrService::TASK_PHOTOSET_PHOTOS
+            'task' => TaskService::TASK_PHOTOSET_PHOTOS
         ]);
 
         Queue::assertPushed(PhotosetPhotosJob::class);
@@ -133,7 +133,7 @@ class DownloadAlbumCommandTest extends TestCase
 
         $this->assertTrue(
             $photoset->tasks()
-                ->where('task', FlickrService::TASK_DOWNLOAD_PHOTOSET)
+                ->where('task', TaskService::TASK_DOWNLOAD_PHOTOSET)
                 ->exists()
         );
 

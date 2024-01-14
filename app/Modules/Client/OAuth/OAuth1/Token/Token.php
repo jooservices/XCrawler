@@ -2,8 +2,8 @@
 
 namespace App\Modules\Client\OAuth\OAuth1\Token;
 
-use App\Modules\Client\OAuth\Token\BaseToken;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface as OAuth1TokenInterface;
+use App\Modules\Client\OAuth\Token\BaseToken;
 
 class Token extends BaseToken implements OAuth1TokenInterface
 {

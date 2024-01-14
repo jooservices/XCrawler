@@ -4,10 +4,10 @@ namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Console\Traits\HasIntegrationProcess;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
 
@@ -41,7 +41,7 @@ class FavoritesCommand extends Command implements Isolatable
 
         $this->completed(FlickrService::SERVICE_NAME, function ($integration) use ($taskService) {
             $tasks = $taskService->tasks(
-                FlickrService::TASK_CONTACT_FAVORITES,
+                TaskService::TASK_CONTACT_FAVORITES,
                 Setting::remember(
                     'flickr',
                     'task_contact_favorites_limit',

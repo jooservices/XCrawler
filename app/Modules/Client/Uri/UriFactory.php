@@ -3,7 +3,6 @@
 namespace App\Modules\Client\Uri;
 
 use App\Modules\Client\Exceptions\MissingUriFromGlobal;
-use RuntimeException;
 
 /**
  * Factory class for uniform resource indicators.
@@ -13,8 +12,9 @@ class UriFactory implements UriFactoryInterface
 {
     /**
      * Factory method to build a URI from a super-global $_SERVER array.
-     *
-     * @return UriInterface
+     * @param array $server
+     * @return Uri|UriInterface
+     * @throws MissingUriFromGlobal
      */
     public function createFromSuperGlobalArray(array $server): Uri|UriInterface
     {

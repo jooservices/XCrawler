@@ -5,7 +5,6 @@ namespace App\Modules\Core\Models;
 use App\Modules\Core\Database\factories\TaskFactory;
 use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\Core\StateMachine\Task\TaskState;
-use App\Modules\Flickr\Database\factories\PhotoFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

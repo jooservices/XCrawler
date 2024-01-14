@@ -1,10 +1,9 @@
 <?php
 
-use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\InitState;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {

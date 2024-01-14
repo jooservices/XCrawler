@@ -5,9 +5,9 @@ namespace App\Modules\Flickr\Console\Photoset;
 use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
@@ -43,10 +43,10 @@ class PhotosCommand extends Command
             $this->output->text('Processing integration: ' . $integration->name);
 
             $tasks = $taskService->tasks(
-                FlickrService::TASK_PHOTOSET_PHOTOS,
+                TaskService::TASK_PHOTOSET_PHOTOS,
                 Setting::remember(
                     'flickr',
-                    'task_' . Str::slug(FlickrService::TASK_PHOTOSET_PHOTOS, '_') . '_limit',
+                    'task_' . Str::slug(TaskService::TASK_PHOTOSET_PHOTOS, '_') . '_limit',
                     fn() => 10
                 )
             );

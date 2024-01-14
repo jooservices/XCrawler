@@ -8,7 +8,6 @@ use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrContactService;
-use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Event;
@@ -33,7 +32,7 @@ class ContactFavoritesJobTest extends TestCase
             RecurredTaskEvent::class
         ]);
 
-        $task = $contact->refresh()->tasks()->where('task', FlickrService::TASK_CONTACT_FAVORITES)->first();
+        $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
         $task->state_code->transitionTo(InProgressState::class);
 
         ContactFavoritesJob::dispatch($this->integration, $task);
@@ -56,7 +55,7 @@ class ContactFavoritesJobTest extends TestCase
         $contact = app(FlickrContactService::class)->create(['nsid' => '64994773@N03']);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
 
-        $task = $contact->refresh()->tasks()->where('task', FlickrService::TASK_CONTACT_FAVORITES)->first();
+        $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
         $task->state_code->transitionTo(InProgressState::class);
 
         ContactFavoritesJob::dispatch($this->integration, $task);

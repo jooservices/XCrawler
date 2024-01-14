@@ -4,15 +4,13 @@ namespace App\Modules\Flickr\Tests\Unit\Events;
 
 use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\Services\States;
-use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\DownloadedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Models\FlickrPhotoset;
-use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
-use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Event;
 use Mockery;
 use Mockery\MockInterface;
@@ -39,7 +37,7 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
         ]);
 
         $task = $photoset->tasks()->create([
-            'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET,
+            'task' => TaskService::TASK_DOWNLOAD_PHOTOSET,
             'payload' => [
                 'photos' => 1
             ]
@@ -47,7 +45,7 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
         $task->state_code->transitionTo(InProgressState::class);
 
         $subTask = $task->subTasks()->create([
-            'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
+            'task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
             'model_id' => $photo->id,
             'model_type' => FlickrPhoto::class,
         ]);
