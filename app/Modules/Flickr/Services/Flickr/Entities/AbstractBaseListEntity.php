@@ -62,7 +62,8 @@ abstract class AbstractBaseListEntity extends BaseEntity
 
     public function isCompleted(): bool
     {
-        return $this->getPage() === $this->getPages();
+        return $this->getPage() === $this->getPages()
+            || $this->getTotal() === 0;
     }
 
     public function getNextPage(): int

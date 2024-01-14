@@ -40,6 +40,10 @@ class People extends BaseAdapter
         );
     }
 
+    /**
+     * @throws MissingEntityElement
+     * @throws GuzzleException
+     */
     public function getInfo(string $nsid): PeopleInfoEntity
     {
         $response = $this->provider->request('flickr.people.getInfo', ['user_id' => $nsid]);

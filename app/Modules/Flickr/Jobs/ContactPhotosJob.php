@@ -6,13 +6,17 @@ use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
-use App\Modules\Core\StateMachine\Task\RecurringState;
-use App\Modules\Flickr\Events\RecurredTaskEvent;
+use App\Modules\Core\StateMachine\Task\FailedState;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
+use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Event;
+use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
 
 class ContactPhotosJob extends BaseJob
 {
@@ -31,16 +35,19 @@ class ContactPhotosJob extends BaseJob
     }
 
     /**
-     * Execute the job.
-     *
+     * @param FlickrService $flickrService
      * @return void
+     * @throws FailedException
+     * @throws InvalidRespondException
+     * @throws MissingEntityElement
+     * @throws GuzzleException
+     * @throws CouldNotPerformTransition
      */
     public function handle(FlickrService $flickrService)
     {
-        $flickrService->setIntegration($this->integration);
         $contactService = app(FlickrContactService::class);
 
-        $photos = $flickrService->people->getPhotos([
+        $photos = $flickrService->setIntegration($this->integration)->people->getPhotos([
             'user_id' => $this->task->model->nsid,
             'page' => $this->page
         ]);
@@ -61,5 +68,12 @@ class ContactPhotosJob extends BaseJob
         $this->recurringTask();
 
         self::dispatch($this->integration, $this->task, $photos->getNextPage());
+    }
+
+    public function failed(Exception $exception)
+    {
+        if ($this->task->state_code->getValue() !== FailedState::class) {
+            $this->task->state_code->transitionTo(FailedState::class);
+        }
     }
 }
