@@ -2,7 +2,6 @@
 
 namespace App\Modules\Flickr\Console\Download;
 
-use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Repositories\TaskRepository;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Jobs\PhotoUploadJob;
@@ -26,8 +25,6 @@ class PhotoUploadCommand extends Command
      * @var string
      */
     protected $description = 'Download all photos\'s album.';
-
-    private Integration $integration;
 
     /**
      * @param TaskRepository $taskRepository
