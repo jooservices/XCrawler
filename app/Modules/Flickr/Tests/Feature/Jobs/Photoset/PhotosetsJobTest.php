@@ -9,7 +9,7 @@ use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Jobs\PhotosetsJob;
 use App\Modules\Flickr\Services\FlickrContactService;
-use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Event;
 
@@ -24,7 +24,7 @@ class PhotosetsJobTest extends TestCase
         ]);
 
         $task = $contact->tasks()
-            ->where('task', FlickrService::TASK_CONTACT_PHOTOSETS)
+            ->where('task', TaskService::TASK_CONTACT_PHOTOSETS)
             ->first();
         $task->state_code->transitionTo(InProgressState::class);
 
@@ -49,7 +49,7 @@ class PhotosetsJobTest extends TestCase
         ]);
 
         $task = $contact->tasks()
-            ->where('task', FlickrService::TASK_CONTACT_PHOTOSETS)
+            ->where('task', TaskService::TASK_CONTACT_PHOTOSETS)
             ->first();
         $task->state_code->transitionTo(InProgressState::class);
 

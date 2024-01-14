@@ -2,8 +2,8 @@
 
 namespace App\Modules\Client\OAuth\Storage;
 
-use App\Modules\Client\OAuth\Token\TokenInterface;
 use App\Modules\Client\OAuth\OAuth1\Token\TokenInterface as OAuth1TokenInterface;
+use App\Modules\Client\OAuth\Token\TokenInterface;
 
 interface TokenStorageInterface
 {

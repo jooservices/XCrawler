@@ -6,7 +6,6 @@ use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Services\FlickrContactService;
-use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Queue;
@@ -22,7 +21,7 @@ class PhotosCommandTest extends TestCase
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => $this->faker->uuid]);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
-        $this->assertEquals(1, $contact->tasks()->where('task', FlickrService::TASK_CONTACT_PHOTOS)->count());
+        $this->assertEquals(1, $contact->tasks()->where('task', TaskService::TASK_CONTACT_PHOTOS)->count());
 
         $this->artisan(PhotosCommand::COMMAND)->assertExitCode(0);
 

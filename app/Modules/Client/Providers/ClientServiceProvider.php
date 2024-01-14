@@ -2,8 +2,8 @@
 
 namespace App\Modules\Client\Providers;
 
-use App\Modules\Client\Console\IntegrationCommand;
 use App\Modules\Client\Console\Integration\AddCommand;
+use App\Modules\Client\Console\IntegrationCommand;
 use App\Modules\Client\OAuth\Storage\Memory;
 use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
 use Exception;

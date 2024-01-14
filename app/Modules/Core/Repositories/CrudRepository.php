@@ -2,11 +2,8 @@
 
 namespace App\Modules\Core\Repositories;
 
-use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 
 class CrudRepository extends ItemsRepository

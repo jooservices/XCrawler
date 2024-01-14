@@ -3,7 +3,7 @@
 namespace App\Modules\Flickr\Tests\Feature\Commands;
 
 use App\Modules\Flickr\Models\FlickrContact;
-use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 
 class SyncContactTaskCommandTest extends TestCase
@@ -18,9 +18,9 @@ class SyncContactTaskCommandTest extends TestCase
         /**
          * Sync again will not make duplicate
          */
-        $this->assertEquals(count(FlickrService::CONTACT_TASKS), $contact->tasks()->count());
+        $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->tasks()->count());
         $this->artisan('flickr:contact-tasks')
             ->assertExitCode(0);
-        $this->assertEquals(count(FlickrService::CONTACT_TASKS), $contact->refresh()->tasks()->count());
+        $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks()->count());
     }
 }

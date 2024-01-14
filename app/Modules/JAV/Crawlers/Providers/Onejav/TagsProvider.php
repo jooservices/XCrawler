@@ -3,7 +3,6 @@
 namespace App\Modules\JAV\Crawlers\Providers\Onejav;
 
 use App\Modules\JAV\Crawlers\AbstractProvider;
-use App\Modules\JAV\Entities\Onejav\MoviesEntity;
 use App\Modules\JAV\Entities\Onejav\TagEntity;
 use App\Modules\JAV\Entities\Onejav\TagsEntity;
 use Symfony\Component\DomCrawler\Crawler;

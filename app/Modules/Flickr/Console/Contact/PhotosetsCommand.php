@@ -4,9 +4,9 @@ namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
-use App\Modules\Core\Services\TaskService;
 use App\Modules\Flickr\Jobs\PhotosetsJob;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Console\Command;
 
 class PhotosetsCommand extends Command
@@ -40,7 +40,7 @@ class PhotosetsCommand extends Command
                 $this->output->text('Processing integration: ' . $integration->name);
 
                 $tasks = $taskService->tasks(
-                    FlickrService::TASK_CONTACT_PHOTOSETS,
+                    TaskService::TASK_CONTACT_PHOTOSETS,
                     Setting::remember('flickr', 'task_contact_photos_limit', fn() => 10)
                 );
 

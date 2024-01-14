@@ -11,6 +11,7 @@ use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\Core\Services\FileManager;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -83,9 +84,7 @@ class FlickrPhoto extends Model implements TaskInterface
 
     public function createDownloadTask(): Task
     {
-        return $this->tasks()->create([
-            'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
-        ]);
+        return $this->tasks()->create(['task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,]);
     }
 
     public function getSizes(): array

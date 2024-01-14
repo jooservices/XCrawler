@@ -15,6 +15,7 @@ use App\Modules\Flickr\Models\FlickrPhotoset;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetEntity;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
@@ -140,13 +141,13 @@ class DownloadAlbumCommand extends Command
          * @var Task $task
          */
         $task = $photoset->tasks()->create([
-            'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET,
+            'task' => TaskService::TASK_DOWNLOAD_PHOTOSET,
             'payload' => [
                 'photos' => $photosetInfo->photos
             ],
         ]);
 
-        $this->line('Registered ' . FlickrService::TASK_DOWNLOAD_PHOTOSET . ' for photoset: <info>' . $task->uuid . '</info>');
+        $this->line('Registered ' . TaskService::TASK_DOWNLOAD_PHOTOSET . ' for photoset: <info>' . $task->uuid . '</info>');
 
         return $task;
     }
@@ -158,7 +159,7 @@ class DownloadAlbumCommand extends Command
         $subTask = $task->subTasks()->create([
             'model_type' => $task->model_type,
             'model_id' => $task->model_id,
-            'task' => FlickrService::TASK_PHOTOSET_PHOTOS,
+            'task' => TaskService::TASK_PHOTOSET_PHOTOS,
         ]);
         $subTask->state_code->transitionTo(InProgressState::class);
 

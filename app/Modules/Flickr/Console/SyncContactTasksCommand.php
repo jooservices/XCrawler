@@ -2,9 +2,8 @@
 
 namespace App\Modules\Flickr\Console;
 
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Models\FlickrContact;
-use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Console\Command;
 
 class SyncContactTasksCommand extends Command
@@ -35,7 +34,7 @@ class SyncContactTasksCommand extends Command
 
         FlickrContact::whereDoesntHave('tasks')->cursor()->each(function (FlickrContact $contact) {
             $this->output->text("Creating tasks for contact {$contact->nsid}...");
-            foreach (FlickrService::CONTACT_TASKS as $task) {
+            foreach (TaskService::CONTACT_TASKS as $task) {
                 $contact->tasks()->create([
                     'task' => $task,
                 ]);
