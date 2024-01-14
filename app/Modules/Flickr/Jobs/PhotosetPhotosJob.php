@@ -5,7 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\RecurringState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Models\FlickrPhoto;
@@ -36,15 +36,15 @@ class PhotosetPhotosJob extends BaseJob
      */
     public function handle(FlickrService $flickrService): void
     {
-        $flickrService->setIntegration($this->integration);
         $photoset = $this->task->model;
-        $adapter = $flickrService->photosets;
 
-        $items = $adapter->getPhotos([
-            'user_id' => $photoset->owner,
-            'photoset_id' => $photoset->id,
-            'page' => $this->page
-        ]);
+        $items = $flickrService->setIntegration($this->integration)
+            ->photosets
+            ->getPhotos([
+                'user_id' => $photoset->owner,
+                'photoset_id' => $photoset->id,
+                'page' => $this->page
+            ]);
 
         $items->getItems()->each(function ($photo) use ($photoset) {
             $photo = FlickrPhoto::updateOrCreate([
@@ -60,8 +60,8 @@ class PhotosetPhotosJob extends BaseJob
             return;
         }
 
+        $this->task->state_code->transitionTo(RecurringState::class);
         $this->task->update([
-            'state_code' => States::STATE_RECURRING,
             'payload' => [
                 'page' => $items->getNextPage()
             ]

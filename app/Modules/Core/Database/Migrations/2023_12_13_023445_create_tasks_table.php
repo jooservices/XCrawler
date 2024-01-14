@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\StateMachine\Task\InitState;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -20,7 +21,7 @@ return new class extends Migration
             $table->uuid()->unique();
             $table->morphs('model');
             $table->string('task')->index();
-            $table->string('state_code')->default(Task::STATE_INIT)->index();
+            $table->string('state_code')->default(InitState::STATE_CODE)->index();
 
             $table->timestamps();
         });

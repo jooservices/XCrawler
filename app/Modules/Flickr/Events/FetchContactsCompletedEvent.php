@@ -15,6 +15,5 @@ class FetchContactsCompletedEvent
      */
     public function __construct()
     {
-        //
     }
 }

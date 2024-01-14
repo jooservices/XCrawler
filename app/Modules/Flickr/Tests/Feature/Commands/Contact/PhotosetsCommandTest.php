@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Modules\Flickr\Tests\Feature\Commands\Photoset;
+namespace App\Modules\Flickr\Tests\Feature\Commands\Contact;
 
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Jobs\PhotosetsJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use Illuminate\Support\Facades\Queue;
 
@@ -20,7 +22,7 @@ class PhotosetsCommandTest extends TestCase
          */
         $contact = app(FlickrContactService::class)->create(['nsid' => '99097633@N00']);
         $this->assertEquals(
-            count(FlickrService::CONTACT_TASKS),
+            count(TaskService::CONTACT_TASKS),
             $contact->refresh()->tasks->count()
         );
 
@@ -28,7 +30,8 @@ class PhotosetsCommandTest extends TestCase
 
         $this->artisan(PhotosetsCommand::COMMAND)->assertExitCode(0);
         Queue::assertPushed(PhotosetsJob::class, function ($job) use ($contact) {
-            return $job->task->model->is($contact);
+            return $job->task->model->is($contact)
+                && $job->task->refresh()->state_code->getValue() === InProgressState::class;
         });
     }
 }

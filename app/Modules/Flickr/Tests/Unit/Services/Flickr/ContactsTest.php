@@ -2,7 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
 

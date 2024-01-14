@@ -7,6 +7,8 @@ use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Client\OAuth\ProviderFactory;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Client\Services\GooglePhotos;
+use App\Modules\Client\StateMachine\Integration\CompletedState;
+use App\Modules\Client\StateMachine\Integration\InProgressState;
 use App\Modules\Flickr\Services\FlickrService;
 use Exception;
 use Google\Client;
@@ -31,15 +33,11 @@ class IntegrationCommand extends Command
     /**
      * @throws Exception
      */
-    public function handle(IntegrationRepository $repository): int
+    public function handle(): int
     {
         $service = $this->output->ask('Enter service: ');
 
-        $integrations = $repository->getNotIntegrated($service);
-        if ($integrations->isEmpty()) {
-            $this->output->error('No integrations found for ' . $service);
-            return 0;
-        }
+        $integrations = app(IntegrationRepository::class)->getInit($service);
 
         $integrations->each(function ($integration) {
             $this->output->table(
@@ -56,12 +54,10 @@ class IntegrationCommand extends Command
 
         $id = $this->output->ask('Choose integration: ', $integrations->first()->id);
         $integration = $integrations->where('id', $id)->first();
+        $integration->state_code->transitionTo(InProgressState::class);
 
         if ($service === FlickrService::SERVICE_NAME) {
-            $provider = app(ProviderFactory::class)->oauth1(
-                app(Flickr::class),
-                $integration
-            );
+            $provider = app(ProviderFactory::class)->oauth1(app(Flickr::class), $integration);
 
             $integrateService = app(
                 IntegrationService::class,
@@ -72,10 +68,14 @@ class IntegrationCommand extends Command
             );
 
             $this->output->title('Integrate with ' . ucfirst($service) . ' with ' . $integration->name);
-
             $this->output->text($integrateService->getAuthorizationUri());
 
+            // Also update state to completed
             $accessToken = $integrateService->retrieveAccessToken($this->output->ask('Enter code: '));
+
+            /**
+             * @TODO If can't get access token, then we need change state to failed
+             */
 
             $this->output->table(
                 ['Service', 'Name', 'ID', 'Token', 'Token Secret'],
@@ -100,6 +100,7 @@ class IntegrationCommand extends Command
             $client->setPrompt('consent');
             $auth_url = $client->createAuthUrl();
             $this->output->info($auth_url);
+            $integration->state_code->transitionTo(CompletedState::class);
         }
 
         return 0;

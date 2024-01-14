@@ -3,7 +3,7 @@
 namespace App\Modules\Flickr\Tests\Feature\Commands;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Services\States;
+use App\Modules\Client\StateMachine\Integration\CompletedState;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
 use App\Modules\Flickr\Jobs\PhotosizesJob;
 use App\Modules\Flickr\Models\FlickrPhoto;
@@ -16,7 +16,7 @@ class PhotosSizesCommandTest extends TestCase
     {
         Integration::factory()->create([
             'is_primary' => false,
-            'status' => States::STATE_COMPLETED,
+            'state_code' => CompletedState::class
         ]);
 
         Queue::fake(PhotosizesJob::class);

@@ -3,7 +3,6 @@
 namespace App\Modules\Client\Console\Integration;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Services\States;
 use Illuminate\Console\Command;
 
 class AddCommand extends Command
@@ -35,7 +34,6 @@ class AddCommand extends Command
             'secret' => $secret,
             'callback' => $callback,
             'is_primary' => $isPrimary === 'y',
-            'state_code' => States::STATE_INIT,
         ]);
     }
 }

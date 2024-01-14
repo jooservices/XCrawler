@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Console;
 
+use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Flickr\Jobs\ContactsJob;
 use App\Modules\Flickr\Services\FlickrService;
@@ -25,9 +26,9 @@ class ContactsCommand extends Command
     protected $description = 'Fetch all logged user \' contacts.';
 
     /**
-     * Execute the console command.
-     *
+     * @param IntegrationRepository $repository
      * @return void
+     * @throws NoIntegrateException
      */
     public function handle(IntegrationRepository $repository): void
     {

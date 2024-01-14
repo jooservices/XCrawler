@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\InitState;
 use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration {
@@ -12,7 +13,7 @@ return new class extends Migration {
     public function up()
     {
         \Illuminate\Support\Facades\DB::table('flickr_photos')->update([
-            'state_code' => States::STATE_INIT
+            'state_code' => InitState::STATE_CODE
         ]);
     }
 

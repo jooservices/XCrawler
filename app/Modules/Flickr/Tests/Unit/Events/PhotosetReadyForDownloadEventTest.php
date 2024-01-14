@@ -2,7 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Events;
 
-use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
 use App\Modules\Flickr\Models\FlickrPhotoset;
@@ -29,8 +29,8 @@ class PhotosetReadyForDownloadEventTest extends TestCase
         Event::dispatch(new PhotosetReadyForDownloadEvent($task));
 
         $this->assertEquals(
-            States::STATE_IN_PROGRESS,
-            $task->refresh()->state_code
+            InProgressState::class,
+            $task->refresh()->state_code->getValue(),
         );
 
         Queue::assertPushed(DownloadPhotoJob::class, 10);

@@ -2,7 +2,9 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Entities\FavoritesListEntity;
 use App\Modules\Flickr\Services\Flickr\Traits\HasList;
 use GuzzleHttp\Exception\GuzzleException;
@@ -14,8 +16,12 @@ class Favorites extends BaseAdapter
     public const PER_PAGE = 500;
 
     /**
-     * @throws InvalidRespondException
+     * @param array $params
+     * @return FavoritesListEntity
      * @throws GuzzleException
+     * @throws InvalidRespondException
+     * @throws FailedException
+     * @throws MissingEntityElement
      */
     public function getList(array $params = []): FavoritesListEntity
     {

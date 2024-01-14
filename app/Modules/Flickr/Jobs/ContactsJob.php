@@ -6,12 +6,12 @@ use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
 use App\Modules\Flickr\Events\FetchContactsRecursiveEvent;
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
-use App\Modules\Flickr\Services\Flickr\Adapters\Contacts;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Entities\ContactsListEntity;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
@@ -37,6 +37,8 @@ class ContactsJob extends BaseJob
      * @return void
      * @throws GuzzleException
      * @throws InvalidRespondException
+     * @throws MissingEntityElement
+     * @throws FailedException
      */
     public function handle(FlickrService $flickrService, FlickrContactService $contactService): void
     {

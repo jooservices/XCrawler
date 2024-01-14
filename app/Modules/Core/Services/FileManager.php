@@ -30,6 +30,11 @@ class FileManager
         $fileName = $fileName ?? explode('?', pathinfo($url, PATHINFO_BASENAME))[0];
         $saveTo = self::DOWNLOAD_PATH . '/' . $fileName;
 
+        if ($this->storage->exists($saveTo)) {
+            Event::dispatch(new FileDownloaded($url, $saveTo));
+            return 0;
+        }
+
         $return = app(Downloader::class)->download($url, $this->storage->path($saveTo));
 
         if ($return === false) {

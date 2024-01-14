@@ -3,7 +3,7 @@
 namespace App\Modules\Flickr\Services\Flickr\Entities;
 
 use App\Modules\Core\Entities\BaseEntity;
-use App\Modules\Flickr\Exceptions\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use Illuminate\Support\Collection;
 
 abstract class AbstractBaseListEntity extends BaseEntity
@@ -62,7 +62,8 @@ abstract class AbstractBaseListEntity extends BaseEntity
 
     public function isCompleted(): bool
     {
-        return $this->getPage() === $this->getPages();
+        return $this->getPage() === $this->getPages()
+            || $this->getTotal() === 0;
     }
 
     public function getNextPage(): int

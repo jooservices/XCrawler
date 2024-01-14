@@ -2,8 +2,8 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
-use App\Modules\Flickr\Exceptions\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetEntity;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetPhotosEntity;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetsListEntity;

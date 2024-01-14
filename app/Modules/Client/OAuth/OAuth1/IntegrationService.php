@@ -5,7 +5,7 @@ namespace App\Modules\Client\OAuth\OAuth1;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\OAuth1\Providers\ProviderInterface;
 use App\Modules\Client\OAuth\OAuth1\Token\Token;
-use App\Modules\Core\Services\States;
+use App\Modules\Client\StateMachine\Integration\CompletedState;
 
 class IntegrationService
 {
@@ -31,8 +31,8 @@ class IntegrationService
         $this->integration->update([
             'token_secret' => $accessToken->getAccessTokenSecret(),
             'token' => $accessToken->getAccessToken(),
-            'state_code' => States::STATE_COMPLETED
         ]);
+        $this->integration->state_code->transitionTo(CompletedState::class);
 
         return $accessToken;
     }

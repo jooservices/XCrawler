@@ -3,8 +3,9 @@
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
 use App\Modules\Core\Entities\EntityInterface;
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
-use App\Modules\Flickr\Exceptions\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Entities\ContactsListEntity;
 use App\Modules\Flickr\Services\Flickr\Traits\HasList;
 use GuzzleHttp\Exception\GuzzleException;
@@ -16,13 +17,16 @@ class Contacts extends BaseAdapter
     public const PER_PAGE = 1000;
 
     /**
-     * @throws InvalidRespondException
+     * @param array $params
+     * @return EntityInterface
      * @throws GuzzleException
+     * @throws InvalidRespondException
      * @throws MissingEntityElement
+     * @throws FailedException
      */
     public function getList(array $params = []): EntityInterface
     {
-        $data = $this->fetchList(
+        return new ContactsListEntity($this->fetchList(
             'flickr.contacts.getList',
             array_merge(
                 [
@@ -31,8 +35,6 @@ class Contacts extends BaseAdapter
                 ],
                 $params
             )
-        );
-
-        return new ContactsListEntity($data);
+        ));
     }
 }

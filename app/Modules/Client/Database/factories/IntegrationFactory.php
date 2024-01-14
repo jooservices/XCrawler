@@ -3,7 +3,6 @@
 namespace App\Modules\Client\Database\factories;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -33,7 +32,6 @@ class IntegrationFactory extends Factory
             'is_primary' => true,
             'token' => $this->faker->uuid,
             'token_secret' => $this->faker->uuid,
-            'state_code' => States::STATE_COMPLETED,
         ];
     }
 
@@ -51,15 +49,6 @@ class IntegrationFactory extends Factory
         return $this->state(function () use ($isPrimary) {
             return [
                 'is_primary' => $isPrimary,
-            ];
-        });
-    }
-
-    public function init(): Factory
-    {
-        return $this->state(function () {
-            return [
-                'state_code' => States::STATE_INIT,
             ];
         });
     }

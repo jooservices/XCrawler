@@ -30,6 +30,8 @@ class FlickrService
     public const TASK_PHOTOSET_PHOTOS = 'photoset-photos';
     public const TASK_DOWNLOAD_PHOTOSET = 'download-photoset';
     public const TASK_DOWNLOAD_PHOTOSET_PHOTO = 'download-photoset-photo';
+    public const TASK_UPLOAD_PHOTOSET = 'upload-photoset';
+    public const TASK_UPLOAD_PHOTO = 'upload-photo';
 
     public const CONTACT_TASKS = [
         self::TASK_CONTACT_FAVORITES,

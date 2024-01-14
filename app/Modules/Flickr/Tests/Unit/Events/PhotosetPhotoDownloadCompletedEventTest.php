@@ -4,6 +4,9 @@ namespace App\Modules\Flickr\Tests\Unit\Events;
 
 use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\Services\States;
+use App\Modules\Core\StateMachine\Task\CompletedState;
+use App\Modules\Core\StateMachine\Task\DownloadedState;
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Models\FlickrPhotoset;
@@ -37,15 +40,14 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
 
         $task = $photoset->tasks()->create([
             'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET,
-            'state_code' => States::STATE_INIT,
             'payload' => [
                 'photos' => 1
             ]
         ]);
+        $task->state_code->transitionTo(InProgressState::class);
 
         $subTask = $task->subTasks()->create([
             'task' => FlickrService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
-            'state_code' => States::STATE_INIT,
             'model_id' => $photo->id,
             'model_type' => FlickrPhoto::class,
         ]);
@@ -56,10 +58,11 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
                 $mock->shouldReceive('createPhoto');
             })
         );
+        $subTask->state_code->transitionTo(InProgressState::class);
 
         Event::dispatch(new PhotosetPhotoDownloadCompletedEvent($subTask));
 
-        $this->assertEquals(States::STATE_DOWNLOADED, $subTask->refresh()->state_code);
-        $this->assertEquals(States::STATE_COMPLETED, $task->refresh()->state_code);
+        $this->assertEquals(DownloadedState::class, $subTask->refresh()->state_code->getValue());
+        $this->assertEquals(DownloadedState::class, $task->refresh()->state_code->getValue());
     }
 }

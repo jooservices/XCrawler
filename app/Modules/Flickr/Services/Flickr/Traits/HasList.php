@@ -2,7 +2,8 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Traits;
 
-use App\Modules\Flickr\Exceptions\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use GuzzleHttp\Exception\GuzzleException;
 
 trait HasList
@@ -10,6 +11,7 @@ trait HasList
     /**
      * @throws InvalidRespondException
      * @throws GuzzleException
+     * @throws FailedException
      */
     protected function fetchList(
         string $method,
@@ -26,7 +28,7 @@ trait HasList
         if (
             !$this->isSuccessfull($data)
         ) {
-            return [];
+            throw new FailedException($data['message'] ?? 'Unknown error', $data['code'] ?? 0);
         }
 
         return $data;

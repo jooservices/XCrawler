@@ -3,8 +3,10 @@
 namespace App\Modules\Client\Tests\Feature\Commands;
 
 use App\Modules\Client\Console\Integration\AddCommand;
+use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Services\States;
+use App\Modules\Client\StateMachine\Integration\CompletedState;
+use App\Modules\Client\StateMachine\Integration\InitState;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
 
@@ -12,10 +14,7 @@ class IntegrationTest extends TestCase
 {
     public function testFlickrIntegration()
     {
-        $integration = Integration::factory()->create([
-            'name' => 'test',
-            'state_code' => States::STATE_INIT
-        ]);
+        $integration = Integration::factory()->create(['name' => 'test',]);
 
         $this->artisan('client:integration')
             ->expectsQuestion('Enter service: ', FlickrService::SERVICE_NAME)
@@ -23,7 +22,8 @@ class IntegrationTest extends TestCase
             ->expectsQuestion('Enter code: ', 'test-599ea1b1486d58e9')
             ->assertExitCode(0);
 
-        $this->assertEquals(States::STATE_COMPLETED, $integration->fresh()->state_code);
+        $this->assertTrue($integration->fresh()->state_code->getValue() === CompletedState::class);
+
         $this->assertEquals('test-secret', $integration->fresh()->token_secret);
         $this->assertEquals('test-599ea1b1486d58e9', $integration->fresh()->token);
     }
@@ -31,6 +31,7 @@ class IntegrationTest extends TestCase
     public function testNoIntegration()
     {
         Integration::truncate();
+        $this->expectException(NoIntegrateException::class);
         $this->artisan('client:integration')
             ->expectsQuestion('Enter service: ', FlickrService::SERVICE_NAME)
             ->assertExitCode(0);
@@ -58,7 +59,7 @@ class IntegrationTest extends TestCase
                 'secret' => 'test',
                 'callback' => 'test',
                 'is_primary' => true,
-                'state_code' => States::STATE_INIT,
+                'state_code' => InitState::class,
             ],
             'mongodb'
         );

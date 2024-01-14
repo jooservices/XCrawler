@@ -3,7 +3,7 @@
 namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Repositories\IntegrationRepository;
-use App\Modules\Core\Exceptions\HaveNoIntegration;
+use App\Modules\Core\Exceptions\NoIntegrateException;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
