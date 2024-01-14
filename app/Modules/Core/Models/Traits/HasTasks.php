@@ -3,7 +3,6 @@
 namespace App\Modules\Core\Models\Traits;
 
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\Services\States;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait HasTasks

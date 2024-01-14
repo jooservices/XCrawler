@@ -17,6 +17,7 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
+use TypeError;
 
 class ContactPhotosJob extends BaseJob
 {
@@ -70,7 +71,7 @@ class ContactPhotosJob extends BaseJob
         self::dispatch($this->integration, $this->task, $photos->getNextPage());
     }
 
-    public function failed(Exception $exception)
+    public function failed(Exception|TypeError $exception)
     {
         if ($this->task->state_code->getValue() !== FailedState::class) {
             $this->task->state_code->transitionTo(FailedState::class);
