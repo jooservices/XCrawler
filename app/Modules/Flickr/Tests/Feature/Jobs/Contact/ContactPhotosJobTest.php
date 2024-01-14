@@ -48,7 +48,7 @@ class ContactPhotosJobTest extends TestCase
         );
 
         $this->expectException(Exception::class);
-        ContactPhotosJob::dispatch($this->integration, $task);
+        ContactPhotosJob::dispatch($this->integration, $task)->onQueue(FlickrService::QUEUE_NAME);
         $this->assertEquals(FailedState::class, $task->refresh()->state_code);
     }
 }
