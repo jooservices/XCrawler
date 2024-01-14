@@ -10,6 +10,7 @@ use App\Modules\Core\StateMachine\Task\RecurringState;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Event;
 class PhotosetsJob extends BaseJob
 {
     use SerializesModels;
+    use HasRecurring;
 
     public $deleteWhenMissingModels = true;
 
@@ -75,14 +77,13 @@ class PhotosetsJob extends BaseJob
             return;
         }
 
-        $this->task->state_code->transitionTo(RecurringState::class);
         $this->task->update([
             'payload' => [
                 'page' => $items->getNextPage()
             ]
         ]);
 
-        Event::dispatch(new RecurredTaskEvent($this->task));
+        $this->recurringTask();
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
