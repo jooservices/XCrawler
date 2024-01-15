@@ -5,17 +5,18 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\StateMachine\Task\RecurringState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
-use App\Modules\Flickr\Events\RecurredTaskEvent;
+use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
+use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
 
 class PhotosetPhotosJob extends BaseJob
 {
     use SerializesModels;
+    use HasRecurring;
 
     public $deleteWhenMissingModels = true;
 
@@ -29,10 +30,9 @@ class PhotosetPhotosJob extends BaseJob
     }
 
     /**
-     * Execute the job.
-     *
      * @param FlickrService $flickrService
      * @return void
+     * @throws CouldNotPerformTransition
      */
     public function handle(FlickrService $flickrService): void
     {
@@ -60,14 +60,13 @@ class PhotosetPhotosJob extends BaseJob
             return;
         }
 
-        $this->task->state_code->transitionTo(RecurringState::class);
         $this->task->update([
             'payload' => [
                 'page' => $items->getNextPage()
             ]
         ]);
 
-        Event::dispatch(new RecurredTaskEvent($this->task));
+        $this->recurringTask();
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
