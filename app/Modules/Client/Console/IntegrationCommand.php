@@ -73,10 +73,6 @@ class IntegrationCommand extends Command
             // Also update state to completed
             $accessToken = $integrateService->retrieveAccessToken($this->output->ask('Enter code: '));
 
-            /**
-             * @TODO If can't get access token, then we need change state to failed
-             */
-
             $this->output->table(
                 ['Service', 'Name', 'ID', 'Token', 'Token Secret'],
                 [
