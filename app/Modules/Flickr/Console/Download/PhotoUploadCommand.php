@@ -33,7 +33,6 @@ class PhotoUploadCommand extends Command
     public function handle(TaskRepository $taskRepository): void
     {
         $taskRepository->tasks(TaskService::TASK_UPLOAD_PHOTO, 5)->each(function ($task) {
-            $task->state_code->transitionTo(InProgressState::class);
             PhotoUploadJob::dispatch($task)->onQueue(FlickrService::QUEUE_NAME);
         });
     }

@@ -27,7 +27,7 @@ class PhotosetEventSubscriber
 
     public function onFetchPhotosetPhotosCompleted(FetchPhotosetPhotosCompletedEvent $event)
     {
-        $event->task->state_code->transitionTo(CompletedState::class);
+        $event->task->transitionTo(CompletedState::class);
 
         if ($event->task->parentTask && $event->task->parentTask->task === TaskService::TASK_DOWNLOAD_PHOTOSET) {
             Event::dispatch(new PhotosetReadyForDownloadEvent($event->task->parentTask));
@@ -40,7 +40,7 @@ class PhotosetEventSubscriber
      */
     public function onPhotosetReadyForDownload(PhotosetReadyForDownloadEvent $event)
     {
-        $event->task->state_code->transitionTo(InProgressState::class);
+        $event->task->transitionTo(InProgressState::class);
         $event->task->model->relationshipPhotos->each(function ($photo) use ($event) {
             $task = $photo->tasks()->create([
                 'task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
@@ -53,7 +53,7 @@ class PhotosetEventSubscriber
 
     public function onPhotosetPhotoDownloadCompletedEvent(PhotosetPhotoDownloadCompletedEvent $event)
     {
-        $event->task->state_code->transitionTo(DownloadedState::class);
+        $event->task->transitionTo(DownloadedState::class);
 
         $parentTask = $event->task->parentTask;
         $photoset = $parentTask->model;
@@ -69,7 +69,7 @@ class PhotosetEventSubscriber
             return;
         }
 
-        $parentTask->state_code->transitionTo(DownloadedState::class);
+        $parentTask->transitionTo(DownloadedState::class);
         Event::dispatch(new PhotosetPhotoReadyForUploadEvent($photoset));
     }
 
@@ -87,7 +87,7 @@ class PhotosetEventSubscriber
                 'photos' => $photos->count(),
             ]
         ]);
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         foreach ($photos as $photo) {
             $task->subTasks()->create([

@@ -22,7 +22,7 @@ class IntegrationTest extends TestCase
             ->expectsQuestion('Enter code: ', 'test-599ea1b1486d58e9')
             ->assertExitCode(0);
 
-        $this->assertTrue($integration->fresh()->state_code->getValue() === CompletedState::class);
+        $this->assertTrue($integration->fresh()->isState(CompletedState::class));
 
         $this->assertEquals('test-secret', $integration->fresh()->token_secret);
         $this->assertEquals('test-599ea1b1486d58e9', $integration->fresh()->token);

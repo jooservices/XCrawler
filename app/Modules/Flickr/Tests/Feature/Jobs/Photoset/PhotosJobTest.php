@@ -30,7 +30,7 @@ class PhotosJobTest extends TestCase
         $task = $photoset->tasks()->create([
             'task' => TaskService::TASK_PHOTOSET_PHOTOS,
         ]);
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         PhotosetPhotosJob::dispatch($this->integration, $task);
 

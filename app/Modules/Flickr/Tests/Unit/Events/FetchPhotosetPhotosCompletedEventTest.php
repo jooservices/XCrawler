@@ -22,7 +22,7 @@ class FetchPhotosetPhotosCompletedEventTest extends TestCase
         $task = $photoset->tasks()->create([
             'task' => TaskService::TASK_CONTACT_PHOTOSETS,
         ]);
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         Event::dispatch(new FetchPhotosetPhotosCompletedEvent($task));
 

@@ -17,7 +17,7 @@ class ProviderFactory
          * Integration already completed than use token from database
          * @TODO Consider combine both credentials and token into one object
          */
-        if ($integration->state_code->getValue() === CompletedState::class) {
+        if ($integration->isState(CompletedState::class)) {
             $token = app(Token::class);
             $token->setAccessToken($integration->token);
             $token->setAccessTokenSecret($integration->token_secret);

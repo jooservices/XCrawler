@@ -54,7 +54,7 @@ class IntegrationCommand extends Command
 
         $id = $this->output->ask('Choose integration: ', $integrations->first()->id);
         $integration = $integrations->where('id', $id)->first();
-        $integration->state_code->transitionTo(InProgressState::class);
+        $integration->transitionTo(InProgressState::class);
 
         if ($service === FlickrService::SERVICE_NAME) {
             $provider = app(ProviderFactory::class)->oauth1(app(Flickr::class), $integration);
@@ -100,7 +100,7 @@ class IntegrationCommand extends Command
             $client->setPrompt('consent');
             $auth_url = $client->createAuthUrl();
             $this->output->info($auth_url);
-            $integration->state_code->transitionTo(CompletedState::class);
+            $integration->transitionTo(CompletedState::class);
         }
 
         return 0;

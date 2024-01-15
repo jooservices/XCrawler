@@ -25,9 +25,7 @@ class PhotoUploadJob extends BaseJob
      */
     public function handle()
     {
-        if ($this->task->state_code->getValue() !== InProgressState::class) {
-            $this->task->state_code->transitionTo(InProgressState::class);
-        }
+        $this->task->transitionTo(InProgressState::class);
 
         $parentTask = $this->task->parentTask;
         /**
@@ -41,10 +39,10 @@ class PhotoUploadJob extends BaseJob
         }
 
         $photo->uploadToGooglePhotos($photoset->googlePhotoAlbum->album_id);
-        $this->task->state_code->transitionTo(CompletedState::class);
+        $this->task->transitionTo(CompletedState::class);
 
         if ($parentTask->subTasks()->where('state_code', CompletedState::class)->count() === $parentTask->payload['photos']) {
-            $parentTask->state_code->transitionTo(CompletedState::class);
+            $parentTask->transitionTo(CompletedState::class);
         }
     }
 }

@@ -26,7 +26,7 @@ class DownloadPhotoJob extends BaseJob
 
     public function handle(FileManager $fileManager)
     {
-        $this->task->state_code->transitionTo(InProgressState::class);
+        $this->task->transitionTo(InProgressState::class);
         $photo = $this->task->model;
         $fileName = $fileManager->download($photo->getOriginalSizeUrl());
 

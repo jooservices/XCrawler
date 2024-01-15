@@ -4,6 +4,7 @@ namespace App\Modules\Core\Models;
 
 use App\Modules\Core\Database\factories\TaskFactory;
 use App\Modules\Core\Models\Traits\HasUuid;
+use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\TaskState;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,12 +12,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\ModelStates\HasStates;
+use App\Modules\Core\Models\Traits\HasStates as HasStatesCover;
 use Spatie\ModelStates\State;
 
 /**
+ * @property Task $parentTask
  * @property string $uuid
  * @property string $model_type
  * @property int $model_id
+ * @property Model $model
  * @property string $task
  * @property State $state_code
  * @property array $payload
@@ -26,6 +30,7 @@ class Task extends Model
     use HasFactory;
     use HasUuid;
     use HasStates;
+    use HasStatesCover;
 
     protected $table = 'tasks';
 
@@ -58,9 +63,19 @@ class Task extends Model
         return $this->morphTo('model');
     }
 
+    public function isTask(string $task): bool
+    {
+        return $this->task === $task;
+    }
+
     public function subTasks(): HasMany
     {
         return $this->hasMany(Task::class, 'task_id');
+    }
+
+    public function isSubTasksCompleted(): bool
+    {
+        return $this->subTasks()->count() === $this->subTasks()->where('state_code', CompletedState::class)->count();
     }
 
     public function parentTask(): BelongsTo

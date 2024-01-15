@@ -55,7 +55,7 @@ class PhotosetPhotoReadyForUploadEventTest extends TestCase
 
         Event::dispatch(new PhotosetPhotoReadyForUploadEvent($photoset));
         $task = $photoset->tasks()->where('task', TaskService::TASK_UPLOAD_PHOTOSET)->first();
-        $this->assertEquals(InProgressState::class, $task->state_code->getValue());
+        $this->assertTrue($task->isState(InProgressState::class));
         $this->assertEquals(5, $task->payload['photos']);
         $this->assertEquals(5, $task->subTasks()->count());
 
@@ -64,6 +64,6 @@ class PhotosetPhotoReadyForUploadEventTest extends TestCase
         $task = $photoset->tasks()->where('task', TaskService::TASK_UPLOAD_PHOTOSET)->first();
 
         $this->assertEquals(5, $task->subTasks()->where('state_code', TaskCompletedState::class)->count());
-        $this->assertEquals(TaskCompletedState::class, $task->state_code->getValue());
+        $this->assertTrue($task->isState(TaskCompletedState::class));
     }
 }

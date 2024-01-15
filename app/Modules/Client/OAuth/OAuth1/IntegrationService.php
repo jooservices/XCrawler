@@ -32,7 +32,7 @@ class IntegrationService
             'token_secret' => $accessToken->getAccessTokenSecret(),
             'token' => $accessToken->getAccessToken(),
         ]);
-        $this->integration->state_code->transitionTo(CompletedState::class);
+        $this->integration->transitionTo(CompletedState::class);
 
         return $accessToken;
     }

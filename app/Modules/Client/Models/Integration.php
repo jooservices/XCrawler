@@ -9,8 +9,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Spatie\ModelStates\HasStates;
+use App\Modules\Core\Models\Traits\HasStates as HasStatesCover;
 
 /**
+ * @property int $id
  * @property string $service
  * @property string $key
  * @property string $token
@@ -26,6 +28,7 @@ class Integration extends Model implements CredentialsInterface
 {
     use HasFactory;
     use HasStates;
+    use HasStatesCover;
 
     protected $connection = 'mongodb';
 

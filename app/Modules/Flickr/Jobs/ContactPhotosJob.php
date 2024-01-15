@@ -56,7 +56,7 @@ class ContactPhotosJob extends BaseJob
         $contactService->addPhotos($photos->getItems());
 
         if ($photos->isCompleted()) {
-            $this->task->state_code->transitionTo(CompletedState::class);
+            $this->task->transitionTo(CompletedState::class);
             return;
         }
 
@@ -73,8 +73,6 @@ class ContactPhotosJob extends BaseJob
 
     public function failed(Exception|TypeError $exception)
     {
-        if ($this->task->state_code->getValue() !== FailedState::class) {
-            $this->task->state_code->transitionTo(FailedState::class);
-        }
+        $this->task->transitionTo(FailedState::class);
     }
 }
