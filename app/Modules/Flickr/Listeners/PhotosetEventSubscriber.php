@@ -29,7 +29,10 @@ class PhotosetEventSubscriber
     {
         $event->task->transitionTo(CompletedState::class);
 
-        if ($event->task->parentTask && $event->task->parentTask->task === TaskService::TASK_DOWNLOAD_PHOTOSET) {
+        if (
+            $event->task->parentTask()->exists()
+            && $event->task->parentTask->task === TaskService::TASK_DOWNLOAD_PHOTOSET
+        ) {
             Event::dispatch(new PhotosetReadyForDownloadEvent($event->task->parentTask));
         }
     }

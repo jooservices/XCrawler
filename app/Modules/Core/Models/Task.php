@@ -20,7 +20,6 @@ use Spatie\ModelStates\State;
  * @property string $uuid
  * @property string $model_type
  * @property int $model_id
- * @property Model $model
  * @property string $task
  * @property State $state_code
  * @property array $payload
