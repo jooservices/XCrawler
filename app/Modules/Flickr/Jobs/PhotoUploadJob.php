@@ -6,6 +6,7 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
+use App\Modules\Flickr\Exceptions\Google\GoogleAlbumNotFound;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use Exception;
 use Illuminate\Queue\SerializesModels;
@@ -35,7 +36,7 @@ class PhotoUploadJob extends BaseJob
         $photoset = $parentTask->model;
 
         if (!$photoset->googlePhotoAlbum()->exists()) {
-            throw new Exception('Google Photo Album not exists');
+            throw new GoogleAlbumNotFound('Google Photo Album not exists');
         }
 
         $photo->uploadToGooglePhotos($photoset->googlePhotoAlbum->album_id);
