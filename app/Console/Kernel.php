@@ -33,13 +33,13 @@ class Kernel extends ConsoleKernel
          * Flickr
          */
         $schedule->command(ContactsCommand::COMMAND)->weekly();
-        $schedule->command(PhotosCommand::COMMAND)->everyTwoMinutes();
-        $schedule->command(FavoritesCommand::COMMAND)->everyTwoMinutes();
+        $schedule->command(PhotosCommand::COMMAND)->everyMinute();
+        $schedule->command(FavoritesCommand::COMMAND)->everyMinute();
 
-        $schedule->command(PhotosetsCommand::COMMAND)->everyTwoMinutes();
-        $schedule->command(PhotosetPhotosCommand::COMMAND)->everyTwoMinutes();
+        $schedule->command(PhotosetsCommand::COMMAND)->everyMinute();
+        $schedule->command(PhotosetPhotosCommand::COMMAND)->everyMinute();
 
-        $schedule->command(PhotosSizesCommand::COMMAND)->everyTwoMinutes();
+        $schedule->command(PhotosSizesCommand::COMMAND)->everyMinute();
 
         $schedule->command(PhotoUploadCommand::COMMAND)->everyMinute();
     }
