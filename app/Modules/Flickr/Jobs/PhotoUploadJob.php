@@ -8,7 +8,6 @@ use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Exceptions\Google\GoogleAlbumNotFound;
 use App\Modules\Flickr\Models\FlickrPhoto;
-use Exception;
 use Illuminate\Queue\SerializesModels;
 
 class PhotoUploadJob extends BaseJob
@@ -22,9 +21,10 @@ class PhotoUploadJob extends BaseJob
     }
 
     /**
-     * @throws Exception
+     * @return void
+     * @throws GoogleAlbumNotFound
      */
-    public function handle()
+    public function handle(): void
     {
         $this->task->transitionTo(InProgressState::class);
 

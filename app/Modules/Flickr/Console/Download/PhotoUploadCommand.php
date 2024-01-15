@@ -3,7 +3,6 @@
 namespace App\Modules\Flickr\Console\Download;
 
 use App\Modules\Core\Repositories\TaskRepository;
-use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Jobs\PhotoUploadJob;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Services\TaskService;
