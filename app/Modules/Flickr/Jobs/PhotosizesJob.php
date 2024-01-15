@@ -8,6 +8,7 @@ use App\Modules\Flickr\Events\PhotoSizedEvent;
 use App\Modules\Flickr\Exceptions\PhotoSizesNotFound;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
+use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
@@ -31,7 +32,7 @@ class PhotosizesJob extends BaseJob
      * @param FlickrService $flickrService
      * @return void
      * @throws GuzzleException
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(FlickrService $flickrService): void
     {

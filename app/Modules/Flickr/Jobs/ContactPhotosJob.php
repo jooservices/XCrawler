@@ -13,19 +13,17 @@ use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
 use Throwable;
-use TypeError;
 
 class ContactPhotosJob extends BaseJob
 {
     use SerializesModels;
     use HasRecurring;
 
-    public $deleteWhenMissingModels = true;
+    public bool $deleteWhenMissingModels = true;
 
     /**
      * Create a new job instance.
@@ -45,7 +43,7 @@ class ContactPhotosJob extends BaseJob
      * @throws GuzzleException
      * @throws CouldNotPerformTransition
      */
-    public function handle(FlickrService $flickrService)
+    public function handle(FlickrService $flickrService): void
     {
         $contactService = app(FlickrContactService::class);
 

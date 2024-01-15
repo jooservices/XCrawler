@@ -102,6 +102,9 @@ class BaseEntity implements EntityInterface
         return isset($this->data[$name]);
     }
 
+    /**
+     * @throws EntityCastException
+     */
     public function toArray(): array
     {
         if (empty($this->fields)) {

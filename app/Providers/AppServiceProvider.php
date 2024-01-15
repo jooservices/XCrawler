@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -39,7 +40,7 @@ class AppServiceProvider extends ServiceProvider
     {
         try {
             DB::connection()->getPdo();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             report("Could not connect to the database.  Please check your configuration. error:" . $e);
             die;
         }
@@ -49,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
     {
         try {
             Cache::get('dummy');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             report("Could not connect to the database.  Please check your configuration. error:" . $e);
             die;
         }

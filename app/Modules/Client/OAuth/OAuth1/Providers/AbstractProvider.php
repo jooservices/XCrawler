@@ -12,6 +12,7 @@ use App\Modules\Client\Responses\XResponseInterface;
 use App\Modules\Client\Uri\Uri;
 use App\Modules\Client\Uri\UriInterface;
 use DateTime;
+use Exception;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 
@@ -153,7 +154,7 @@ abstract class AbstractProvider extends AbstractBaseProvider implements Provider
      *                                          These will override service-specific any defaults.
      *
      * @return XResponseInterface
-     * @throws \Exception
+     * @throws Exception
      */
     public function request(
         $path,
