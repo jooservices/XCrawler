@@ -17,7 +17,7 @@ class IntegrationRepositoryTest extends TestCase
         $integration = Integration::factory()->create([
             'service' => 'test'
         ]);
-        $integration->state_code->transitionTo(InProgressState::class);
+        $integration->transitionTo(InProgressState::class);
 
         $integrations = app(IntegrationRepository::class)
             ->getItems($integration->service, null, InProgressState::class);
@@ -35,7 +35,7 @@ class IntegrationRepositoryTest extends TestCase
             ->getInit($integration->service);
 
         $this->assertEquals(1, $integrations->count());
-        $this->assertEquals(InitState::class, $integrations->first()->state_code->getValue());
+        $this->assertTrue($integrations->first()->isState(InitState::class));
     }
 
     public function testGetCompleted()
@@ -45,6 +45,6 @@ class IntegrationRepositoryTest extends TestCase
 
         $this->assertEquals(1, $integrations->count());
 
-        $this->assertEquals(CompletedState::class, $integrations->first()->state_code->getValue());
+        $this->assertTrue($integrations->first()->isState(CompletedState::class));
     }
 }

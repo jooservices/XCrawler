@@ -31,7 +31,7 @@ class PhotosCommandTest extends TestCase
 
         Queue::assertPushed(PhotosetPhotosJob::class, function ($job) use ($photoset) {
             return $job->task->model->is($photoset)
-                && $job->task->refresh()->state_code->getValue() === InProgressState::class;
+                && $job->task->refresh()->isState(InProgressState::class);
         });
     }
 }

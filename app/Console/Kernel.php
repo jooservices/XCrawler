@@ -6,6 +6,7 @@ use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
 use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Console\ContactsCommand;
+use App\Modules\Flickr\Console\Download\PhotoUploadCommand;
 use App\Modules\Flickr\Console\Photoset\PhotosCommand as PhotosetPhotosCommand;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
 use App\Modules\JAV\Console\Onejav\DailyCommand;
@@ -39,6 +40,8 @@ class Kernel extends ConsoleKernel
         $schedule->command(PhotosetPhotosCommand::COMMAND)->everyTwoMinutes();
 
         $schedule->command(PhotosSizesCommand::COMMAND)->everyTwoMinutes();
+
+        $schedule->command(PhotoUploadCommand::COMMAND)->everyMinute();
     }
 
     /**

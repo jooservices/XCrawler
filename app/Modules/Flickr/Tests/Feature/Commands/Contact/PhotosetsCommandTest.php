@@ -30,7 +30,7 @@ class PhotosetsCommandTest extends TestCase
         $this->artisan(PhotosetsCommand::COMMAND)->assertExitCode(0);
         Queue::assertPushed(PhotosetsJob::class, function ($job) use ($contact) {
             return $job->task->model->is($contact)
-                && $job->task->refresh()->state_code->getValue() === InProgressState::class;
+                && $job->task->refresh()->isState(InProgressState::class);
         });
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Modules\Flickr\Console\Contact;
 
-use App\Modules\Core\Exceptions\NoIntegrateException;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Console\Command;

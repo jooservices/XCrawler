@@ -6,8 +6,8 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
+use App\Modules\Flickr\Exceptions\Google\GoogleAlbumNotFound;
 use App\Modules\Flickr\Models\FlickrPhoto;
-use Exception;
 use Illuminate\Queue\SerializesModels;
 
 class PhotoUploadJob extends BaseJob
@@ -21,13 +21,12 @@ class PhotoUploadJob extends BaseJob
     }
 
     /**
-     * @throws Exception
+     * @return void
+     * @throws GoogleAlbumNotFound
      */
-    public function handle()
+    public function handle(): void
     {
-        if ($this->task->state_code->getValue() !== InProgressState::class) {
-            $this->task->state_code->transitionTo(InProgressState::class);
-        }
+        $this->task->transitionTo(InProgressState::class);
 
         $parentTask = $this->task->parentTask;
         /**
@@ -37,14 +36,14 @@ class PhotoUploadJob extends BaseJob
         $photoset = $parentTask->model;
 
         if (!$photoset->googlePhotoAlbum()->exists()) {
-            throw new Exception('Google Photo Album not exists');
+            throw new GoogleAlbumNotFound('Google Photo Album not exists');
         }
 
         $photo->uploadToGooglePhotos($photoset->googlePhotoAlbum->album_id);
-        $this->task->state_code->transitionTo(CompletedState::class);
+        $this->task->transitionTo(CompletedState::class);
 
         if ($parentTask->subTasks()->where('state_code', CompletedState::class)->count() === $parentTask->payload['photos']) {
-            $parentTask->state_code->transitionTo(CompletedState::class);
+            $parentTask->transitionTo(CompletedState::class);
         }
     }
 }

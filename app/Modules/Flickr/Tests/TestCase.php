@@ -168,7 +168,7 @@ class TestCase extends BaseTestCase
         }
 
         $mock->shouldReceive('request')
-            ->withArgs(function ($method, $url, $options) use ($index) {
+            ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.favorites.getList')
                     && $options['form_params']['per_page'] === 500

@@ -60,7 +60,7 @@ class ContactFavoritesJob extends BaseJob
         $contactService->addPhotos($items->getItems());
 
         if ($items->isCompleted()) {
-            $this->task->state_code->transitionTo(CompletedState::class);
+            $this->task->transitionTo(CompletedState::class);
             return;
         }
 

@@ -2,10 +2,13 @@
 
 namespace App\Modules\Client\OAuth\OAuth1;
 
+use App\Modules\Client\Exceptions\CannotGetAccessTokenException;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\OAuth\OAuth1\Providers\ProviderInterface;
 use App\Modules\Client\OAuth\OAuth1\Token\Token;
 use App\Modules\Client\StateMachine\Integration\CompletedState;
+use App\Modules\Client\StateMachine\Integration\FailedState;
+use Exception;
 
 class IntegrationService
 {
@@ -25,14 +28,22 @@ class IntegrationService
         )->getAbsoluteUri();
     }
 
+    /**
+     * @throws CannotGetAccessTokenException
+     */
     public function retrieveAccessToken(string $code): Token
     {
-        $accessToken = $this->provider->retrieveAccessToken($code);
-        $this->integration->update([
-            'token_secret' => $accessToken->getAccessTokenSecret(),
-            'token' => $accessToken->getAccessToken(),
-        ]);
-        $this->integration->state_code->transitionTo(CompletedState::class);
+        try {
+            $accessToken = $this->provider->retrieveAccessToken($code);
+            $this->integration->transitionTo(CompletedState::class);
+            $this->integration->update([
+                'token_secret' => $accessToken->getAccessTokenSecret(),
+                'token' => $accessToken->getAccessToken(),
+            ]);
+        } catch (Exception $e) {
+            $this->integration->transitionTo(FailedState::class);
+            throw new CannotGetAccessTokenException($e->getMessage());
+        }
 
         return $accessToken;
     }

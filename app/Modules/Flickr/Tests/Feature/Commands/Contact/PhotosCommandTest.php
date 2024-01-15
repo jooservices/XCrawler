@@ -27,7 +27,7 @@ class PhotosCommandTest extends TestCase
 
         Queue::assertPushed(ContactPhotosJob::class, function ($job) use ($contact) {
             return $job->task->model->is($contact)
-                && $job->task->refresh()->state_code->getValue() === InProgressState::class;
+                && $job->task->refresh()->isState(InProgressState::class);
         });
     }
 }

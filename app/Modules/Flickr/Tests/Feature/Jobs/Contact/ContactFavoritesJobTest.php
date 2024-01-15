@@ -33,7 +33,7 @@ class ContactFavoritesJobTest extends TestCase
         ]);
 
         $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         ContactFavoritesJob::dispatch($this->integration, $task);
 
@@ -56,7 +56,7 @@ class ContactFavoritesJobTest extends TestCase
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
 
         $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         ContactFavoritesJob::dispatch($this->integration, $task);
 

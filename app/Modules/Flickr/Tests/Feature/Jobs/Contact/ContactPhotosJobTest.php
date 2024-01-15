@@ -22,7 +22,7 @@ class ContactPhotosJobTest extends TestCase
         $contact = app(FlickrContactService::class)->create(['nsid' => '73115043@N07',]);
         $task = $contact->refresh()->tasks()
             ->where('task', TaskService::TASK_CONTACT_PHOTOS)->first();
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         ContactPhotosJob::dispatch($this->integration, $task);
 
@@ -37,7 +37,7 @@ class ContactPhotosJobTest extends TestCase
         $task = $contact->refresh()->tasks()
             ->where('task', TaskService::TASK_CONTACT_PHOTOS)->first();
 
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         $this->instance(
             FlickrService::class,

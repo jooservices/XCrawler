@@ -28,10 +28,7 @@ class PhotosetReadyForDownloadEventTest extends TestCase
 
         Event::dispatch(new PhotosetReadyForDownloadEvent($task));
 
-        $this->assertEquals(
-            InProgressState::class,
-            $task->refresh()->state_code->getValue(),
-        );
+        $this->assertTrue($task->refresh()->isState(InProgressState::class));
 
         Queue::assertPushed(DownloadPhotoJob::class, 10);
     }

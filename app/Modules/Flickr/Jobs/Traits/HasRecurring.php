@@ -10,9 +10,7 @@ trait HasRecurring
 {
     protected function recurringTask()
     {
-        if ($this->task->state_code->getValue() !== RecurringState::class) {
-            $this->task->state_code->transitionTo(RecurringState::class);
-        }
+        $this->task->transitionTo(RecurringState::class);
 
         Event::dispatch(new RecurredTaskEvent($this->task));
     }

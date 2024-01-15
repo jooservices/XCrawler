@@ -26,7 +26,7 @@ class PhotosetsJobTest extends TestCase
         $task = $contact->tasks()
             ->where('task', TaskService::TASK_CONTACT_PHOTOSETS)
             ->first();
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         PhotosetsJob::dispatch($this->integration, $task);
 
@@ -51,16 +51,15 @@ class PhotosetsJobTest extends TestCase
         $task = $contact->tasks()
             ->where('task', TaskService::TASK_CONTACT_PHOTOSETS)
             ->first();
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         PhotosetsJob::dispatch($this->integration, $task);
 
         Event::assertDispatched(RecurredTaskEvent::class, function ($event) use ($task) {
             return $event->task->is($task)
-                && $event->task->state_code->getValue() === RecurringState::class;
+                && $event->task->isState(RecurringState::class);
         });
-        $this->assertEquals(CompletedState::class, $task->refresh()->state_code);
-
+        $this->assertTrue($task->refresh()->isState(CompletedState::class));
         $this->assertEquals(2, $task->refresh()->payload['page']);
     }
 }

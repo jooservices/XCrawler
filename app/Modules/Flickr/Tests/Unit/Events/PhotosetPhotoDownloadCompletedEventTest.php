@@ -45,7 +45,7 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
                 'photos' => 1
             ]
         ]);
-        $task->state_code->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
         $subTask = $task->subTasks()->create([
             'task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
@@ -59,12 +59,12 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
                 $mock->shouldReceive('createPhoto');
             })
         );
-        $subTask->state_code->transitionTo(InProgressState::class);
+        $subTask->transitionTo(InProgressState::class);
 
         Event::dispatch(new PhotosetPhotoDownloadCompletedEvent($subTask));
 
-        $this->assertEquals(DownloadedState::class, $subTask->refresh()->state_code->getValue());
-        $this->assertEquals(DownloadedState::class, $task->refresh()->state_code->getValue());
+        $this->assertTrue($subTask->refresh()->isState(DownloadedState::class));
+        $this->assertTrue($task->refresh()->isState(DownloadedState::class));
         Event::assertDispatched(PhotosetPhotoReadyForUploadEvent::class);
     }
 }

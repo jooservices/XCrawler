@@ -161,7 +161,7 @@ class DownloadAlbumCommand extends Command
             'model_id' => $task->model_id,
             'task' => TaskService::TASK_PHOTOSET_PHOTOS,
         ]);
-        $subTask->state_code->transitionTo(InProgressState::class);
+        $subTask->transitionTo(InProgressState::class);
 
         PhotosetPhotosJob::dispatch($this->integration, $subTask)->onQueue(FlickrService::QUEUE_NAME);
         $this->warn('There are no photos yet. Registered task to fetch photos of photoset');
