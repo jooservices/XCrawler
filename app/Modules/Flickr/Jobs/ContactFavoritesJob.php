@@ -72,8 +72,8 @@ class ContactFavoritesJob extends BaseJob
     public function failed(\Throwable $exception)
     {
         if ($exception->getCode() === 1) {
-            $this->task->model->tasks()->delete();
             $this->task->transitionTo(FailedState::class);
+            $this->task->model->tasks()->delete();
         }
     }
 }
