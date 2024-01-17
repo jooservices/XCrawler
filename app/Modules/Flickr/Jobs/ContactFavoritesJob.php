@@ -13,10 +13,8 @@ use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
-use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
-use TypeError;
 
 /**
  * Get all favorites of a contact.
@@ -43,22 +41,14 @@ class ContactFavoritesJob extends BaseJob
      * @return void
      * @throws GuzzleException
      * @throws InvalidRespondException
-     * @throws MissingEntityElement
+     * @throws MissingEntityElement|FailedException
      */
     public function handle(FlickrService $flickrService, FlickrContactService $contactService): void
     {
-        try {
-            $items = $flickrService->setIntegration($this->integration)->favorites->getList([
-                'user_id' => $this->task->model->nsid,
-                'page' => $this->page
-            ]);
-        } catch (FailedException $e) {
-            if ($e->getCode() === 1) {
-                // User not found
-                $this->task->model->tasks()->delete();
-            }
-            return;
-        }
+        $items = $flickrService->setIntegration($this->integration)->favorites->getList([
+            'user_id' => $this->task->model->nsid,
+            'page' => $this->page
+        ]);
 
         $contactService->addPhotos($items->getItems());
 
@@ -79,8 +69,11 @@ class ContactFavoritesJob extends BaseJob
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 
-    public function failed(Exception|TypeError $exception)
+    public function failed(\Throwable $exception)
     {
-        $this->task->transitionTo(FailedState::class);
+        if ($exception->getCode() === 1) {
+            $this->task->model->tasks()->delete();
+            $this->task->transitionTo(FailedState::class);
+        }
     }
 }

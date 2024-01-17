@@ -3,9 +3,11 @@
 namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
 use App\Modules\Core\StateMachine\Task\CompletedState;
+use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\TaskService;
@@ -58,9 +60,11 @@ class ContactFavoritesJobTest extends TestCase
         $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
         $task->transitionTo(InProgressState::class);
 
+        $this->expectException(FailedException::class);
         ContactFavoritesJob::dispatch($this->integration, $task);
 
         // Tasks deleted
         $this->assertEquals(0, $contact->refresh()->tasks->count());
+        $this->assertTrue($task->refresh()->isState(FailedState::class));
     }
 }
