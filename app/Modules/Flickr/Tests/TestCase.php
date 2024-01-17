@@ -211,6 +211,23 @@ class TestCase extends BaseTestCase
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.photos.getSizes')
+                    && isset($options['form_params']['photo_id'])
+                    && $options['form_params']['photo_id'] === 10;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    [
+                        'Content-Type' => 'application/json; charset=utf-8',
+                    ],
+                    $this->getFixtures('flickr_photo_sizes_notfound.json')
+                )
+            );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photos.getSizes')
                     && $options['form_params']['photo_id'] === -1;
             })
             ->andThrow($this->exception());

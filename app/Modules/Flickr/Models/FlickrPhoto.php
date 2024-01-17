@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property int $id
@@ -27,6 +28,7 @@ class FlickrPhoto extends Model implements TaskInterface
     use HasUuid;
     use HasTasks;
     use HasFactory;
+    use SoftDeletes;
 
     /**
      * Mapping with Flickr photo.id
