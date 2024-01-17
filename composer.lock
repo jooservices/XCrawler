@@ -273,16 +273,16 @@
         },
         {
             "name": "doctrine/inflector",
-            "version": "2.0.8",
+            "version": "2.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "f9301a5b2fb1216b2b08f02ba04dc45423db6bff"
+                "reference": "2930cd5ef353871c821d5c43ed030d39ac8cfe65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/f9301a5b2fb1216b2b08f02ba04dc45423db6bff",
-                "reference": "f9301a5b2fb1216b2b08f02ba04dc45423db6bff",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/2930cd5ef353871c821d5c43ed030d39ac8cfe65",
+                "reference": "2930cd5ef353871c821d5c43ed030d39ac8cfe65",
                 "shasum": ""
             },
             "require": {
@@ -344,7 +344,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/inflector/issues",
-                "source": "https://github.com/doctrine/inflector/tree/2.0.8"
+                "source": "https://github.com/doctrine/inflector/tree/2.0.9"
             },
             "funding": [
                 {
@@ -360,7 +360,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-06-16T13:40:37+00:00"
+            "time": "2024-01-15T18:05:13+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -2048,36 +2048,36 @@
         },
         {
             "name": "laravel/horizon",
-            "version": "v5.21.5",
+            "version": "v5.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/horizon.git",
-                "reference": "081422577fb49608ed68a3b284bcecd0c5860ce6"
+                "reference": "151f7fc544fd7711499512b736b30036dfaa5bc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/081422577fb49608ed68a3b284bcecd0c5860ce6",
-                "reference": "081422577fb49608ed68a3b284bcecd0c5860ce6",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/151f7fc544fd7711499512b736b30036dfaa5bc0",
+                "reference": "151f7fc544fd7711499512b736b30036dfaa5bc0",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-pcntl": "*",
                 "ext-posix": "*",
-                "illuminate/contracts": "^8.17|^9.0|^10.0",
-                "illuminate/queue": "^8.17|^9.0|^10.0",
-                "illuminate/support": "^8.17|^9.0|^10.0",
+                "illuminate/contracts": "^8.17|^9.0|^10.0|^11.0",
+                "illuminate/queue": "^8.17|^9.0|^10.0|^11.0",
+                "illuminate/support": "^8.17|^9.0|^10.0|^11.0",
                 "nesbot/carbon": "^2.17",
                 "php": "^7.3|^8.0",
                 "ramsey/uuid": "^4.0",
-                "symfony/error-handler": "^5.0|^6.0",
-                "symfony/process": "^5.0|^6.0"
+                "symfony/error-handler": "^5.0|^6.0|^7.0",
+                "symfony/process": "^5.0|^6.0|^7.0"
             },
             "require-dev": {
                 "mockery/mockery": "^1.0",
-                "orchestra/testbench": "^6.0|^7.0|^8.0",
+                "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0",
                 "phpstan/phpstan": "^1.10",
-                "phpunit/phpunit": "^9.0",
+                "phpunit/phpunit": "^9.0|^10.4",
                 "predis/predis": "^1.1|^2.0"
             },
             "suggest": {
@@ -2120,9 +2120,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/horizon/issues",
-                "source": "https://github.com/laravel/horizon/tree/v5.21.5"
+                "source": "https://github.com/laravel/horizon/tree/v5.22.0"
             },
-            "time": "2023-12-29T22:22:23+00:00"
+            "time": "2024-01-16T15:06:40+00:00"
         },
         {
             "name": "laravel/sanctum",
@@ -9480,16 +9480,16 @@
         },
         {
             "name": "friendsofphp/php-cs-fixer",
-            "version": "v3.46.0",
+            "version": "v3.47.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer.git",
-                "reference": "be6831c9af1740470d2a773119b9273f8ac1c3d2"
+                "reference": "173c60d1eff911c9c54322704623a45561d3241d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/be6831c9af1740470d2a773119b9273f8ac1c3d2",
-                "reference": "be6831c9af1740470d2a773119b9273f8ac1c3d2",
+                "url": "https://api.github.com/repos/PHP-CS-Fixer/PHP-CS-Fixer/zipball/173c60d1eff911c9c54322704623a45561d3241d",
+                "reference": "173c60d1eff911c9c54322704623a45561d3241d",
                 "shasum": ""
             },
             "require": {
@@ -9559,7 +9559,7 @@
             ],
             "support": {
                 "issues": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/issues",
-                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.46.0"
+                "source": "https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/tree/v3.47.1"
             },
             "funding": [
                 {
@@ -9567,7 +9567,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-01-03T21:38:46+00:00"
+            "time": "2024-01-16T18:54:21+00:00"
         },
         {
             "name": "hamcrest/hamcrest-php",
@@ -9622,16 +9622,16 @@
         },
         {
             "name": "laravel/pint",
-            "version": "v1.13.8",
+            "version": "v1.13.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/pint.git",
-                "reference": "69def89df9e0babc0f0a8bea184804a7d8a9c5c0"
+                "reference": "e3e269cc5d874c8efd2dc7962b1c7ff2585fe525"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/pint/zipball/69def89df9e0babc0f0a8bea184804a7d8a9c5c0",
-                "reference": "69def89df9e0babc0f0a8bea184804a7d8a9c5c0",
+                "url": "https://api.github.com/repos/laravel/pint/zipball/e3e269cc5d874c8efd2dc7962b1c7ff2585fe525",
+                "reference": "e3e269cc5d874c8efd2dc7962b1c7ff2585fe525",
                 "shasum": ""
             },
             "require": {
@@ -9642,13 +9642,13 @@
                 "php": "^8.1.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.46.0",
-                "illuminate/view": "^10.39.0",
+                "friendsofphp/php-cs-fixer": "^3.47.0",
+                "illuminate/view": "^10.40.0",
                 "larastan/larastan": "^2.8.1",
                 "laravel-zero/framework": "^10.3.0",
                 "mockery/mockery": "^1.6.7",
                 "nunomaduro/termwind": "^1.15.1",
-                "pestphp/pest": "^2.30.0"
+                "pestphp/pest": "^2.31.0"
             },
             "bin": [
                 "builds/pint"
@@ -9684,20 +9684,20 @@
                 "issues": "https://github.com/laravel/pint/issues",
                 "source": "https://github.com/laravel/pint"
             },
-            "time": "2024-01-09T18:03:54+00:00"
+            "time": "2024-01-16T17:39:29+00:00"
         },
         {
             "name": "laravel/sail",
-            "version": "v1.27.0",
+            "version": "v1.27.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "65a7764af5daadbd122e3b0d67be371d158a9b9a"
+                "reference": "9dc648978e4276f2bfd37a076a52e3bd9394777f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/65a7764af5daadbd122e3b0d67be371d158a9b9a",
-                "reference": "65a7764af5daadbd122e3b0d67be371d158a9b9a",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/9dc648978e4276f2bfd37a076a52e3bd9394777f",
+                "reference": "9dc648978e4276f2bfd37a076a52e3bd9394777f",
                 "shasum": ""
             },
             "require": {
@@ -9749,7 +9749,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2024-01-03T14:07:34+00:00"
+            "time": "2024-01-13T18:46:48+00:00"
         },
         {
             "name": "mockery/mockery",
@@ -10587,16 +10587,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.55",
+            "version": "1.10.56",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "9a88f9d18ddf4cf54c922fbeac16c4cb164c5949"
+                "reference": "27816a01aea996191ee14d010f325434c0ee76fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9a88f9d18ddf4cf54c922fbeac16c4cb164c5949",
-                "reference": "9a88f9d18ddf4cf54c922fbeac16c4cb164c5949",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/27816a01aea996191ee14d010f325434c0ee76fa",
+                "reference": "27816a01aea996191ee14d010f325434c0ee76fa",
                 "shasum": ""
             },
             "require": {
@@ -10645,7 +10645,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-01-08T12:32:40+00:00"
+            "time": "2024-01-15T10:43:00+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

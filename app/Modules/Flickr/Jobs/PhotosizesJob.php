@@ -51,4 +51,12 @@ class PhotosizesJob extends BaseJob
 
         Event::dispatch(new PhotoSizedEvent($this->photo));
     }
+
+    public function failed(\Throwable $exception)
+    {
+        // Delete photo when it's not found
+        if ($exception->getCode() === 1) {
+            $this->photo->delete();
+        }
+    }
 }
