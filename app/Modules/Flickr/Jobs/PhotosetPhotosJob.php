@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Models\FlickrPhoto;
@@ -70,5 +71,22 @@ class PhotosetPhotosJob extends BaseJob
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
+    }
+
+    public function failed(\Throwable $throwable): void
+    {
+        if ($throwable->getCode() === 1) {
+            // Photoset not found
+            $this->task->model->delete();
+            $this->task->transitionTo(FailedState::class);
+
+            return;
+        }
+
+        if ($throwable->getCode() === 2) {
+            // User not found
+            $this->task->model->contact->delete();
+            $this->task->transitionTo(FailedState::class);
+        }
     }
 }
