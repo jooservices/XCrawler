@@ -6,10 +6,11 @@ use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
-use App\Modules\Core\StateMachine\Task\RecurringState;
+use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
-use App\Modules\Flickr\Events\RecurredTaskEvent;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
@@ -36,16 +37,17 @@ class PhotosetsJob extends BaseJob
     /**
      * @param FlickrService $flickrService
      * @return void
-     * @throws InvalidRespondException
      * @throws GuzzleException
+     * @throws InvalidRespondException
+     * @throws FailedException
+     * @throws MissingEntityElement
      */
     public function handle(FlickrService $flickrService): void
     {
-        $adapter = $flickrService->setIntegration($this->integration)->photosets;
         $contact = $this->task->model;
         $columns = DB::getSchemaBuilder()->getColumnListing('flickr_photosets');
 
-        $items = $adapter->getList([
+        $items = $flickrService->setIntegration($this->integration)->photosets->getList([
             'user_id' => $contact->nsid,
             'page' => $this->page
         ]);
@@ -87,5 +89,10 @@ class PhotosetsJob extends BaseJob
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
+    }
+
+    public function failed(\Throwable $exception)
+    {
+        $this->task->transitionTo(FailedState::class);
     }
 }

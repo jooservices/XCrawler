@@ -15,6 +15,7 @@ use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Get all favorites of a contact.
@@ -69,10 +70,11 @@ class ContactFavoritesJob extends BaseJob
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 
-    public function failed(\Throwable $exception)
+    public function failed(Throwable $exception)
     {
+        $this->task->transitionTo(FailedState::class);
+
         if ($exception->getCode() === 1) {
-            $this->task->transitionTo(FailedState::class);
             $this->task->model->tasks()->delete();
         }
     }

@@ -72,6 +72,12 @@ class ContactPhotosJob extends BaseJob
 
     public function failed(Throwable $throwable)
     {
+        // User deleted
         $this->task->transitionTo(FailedState::class);
+
+        if ($throwable->getCode() === 5) {
+            $this->task->model->delete();
+            $this->task->delete();
+        }
     }
 }

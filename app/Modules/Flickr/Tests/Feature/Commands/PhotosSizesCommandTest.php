@@ -5,7 +5,7 @@ namespace App\Modules\Flickr\Tests\Feature\Commands;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\StateMachine\Integration\CompletedState;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
-use App\Modules\Flickr\Exceptions\PhotoNotFoundException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Jobs\PhotosizesJob;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Tests\TestCase;
@@ -42,7 +42,7 @@ class PhotosSizesCommandTest extends TestCase
             'id' => 10,
             'sizes' => null,
         ]);
-        $this->expectException(PhotoNotFoundException::class);
+        $this->expectException(FailedException::class);
         $this->artisan(PhotosSizesCommand::COMMAND)->assertExitCode(0);
 
         $this->assertTrue($photo->refresh()->trashed());

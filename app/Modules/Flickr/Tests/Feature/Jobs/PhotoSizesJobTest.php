@@ -2,10 +2,9 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
-use App\Modules\Core\Services\States;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
 use App\Modules\Flickr\Events\PhotoSizedEvent;
-use App\Modules\Flickr\Exceptions\PhotoNotFoundException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Jobs\PhotosizesJob;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
@@ -39,7 +38,7 @@ class PhotoSizesJobTest extends TestCase
             'id' => 10
         ]);
 
-        $this->expectException(PhotoNotFoundException::class);
+        $this->expectException(FailedException::class);
         PhotosizesJob::dispatch($this->integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
         $this->assertTrue($photo->refresh()->trashed());
     }

@@ -5,11 +5,11 @@ namespace App\Modules\Client\Models;
 use App\Modules\Client\Database\factories\IntegrationFactory;
 use App\Modules\Client\OAuth\Credentials\CredentialsInterface;
 use App\Modules\Client\StateMachine\Integration\IntegrationState;
+use App\Modules\Core\Models\Traits\HasStates as HasStatesCover;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Builder;
 use Jenssegers\Mongodb\Eloquent\Model;
 use Spatie\ModelStates\HasStates;
-use App\Modules\Core\Models\Traits\HasStates as HasStatesCover;
 
 /**
  * @property int $id

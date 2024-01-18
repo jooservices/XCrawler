@@ -3,6 +3,7 @@
 namespace App\Modules\Core\Models;
 
 use App\Modules\Core\Database\factories\TaskFactory;
+use App\Modules\Core\Models\Traits\HasStates as HasStatesCover;
 use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\TaskState;
@@ -12,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Spatie\ModelStates\HasStates;
-use App\Modules\Core\Models\Traits\HasStates as HasStatesCover;
 use Spatie\ModelStates\State;
 
 /**

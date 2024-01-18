@@ -11,7 +11,6 @@ use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
 use Exception;
-use GuzzleHttp\Client;
 use Mockery;
 use Mockery\MockInterface;
 

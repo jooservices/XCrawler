@@ -75,10 +75,11 @@ class PhotosetPhotosJob extends BaseJob
 
     public function failed(\Throwable $throwable): void
     {
+        $this->task->transitionTo(FailedState::class);
+
         if ($throwable->getCode() === 1) {
             // Photoset not found
             $this->task->model->delete();
-            $this->task->transitionTo(FailedState::class);
 
             return;
         }
@@ -86,7 +87,7 @@ class PhotosetPhotosJob extends BaseJob
         if ($throwable->getCode() === 2) {
             // User not found
             $this->task->model->contact->delete();
-            $this->task->transitionTo(FailedState::class);
+            $this->task->model->delete();
         }
     }
 }
