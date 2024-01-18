@@ -13,6 +13,7 @@ use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
 use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
+use Throwable;
 
 class PhotosetPhotosJob extends BaseJob
 {
@@ -73,7 +74,7 @@ class PhotosetPhotosJob extends BaseJob
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         $this->task->transitionTo(FailedState::class);
 
