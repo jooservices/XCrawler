@@ -66,6 +66,8 @@ class PhotosizesJob extends BaseJob
 
             $integration = app(IntegrationRepository::class)->getPrimary(FlickrService::SERVICE_NAME);
             self::dispatch($integration, $this->photo)->onQueue(FlickrService::QUEUE_NAME);
+
+            return;
         }
 
         // Delete photo when it's not found

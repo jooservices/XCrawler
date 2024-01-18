@@ -292,7 +292,7 @@ class TestCase extends BaseTestCase
                 new Response(
                     200,
                     [
-                        'Content-Type' => 'application/json; charset=utf-8',
+                        'Content-Type' => 'text/xml; charset=utf-8',
                     ],
                     '<?xml version="1.0" encoding="utf-8" ?>
 <rsp stat="fail">
