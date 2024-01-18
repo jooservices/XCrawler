@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\PhotoHasNoSizesException;
 use App\Modules\Flickr\Exceptions\PhotoNotFoundException;
 use GuzzleHttp\Exception\GuzzleException;
@@ -12,6 +13,7 @@ class Photos extends BaseAdapter
      * @throws GuzzleException
      * @throws PhotoHasNoSizesException
      * @throws PhotoNotFoundException
+     * @throws InvalidRespondException
      */
     public function getSizes(int $id): ?array
     {
@@ -19,8 +21,8 @@ class Photos extends BaseAdapter
             'photo_id' => $id
         ]);
 
-        if (!$response->isSuccessful()) {
-            return null;
+        if (!$response->isSuccessful() || !is_array($response->getData())) {
+            throw new InvalidRespondException('Invalid response from Flickr API');
         }
 
         if (!$this->isSuccessfull($response->getData()) && isset($response->getData()['code'])) {
