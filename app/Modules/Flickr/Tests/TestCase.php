@@ -79,6 +79,24 @@ class TestCase extends BaseTestCase
                 return $method === 'POST'
                     && str_contains($url, 'flickr.people.getPhotos')
                     && $options['form_params']['per_page'] === 500
+                    && $options['form_params']['user_id'] === '-5';
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    json_encode([
+                        'stat' => 'fail',
+                        'code' => 5,
+                    ])
+                )
+            );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getPhotos')
+                    && $options['form_params']['per_page'] === 500
                     && $options['form_params']['user_id'] === '44203036@N06';
             })
             ->andReturn(
