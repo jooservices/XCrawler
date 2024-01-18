@@ -365,6 +365,23 @@ class TestCase extends BaseTestCase
                     ])
                 )
             );
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getPhotos')
+                    && $options['form_params']['photoset_id'] === 2
+                    && $options['form_params']['user_id'] === self::NSID;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    json_encode([
+                        'stat' => 'fail',
+                        'code' => 2,
+                    ])
+                )
+            );
 
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {

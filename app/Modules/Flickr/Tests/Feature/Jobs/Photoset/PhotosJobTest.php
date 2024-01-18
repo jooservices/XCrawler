@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Event;
 
 class PhotosJobTest extends TestCase
 {
-    public function testGetPhotos()
+    public function testGetPhotosetPhotos()
     {
         Event::fake([
             FetchPhotosetPhotosCompletedEvent::class,
@@ -39,7 +39,7 @@ class PhotosJobTest extends TestCase
         Event::assertDispatched(FetchPhotosetPhotosCompletedEvent::class);
     }
 
-    public function testGetPhotosFailed()
+    public function testGetPhotosetsPhotoNotFound()
     {
         $contact = FlickrContact::factory()->create([
             'nsid' => '94529704@N02',
@@ -57,6 +57,34 @@ class PhotosJobTest extends TestCase
         $this->expectException(FailedException::class);
         PhotosetPhotosJob::dispatch($this->integration, $task);
 
+        $this->assertDatabaseMissing('flickr_photos', [
+            'id' => 1,
+        ]);
+
+        $this->assertTrue($task->isFailedState());
+    }
+
+    public function testGetPhotosetsPhotoUserNotFound()
+    {
+        $contact = FlickrContact::factory()->create([
+            'nsid' => '94529704@N02',
+        ]);
+
+        $photoset = $contact->photosets()->create([
+            'id' => 2,
+        ]);
+
+        $task = $photoset->tasks()->create([
+            'task' => TaskService::TASK_PHOTOSET_PHOTOS,
+        ]);
+        $task->transitionTo(InProgressState::class);
+
+        $this->expectException(FailedException::class);
+        PhotosetPhotosJob::dispatch($this->integration, $task);
+
+        $this->assertDatabaseMissing('flickr_contacts', [
+            'nsid' => '94529704@N02',
+        ]);
         $this->assertDatabaseMissing('flickr_photos', [
             'id' => 1,
         ]);

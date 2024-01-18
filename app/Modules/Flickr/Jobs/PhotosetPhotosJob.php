@@ -87,8 +87,9 @@ class PhotosetPhotosJob extends BaseJob
 
         if ($throwable->getCode() === 2) {
             // User not found
-            $this->task->model->contact->delete();
+            $contact = $this->task->model->contact;
             $this->task->model->delete();
+            $contact->delete();
         }
     }
 }
