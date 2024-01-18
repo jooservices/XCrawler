@@ -59,6 +59,8 @@ class PhotosizesJob extends BaseJob
     {
         if ($exception instanceof PermissionDeniedException) {
             if ($this->integration->is_primary) {
+                // Have no permission than just delete it
+                $this->photo->delete();
                 return;
             }
 
