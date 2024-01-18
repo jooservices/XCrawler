@@ -144,6 +144,22 @@ class TestCase extends BaseTestCase
                     && $options['form_params']['user_id'] === 'exception';
             })
             ->andThrow($this->exception());
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getInfo')
+                    && $options['form_params']['user_id'] === 'User deleted';
+            })
+            ->andReturn(new Response(
+                200,
+                self::DEFAULT_CONTENT_TYPE,
+                '{
+    "stat": "fail",
+    "code": 5,
+    "message": "User deleted"
+}'
+            ));
     }
 
     private function mockFlickrFavorites(MockInterface &$mock)
