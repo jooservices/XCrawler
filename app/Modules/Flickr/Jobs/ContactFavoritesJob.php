@@ -10,11 +10,13 @@ use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 /**
  * Get all favorites of a contact.
@@ -69,11 +71,17 @@ class ContactFavoritesJob extends BaseJob
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 
-    public function failed(\Throwable $exception)
+    /**
+     * @throws UserNotFoundException
+     */
+    public function failed(Throwable $exception)
     {
+        $this->task->transitionTo(FailedState::class);
+
         if ($exception->getCode() === 1) {
-            $this->task->transitionTo(FailedState::class);
             $this->task->model->tasks()->delete();
+
+            throw new UserNotFoundException($exception->getMessage(), $exception->getCode(), $exception);
         }
     }
 }

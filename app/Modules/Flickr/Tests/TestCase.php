@@ -79,6 +79,24 @@ class TestCase extends BaseTestCase
                 return $method === 'POST'
                     && str_contains($url, 'flickr.people.getPhotos')
                     && $options['form_params']['per_page'] === 500
+                    && $options['form_params']['user_id'] === '-5';
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    json_encode([
+                        'stat' => 'fail',
+                        'code' => 5,
+                    ])
+                )
+            );
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getPhotos')
+                    && $options['form_params']['per_page'] === 500
                     && $options['form_params']['user_id'] === '44203036@N06';
             })
             ->andReturn(
@@ -144,6 +162,22 @@ class TestCase extends BaseTestCase
                     && $options['form_params']['user_id'] === 'exception';
             })
             ->andThrow($this->exception());
+
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.people.getInfo')
+                    && $options['form_params']['user_id'] === 'User deleted';
+            })
+            ->andReturn(new Response(
+                200,
+                self::DEFAULT_CONTENT_TYPE,
+                '{
+    "stat": "fail",
+    "code": 5,
+    "message": "User deleted"
+}'
+            ));
     }
 
     private function mockFlickrFavorites(MockInterface &$mock)
@@ -316,6 +350,7 @@ class TestCase extends BaseTestCase
                 );
         }
 
+        # Photosets
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
@@ -329,6 +364,40 @@ class TestCase extends BaseTestCase
                     200,
                     self::DEFAULT_CONTENT_TYPE,
                     $this->getFixtures('flickr_photosets_photos.json')
+                )
+            );
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getPhotos')
+                    && $options['form_params']['photoset_id'] === 1
+                    && $options['form_params']['user_id'] === self::NSID;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    json_encode([
+                        'stat' => 'fail',
+                        'code' => 1,
+                    ])
+                )
+            );
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getPhotos')
+                    && $options['form_params']['photoset_id'] === 2
+                    && $options['form_params']['user_id'] === self::NSID;
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    self::DEFAULT_CONTENT_TYPE,
+                    json_encode([
+                        'stat' => 'fail',
+                        'code' => 2,
+                    ])
                 )
             );
 

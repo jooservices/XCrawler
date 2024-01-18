@@ -3,7 +3,6 @@
 namespace App\Modules\Flickr\Console\Contact;
 
 use App\Modules\Client\Exceptions\NoIntegrateException;
-use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\Flickr\Console\Traits\HasIntegrationProcess;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
@@ -34,11 +33,10 @@ class PhotosCommand extends Command implements Isolatable
 
     /**
      * @param TaskService $taskService
-     * @param IntegrationRepository $repository
      * @return void
      * @throws NoIntegrateException
      */
-    public function handle(TaskService $taskService, IntegrationRepository $repository): void
+    public function handle(TaskService $taskService): void
     {
         $this->info('Fetching contact\' photos ...');
 

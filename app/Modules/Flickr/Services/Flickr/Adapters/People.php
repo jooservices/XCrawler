@@ -12,8 +12,6 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class People extends BaseAdapter
 {
-    use HasList;
-
     public const PER_PAGE = 500;
 
     /**
@@ -27,7 +25,7 @@ class People extends BaseAdapter
     public function getPhotos(array $params): PeoplePhotosEntity
     {
         return new PeoplePhotosEntity(
-            $this->fetchList(
+            $this->request(
                 'flickr.people.getPhotos',
                 array_merge(
                     [
@@ -41,17 +39,26 @@ class People extends BaseAdapter
     }
 
     /**
-     * @throws MissingEntityElement
+     * @param string $nsid
+     * @return PeopleInfoEntity
+     * @throws FailedException
      * @throws GuzzleException
+     * @throws InvalidRespondException
+     * @throws MissingEntityElement
      */
     public function getInfo(string $nsid): PeopleInfoEntity
     {
-        $response = $this->provider->request('flickr.people.getInfo', ['user_id' => $nsid]);
+        $response = $this->request('flickr.people.getInfo', ['user_id' => $nsid]);
 
-        if (!$response->isSuccessful() || !isset($response->getData()['person'])) {
-            throw new MissingEntityElement('Can not get person info: ' . $nsid);
+        if (!isset($response['person'])) {
+            throw new MissingEntityElement(
+                sprintf(
+                    'Missing element "%s" in response',
+                    'person'
+                )
+            );
         }
 
-        return new PeopleInfoEntity($response->getData()['person']);
+        return new PeopleInfoEntity($response['person']);
     }
 }

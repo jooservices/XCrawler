@@ -2,28 +2,30 @@
 
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetEntity;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetPhotosEntity;
 use App\Modules\Flickr\Services\Flickr\Entities\PhotosetsListEntity;
-use App\Modules\Flickr\Services\Flickr\Traits\HasList;
 use GuzzleHttp\Exception\GuzzleException;
 
 class Photosets extends BaseAdapter
 {
-    use HasList;
-
     public const PER_PAGE = 500;
 
     /**
-     * @throws InvalidRespondException
+     * @param array $params
+     * @return PhotosetsListEntity
      * @throws GuzzleException
+     * @throws InvalidRespondException
+     * @throws MissingEntityElement
+     * @throws FailedException
      */
     public function getList(array $params = []): PhotosetsListEntity
     {
         return new PhotosetsListEntity(
-            $this->fetchList(
+            $this->request(
                 'flickr.photosets.getList',
                 array_merge(
                     [
@@ -36,10 +38,18 @@ class Photosets extends BaseAdapter
         );
     }
 
+    /**
+     * @param array $params
+     * @return PhotosetPhotosEntity
+     * @throws FailedException
+     * @throws GuzzleException
+     * @throws InvalidRespondException
+     * @throws MissingEntityElement
+     */
     public function getPhotos(array $params = []): PhotosetPhotosEntity
     {
         return new PhotosetPhotosEntity(
-            $this->fetchList(
+            $this->request(
                 'flickr.photosets.getPhotos',
                 array_merge(
                     [
@@ -53,19 +63,18 @@ class Photosets extends BaseAdapter
     }
 
     /**
+     * @param int $photosetId
+     * @return PhotosetEntity|null
+     * @throws FailedException
      * @throws GuzzleException
-     * @throws MissingEntityElement
+     * @throws InvalidRespondException
      */
     public function getInfo(int $photosetId): ?PhotosetEntity
     {
-        $response = $this->provider->request('flickr.photosets.getInfo', [
+        $response = $this->request('flickr.photosets.getInfo', [
             'photoset_id' => $photosetId
         ]);
 
-        if (!$response->isSuccessful() || !isset($response->getData()['photoset'])) {
-            throw new MissingEntityElement('Can not get photoset info: ' . $photosetId);
-        }
-
-        return new PhotosetEntity($response->getData()['photoset']);
+        return new PhotosetEntity($response['photoset']);
     }
 }

@@ -3,7 +3,7 @@
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
 use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
 use App\Modules\Flickr\Services\FlickrService;
@@ -61,7 +61,7 @@ class PeopleTest extends TestCase
 
     public function testGetPeopleInfoWithException()
     {
-        $this->expectException(MissingEntityElement::class);
+        $this->expectException(InvalidRespondException::class);
         $this->adapter->getInfo('exception');
     }
 }
