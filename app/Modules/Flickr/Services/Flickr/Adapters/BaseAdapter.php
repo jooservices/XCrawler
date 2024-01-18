@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Services\Flickr\Adapters;
 use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\PermissionDeniedException;
 use GuzzleHttp\Exception\GuzzleException;
 
 class BaseAdapter
@@ -21,6 +22,7 @@ class BaseAdapter
     /**
      * @throws GuzzleException
      * @throws InvalidRespondException|FailedException
+     * @throws PermissionDeniedException
      */
     protected function request(string $method, array $params = []): array
     {
@@ -28,6 +30,10 @@ class BaseAdapter
         $data = $response->getData();
 
         if (!$data || !is_array($data)) {
+            if (is_string($response->getBody()) && str_contains($response->getBody(), 'Permission denied')) {
+                throw new PermissionDeniedException($response->getBody(), 2);
+            }
+
             throw new InvalidRespondException($response->getBody());
         }
 

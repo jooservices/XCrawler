@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Tests\Feature\Jobs;
 use App\Modules\Flickr\Database\factories\PhotoFactory;
 use App\Modules\Flickr\Events\PhotoSizedEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\PermissionDeniedException;
 use App\Modules\Flickr\Jobs\PhotosizesJob;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
@@ -40,6 +41,19 @@ class PhotoSizesJobTest extends TestCase
 
         $this->expectException(FailedException::class);
         PhotosizesJob::dispatch($this->integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
+        $this->assertTrue($photo->refresh()->trashed());
+    }
+
+    public function testGetPhotoSizesPermissionDenied()
+    {
+        Event::fake(PhotoSizedEvent::class);
+        $photo = FlickrPhoto::factory()->create([
+            'id' => 3
+        ]);
+
+        $this->expectException(PermissionDeniedException::class);
+        PhotosizesJob::dispatch($this->integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
+
         $this->assertTrue($photo->refresh()->trashed());
     }
 }
