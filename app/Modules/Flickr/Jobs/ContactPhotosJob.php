@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\Traits\HasModelJobs;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
@@ -22,8 +23,7 @@ class ContactPhotosJob extends BaseJob
 {
     use SerializesModels;
     use HasRecurring;
-
-    public bool $deleteWhenMissingModels = true;
+    use HasModelJobs;
 
     /**
      * Create a new job instance.
@@ -72,9 +72,9 @@ class ContactPhotosJob extends BaseJob
 
     public function failed(Throwable $throwable)
     {
-        // User deleted
         $this->task->transitionTo(FailedState::class);
 
+        // User deleted
         if ($throwable->getCode() === 5) {
             $this->task->model->delete();
             $this->task->delete();

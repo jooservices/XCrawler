@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\Traits\HasModelJobs;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
@@ -11,19 +12,20 @@ use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Throwable;
 
 class PhotosetsJob extends BaseJob
 {
     use SerializesModels;
     use HasRecurring;
-
-    public $deleteWhenMissingModels = true;
+    use HasModelJobs;
 
     /**
      * @param Integration $integration
@@ -91,8 +93,21 @@ class PhotosetsJob extends BaseJob
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 
-    public function failed(\Throwable $exception)
+    /**
+     * @param Throwable $throwable
+     * @return void
+     * @throws UserNotFoundException
+     */
+    public function failed(Throwable $throwable): void
     {
         $this->task->transitionTo(FailedState::class);
+
+        // User not found
+        if ($throwable->getCode() === 1) {
+            $this->task->model->delete();
+            $this->task->delete();
+
+            throw new UserNotFoundException($throwable->getMessage(), $throwable->getCode(), $throwable);
+        }
     }
 }

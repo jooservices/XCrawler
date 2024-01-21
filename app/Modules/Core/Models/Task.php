@@ -16,6 +16,7 @@ use Spatie\ModelStates\HasStates;
 use Spatie\ModelStates\State;
 
 /**
+ * @property int $id
  * @property Task $parentTask
  * @property string $uuid
  * @property string $model_type

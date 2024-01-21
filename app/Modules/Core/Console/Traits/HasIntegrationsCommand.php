@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Modules\Flickr\Console\Traits;
+namespace App\Modules\Core\Console\Traits;
 
 use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Repositories\IntegrationRepository;
 
-trait HasIntegrationProcess
+trait HasIntegrationsCommand
 {
     /**
      * @throws NoIntegrateException
      */
-    public function completed(string $service, callable $callback): void
+    public function processCompletedIntegrations(string $service, callable $callback): void
     {
         app(IntegrationRepository::class)
             ->getCompleted($service)

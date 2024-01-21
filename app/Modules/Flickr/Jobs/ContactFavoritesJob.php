@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\Traits\HasModelJobs;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
@@ -25,8 +26,7 @@ class ContactFavoritesJob extends BaseJob
 {
     use SerializesModels;
     use HasRecurring;
-
-    public $deleteWhenMissingModels = true;
+    use HasModelJobs;
 
     /**
      * @param Integration $integration

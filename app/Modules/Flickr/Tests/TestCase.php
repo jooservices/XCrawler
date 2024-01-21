@@ -369,7 +369,27 @@ class TestCase extends BaseTestCase
                 );
         }
 
-        # Photosets
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getList')
+                    && $options['form_params']['user_id'] === 'User not found';
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    [
+                        'Content-Type' => 'application/json; charset=utf-8',
+                    ],
+                    '{
+    "stat": "fail",
+    "code": 1,
+    "message": "User not found"
+}'
+                )
+            );
+
+        // Photoset photos
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
@@ -420,6 +440,7 @@ class TestCase extends BaseTestCase
                 )
             );
 
+        // Photoset info
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'

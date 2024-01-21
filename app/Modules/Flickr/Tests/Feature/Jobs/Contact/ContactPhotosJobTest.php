@@ -65,9 +65,7 @@ class ContactPhotosJobTest extends TestCase
         ContactPhotosJob::dispatch($this->integration, $task)->onQueue(FlickrService::QUEUE_NAME);
         $this->assertEquals(FailedState::class, $task->refresh()->state_code);
 
-        $this->assertDatabaseMissing('flickr_contacts', [
-            'nsid' => '-5',
-        ]);
+        $this->assertTrue($contact->trashed());
         $this->assertDatabaseMissing('tasks', [
             'id' => $task->id,
         ]);
