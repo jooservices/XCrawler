@@ -12,8 +12,9 @@ use Mockery\MockInterface;
 
 class TestCase extends BaseTestCase
 {
-    private const NSID = '94529704@N02';
-    private const PHOTOSET_ID = 72157674594210788;
+    protected const NSID = '94529704@N02';
+
+    protected const PHOTOSET_ID = 72157674594210788;
 
     private const DEFAULT_CONTENT_TYPE = [
         'Content-Type' => 'application/json; charset=utf-8',

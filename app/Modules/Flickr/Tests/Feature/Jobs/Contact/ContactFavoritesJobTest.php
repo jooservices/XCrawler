@@ -25,7 +25,7 @@ class ContactFavoritesJobTest extends TestCase
         /**
          * This user have 1487 favorites.
          */
-        $contact = app(FlickrContactService::class)->create(['nsid' => '94529704@N02']);
+        $contact = app(FlickrContactService::class)->create(['nsid' => self::NSID]);
 
         $this->assertEquals(0, (int)$this->integration->refresh()->requested_times);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());

@@ -35,8 +35,8 @@ class PhotosetsTest extends TestCase
     public function testGetPhotos()
     {
         $items = $this->adapter->getPhotos([
-            'photoset_id' => 72157674594210788,
-            'user_id' => '94529704@N02'
+            'photoset_id' => self::PHOTOSET_ID,
+            'user_id' => self::NSID
         ]);
 
         $this->assertCount(1, $items->getItems());
