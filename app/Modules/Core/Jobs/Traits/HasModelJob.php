@@ -2,7 +2,7 @@
 
 namespace App\Modules\Core\Jobs\Traits;
 
-trait HasModelJobs
+trait HasModelJob
 {
     public $deleteWhenMissingModels = true;
 }

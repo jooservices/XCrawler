@@ -4,7 +4,8 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\Core\Jobs\Traits\HasModelJobs;
+use App\Modules\Core\Jobs\Traits\HasModelJob;
+use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
@@ -26,7 +27,8 @@ class ContactFavoritesJob extends BaseJob
 {
     use SerializesModels;
     use HasRecurring;
-    use HasModelJobs;
+    use HasModelJob;
+    use HasTaskJob;
 
     /**
      * @param Integration $integration
@@ -74,14 +76,13 @@ class ContactFavoritesJob extends BaseJob
     /**
      * @throws UserNotFoundException
      */
-    public function failed(Throwable $exception)
+    protected function failedProcess(Throwable $throwable): void
     {
-        $this->task->transitionTo(FailedState::class);
+        switch ($throwable->getCode()) {
+            case 1:
+                $this->task->model->tasks()->delete();
 
-        if ($exception->getCode() === 1) {
-            $this->task->model->tasks()->delete();
-
-            throw new UserNotFoundException($exception->getMessage(), $exception->getCode(), $exception);
+                throw new UserNotFoundException($throwable->getMessage(), $throwable->getCode(), $throwable);
         }
     }
 }

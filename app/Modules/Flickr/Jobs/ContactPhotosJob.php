@@ -4,10 +4,10 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\Core\Jobs\Traits\HasModelJobs;
+use App\Modules\Core\Jobs\Traits\HasModelJob;
+use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
-use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
@@ -23,7 +23,8 @@ class ContactPhotosJob extends BaseJob
 {
     use SerializesModels;
     use HasRecurring;
-    use HasModelJobs;
+    use HasModelJob;
+    use HasTaskJob;
 
     /**
      * Create a new job instance.
@@ -70,14 +71,13 @@ class ContactPhotosJob extends BaseJob
         self::dispatch($this->integration, $this->task, $photos->getNextPage());
     }
 
-    public function failed(Throwable $throwable)
+    protected function failedProcess(Throwable $throwable): void
     {
-        $this->task->transitionTo(FailedState::class);
-
-        // User deleted
-        if ($throwable->getCode() === 5) {
-            $this->task->model->delete();
-            $this->task->delete();
+        switch ($throwable->getCode()) {
+            // User deleted
+            case 5:
+                $this->task->model->delete();
+                $this->task->delete();
         }
     }
 }
