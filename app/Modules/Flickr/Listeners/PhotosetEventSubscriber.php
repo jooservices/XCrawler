@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Listeners;
 
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\DownloadedState;
+use App\Modules\Core\StateMachine\Task\InitState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
@@ -27,6 +28,10 @@ class PhotosetEventSubscriber
 
     public function onFetchPhotosetPhotosCompleted(FetchPhotosetPhotosCompletedEvent $event)
     {
+        if ($event->task->isState(InitState::class)) {
+            $event->task->transitionTo(InProgressState::class);
+        }
+
         $event->task->transitionTo(CompletedState::class);
 
         if (
@@ -94,9 +99,9 @@ class PhotosetEventSubscriber
 
         foreach ($photos as $photo) {
             $task->subTasks()->create([
-               'model_type' => $photo->getMorphClass(),
-               'model_id' => $photo->id,
-               'task' => TaskService::TASK_UPLOAD_PHOTO,
+                'model_type' => $photo->getMorphClass(),
+                'model_id' => $photo->id,
+                'task' => TaskService::TASK_UPLOAD_PHOTO,
             ]);
         }
     }
