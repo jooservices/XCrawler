@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Flickr\Events\FetchContactsCompletedEvent;
 use App\Modules\Flickr\Events\FetchContactsRecursiveEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
@@ -19,8 +20,7 @@ use Illuminate\Support\Facades\Event;
 class ContactsJob extends BaseJob
 {
     use SerializesModels;
-
-    public $deleteWhenMissingModels = true;
+    use HasModelJob;
 
     /**
      * Create a new job instance.

@@ -9,6 +9,7 @@ use App\Modules\Flickr\Database\factories\ContactFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * @property string $nsid
@@ -36,6 +37,7 @@ class FlickrContact extends Model implements TaskInterface
     use HasUuid;
     use HasTasks;
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'nsid',

@@ -6,6 +6,7 @@ use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Exceptions\EntityCastException;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
@@ -16,13 +17,10 @@ use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
+use Throwable;
 
 class PeopleInfoJob extends BaseJob
 {
-    use SerializesModels;
-
-    public $deleteWhenMissingModels = true;
-
     public function __construct(public string $nsid)
     {
     }
@@ -50,18 +48,19 @@ class PeopleInfoJob extends BaseJob
     /**
      * @throws UserDeletedException
      */
-    public function failed(\Throwable $exception)
+    public function failed(Throwable $throwable)
     {
-        // User deleted
-        if ($exception->getCode() === 5) {
-            $contact = FlickrContact::where('nsid', $this->nsid)->first();
-            $contact->tasks()->delete();
-            $contact->delete();
-            throw new UserDeletedException(
-                $exception->getMessage(),
-                $exception->getCode(),
-                $exception
-            );
+        switch ($throwable->getCode()) {
+            // User deleted
+            case 5:
+                $contact = FlickrContact::where('nsid', $this->nsid)->first();
+                $contact->tasks()->delete();
+                $contact->delete();
+                throw new UserDeletedException(
+                    $throwable->getMessage(),
+                    $throwable->getCode(),
+                    $throwable
+                );
         }
     }
 }

@@ -21,7 +21,7 @@ class PhotosJobTest extends TestCase
             RecurredTaskEvent::class,
         ]);
         $contact = FlickrContact::factory()->create([
-            'nsid' => '94529704@N02',
+            'nsid' => self::NSID
         ]);
 
         $photoset = $contact->photosets()->create([
@@ -42,7 +42,7 @@ class PhotosJobTest extends TestCase
     public function testGetPhotosetsPhotoNotFound()
     {
         $contact = FlickrContact::factory()->create([
-            'nsid' => '94529704@N02',
+            'nsid' => self::NSID
         ]);
 
         $photoset = $contact->photosets()->create([
@@ -67,7 +67,7 @@ class PhotosJobTest extends TestCase
     public function testGetPhotosetsPhotoUserNotFound()
     {
         $contact = FlickrContact::factory()->create([
-            'nsid' => '94529704@N02',
+            'nsid' => self::NSID
         ]);
 
         $photoset = $contact->photosets()->create([
@@ -83,7 +83,7 @@ class PhotosJobTest extends TestCase
         PhotosetPhotosJob::dispatch($this->integration, $task);
 
         $this->assertDatabaseMissing('flickr_contacts', [
-            'nsid' => '94529704@N02',
+            'nsid' => self::NSID
         ]);
         $this->assertDatabaseMissing('flickr_photos', [
             'id' => 1,

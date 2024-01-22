@@ -7,6 +7,7 @@ use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrContactService;
@@ -24,7 +25,7 @@ class ContactFavoritesJobTest extends TestCase
         /**
          * This user have 1487 favorites.
          */
-        $contact = app(FlickrContactService::class)->create(['nsid' => '94529704@N02']);
+        $contact = app(FlickrContactService::class)->create(['nsid' => self::NSID]);
 
         $this->assertEquals(0, (int)$this->integration->refresh()->requested_times);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
@@ -60,11 +61,13 @@ class ContactFavoritesJobTest extends TestCase
         $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
         $task->transitionTo(InProgressState::class);
 
+        $this->expectException(FailedException::class);
         $this->expectException(UserNotFoundException::class);
         ContactFavoritesJob::dispatch($this->integration, $task);
 
         // Tasks deleted
         $this->assertEquals(0, $contact->refresh()->tasks->count());
-        $this->assertTrue($task->refresh()->isState(FailedState::class));
+        $this->assertTrue($contact->trashed());
+        $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
     }
 }

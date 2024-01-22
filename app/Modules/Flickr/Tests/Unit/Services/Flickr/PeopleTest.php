@@ -28,7 +28,7 @@ class PeopleTest extends TestCase
 
     public function testGetPhotos()
     {
-        $items = $this->adapter->getPhotos(['user_id' => '94529704@N02']);
+        $items = $this->adapter->getPhotos(['user_id' => self::NSID]);
 
         $this->assertCount(358, $items->getItems());
         $this->assertEquals(1, $items->getPage());

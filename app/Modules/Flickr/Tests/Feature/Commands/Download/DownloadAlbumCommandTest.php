@@ -22,9 +22,6 @@ use Mockery\MockInterface;
 
 class DownloadAlbumCommandTest extends TestCase
 {
-    private const PHOTOSET_ID = '72157674594210788';
-    private const NSID = '94529704@N02';
-
     public function setUp(): void
     {
         parent::setUp();

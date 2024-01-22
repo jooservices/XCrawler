@@ -12,8 +12,9 @@ use Mockery\MockInterface;
 
 class TestCase extends BaseTestCase
 {
-    private const NSID = '94529704@N02';
-    private const PHOTOSET_ID = 72157674594210788;
+    protected const NSID = '94529704@N02';
+
+    protected const PHOTOSET_ID = 72157674594210788;
 
     private const DEFAULT_CONTENT_TYPE = [
         'Content-Type' => 'application/json; charset=utf-8',
@@ -369,7 +370,27 @@ class TestCase extends BaseTestCase
                 );
         }
 
-        # Photosets
+        $mock->shouldReceive('request')
+            ->withArgs(function ($method, $url, $options) {
+                return $method === 'POST'
+                    && str_contains($url, 'flickr.photosets.getList')
+                    && $options['form_params']['user_id'] === 'User not found';
+            })
+            ->andReturn(
+                new Response(
+                    200,
+                    [
+                        'Content-Type' => 'application/json; charset=utf-8',
+                    ],
+                    '{
+    "stat": "fail",
+    "code": 1,
+    "message": "User not found"
+}'
+                )
+            );
+
+        // Photoset photos
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
@@ -420,6 +441,7 @@ class TestCase extends BaseTestCase
                 )
             );
 
+        // Photoset info
         $mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'

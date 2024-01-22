@@ -4,23 +4,22 @@ namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\Traits\HasModelJob;
+use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
 use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
 use Throwable;
 
 class PhotosetPhotosJob extends BaseJob
 {
-    use SerializesModels;
+    use HasModelJob;
     use HasRecurring;
-
-    public $deleteWhenMissingModels = true;
+    use HasTaskJob;
 
     /**
      * Create a new job instance.
@@ -74,22 +73,21 @@ class PhotosetPhotosJob extends BaseJob
             ->onQueue(FlickrService::QUEUE_NAME);
     }
 
-    public function failed(Throwable $throwable): void
+    protected function failedProcess(Throwable $throwable): void
     {
-        $this->task->transitionTo(FailedState::class);
+        switch ($throwable->getCode()) {
+            // Photoset deleted
+            case 1:
+                // Photoset not found
+                $this->task->model->delete();
+                break;
 
-        if ($throwable->getCode() === 1) {
-            // Photoset not found
-            $this->task->model->delete();
-
-            return;
-        }
-
-        if ($throwable->getCode() === 2) {
-            // User not found
-            $contact = $this->task->model->contact;
-            $this->task->model->delete();
-            $contact->delete();
+            case 2:
+                // User not found
+                $contact = $this->task->model->contact;
+                $this->task->model->delete();
+                $contact->delete();
+                break;
         }
     }
 }

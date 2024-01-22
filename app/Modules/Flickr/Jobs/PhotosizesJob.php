@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Jobs;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Flickr\Events\PhotoSizedEvent;
 use App\Modules\Flickr\Exceptions\PermissionDeniedException;
 use App\Modules\Flickr\Exceptions\PhotoSizesNotFound;
@@ -19,8 +20,7 @@ use Throwable;
 class PhotosizesJob extends BaseJob
 {
     use SerializesModels;
-
-    public $deleteWhenMissingModels = true;
+    use HasModelJob;
 
     /**
      * Create a new job instance.

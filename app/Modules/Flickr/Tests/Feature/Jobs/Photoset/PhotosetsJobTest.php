@@ -7,6 +7,8 @@ use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Core\StateMachine\Task\RecurringState;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\PhotosetsJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\TaskService;
@@ -61,5 +63,25 @@ class PhotosetsJobTest extends TestCase
         });
         $this->assertTrue($task->refresh()->isState(CompletedState::class));
         $this->assertEquals(2, $task->refresh()->payload['page']);
+    }
+
+    public function testUserNotFound()
+    {
+        $contact = app(FlickrContactService::class)->create([
+            'nsid' => 'User not found'
+        ]);
+
+        $task = $contact->tasks()
+            ->where('task', TaskService::TASK_CONTACT_PHOTOSETS)
+            ->first();
+        $task->transitionTo(InProgressState::class);
+
+        $this->expectException(UserNotFoundException::class);
+        PhotosetsJob::dispatch($this->integration, $task);
+
+        $this->assertTrue($contact->refresh()->trashed());
+        $this->assertDatabaseMissing('tasks', [
+            'id' => $task->id
+        ]);
     }
 }

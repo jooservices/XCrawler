@@ -36,7 +36,7 @@ class PeopleInfoJobTest extends TestCase
             'state_code' => CompletedState::class
         ]);
 
-        FlickrContact::factory()->create([
+        $contact = FlickrContact::factory()->create([
             'nsid' => 'User deleted'
         ]);
 
@@ -45,5 +45,7 @@ class PeopleInfoJobTest extends TestCase
         $this->assertDatabaseMissing('flickr_contacts', [
             'nsid' => 'User deleted'
         ]);
+
+        $this->assertTrue($contact->refresh()->trashed());
     }
 }
