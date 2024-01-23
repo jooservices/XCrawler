@@ -6,6 +6,7 @@ use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\UserDeletedException;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
@@ -60,7 +61,7 @@ class ContactPhotosJobTest extends TestCase
 
         $task->transitionTo(InProgressState::class);
 
-        $this->expectException(FailedException::class);
+        $this->expectException(UserDeletedException::class);
 
         ContactPhotosJob::dispatch($this->integration, $task)->onQueue(FlickrService::QUEUE_NAME);
         $this->assertEquals(FailedState::class, $task->refresh()->state_code);

@@ -15,7 +15,17 @@ trait HasIntegrationsCommand
         app(IntegrationRepository::class)
             ->getCompleted($service)
             ->each(function ($integration) use ($callback) {
-                $this->output->text('Processing integration: ' . $integration->name);
+                $this->output->text('Processing integration: <options=bold;fg=blue>' . $integration->name .'</>');
+                $callback($integration);
+            });
+    }
+
+    public function processNonePrimaryIntegrations(string $service, callable $callback): void
+    {
+        app(IntegrationRepository::class)
+            ->getNonPrimaryItems($service)
+            ->each(function ($integration) use ($callback) {
+                $this->output->text('Processing integration: <options=bold;fg=blue>' . $integration->name .'</>');
                 $callback($integration);
             });
     }

@@ -35,9 +35,7 @@ class SyncContactTasksCommand extends Command
         FlickrContact::whereDoesntHave('tasks')->cursor()->each(function (FlickrContact $contact) {
             $this->output->text("Creating tasks for contact {$contact->nsid}...");
             foreach (TaskService::CONTACT_TASKS as $task) {
-                $contact->tasks()->create([
-                    'task' => $task,
-                ]);
+                $contact->tasks()->create(['task' => $task,]);
             }
         });
     }

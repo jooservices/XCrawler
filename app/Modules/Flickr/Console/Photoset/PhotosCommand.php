@@ -4,6 +4,8 @@ namespace App\Modules\Flickr\Console\Photoset;
 
 use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Core\Console\Traits\HasIntegrationsCommand;
+use App\Modules\Core\Console\Traits\HasTasksCommand;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Services\FlickrService;
@@ -13,6 +15,9 @@ use Illuminate\Support\Str;
 
 class PhotosCommand extends Command
 {
+    use HasIntegrationsCommand;
+    use HasTasksCommand;
+
     public const COMMAND = 'flickr:photoset-photos';
 
     /**
@@ -39,23 +44,18 @@ class PhotosCommand extends Command
     {
         $this->info('Fetching photos ...');
 
-        $repository->getCompleted('flickr')->each(function ($integration) use ($taskService) {
-            $this->output->text('Processing integration: ' . $integration->name);
-
-            $tasks = $taskService->tasks(
+        $this->processCompletedIntegrations(FlickrService::SERVICE_NAME, function ($integration) use ($taskService) {
+            $this->processTasks(
                 TaskService::TASK_PHOTOSET_PHOTOS,
                 Setting::remember(
                     'flickr',
                     'task_' . Str::slug(TaskService::TASK_PHOTOSET_PHOTOS, '_') . '_limit',
-                    fn() => 10
-                )
+                    fn() => config('flickr.task_limit', 10)
+                ),
+                function ($task) use ($integration) {
+                    PhotosetPhotosJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
+                }
             );
-
-            foreach ($tasks as $task) {
-                $this->info('Processing ' . $task->task . ' with integration ' . $integration->name . ' for ' . $task->model->id);
-
-                PhotosetPhotosJob::dispatch($integration, $task)->onQueue(FlickrService::QUEUE_NAME);
-            }
         });
     }
 }

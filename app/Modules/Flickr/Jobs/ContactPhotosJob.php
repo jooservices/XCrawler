@@ -11,6 +11,7 @@ use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\UserDeletedException;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
@@ -71,6 +72,9 @@ class ContactPhotosJob extends BaseJob
         self::dispatch($this->integration, $this->task, $photos->getNextPage());
     }
 
+    /**
+     * @throws UserDeletedException
+     */
     protected function failedProcess(Throwable $throwable): void
     {
         switch ($throwable->getCode()) {
@@ -78,6 +82,8 @@ class ContactPhotosJob extends BaseJob
             case 5:
                 $this->task->model->delete();
                 $this->task->delete();
+
+                throw new UserDeletedException($throwable->getMessage(), $throwable->getCode(), $throwable);
         }
     }
 }
