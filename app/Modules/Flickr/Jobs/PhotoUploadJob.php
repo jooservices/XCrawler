@@ -26,9 +26,14 @@ class PhotoUploadJob extends BaseJob
      */
     public function handle(): void
     {
+        // Task already transitioned to InProgressState
         $this->task->transitionTo(InProgressState::class);
 
         $parentTask = $this->task->parentTask;
+        if (!$parentTask->isState(InProgressState::class)) {
+            $parentTask->transitionTo(InProgressState::class);
+        }
+
         /**
          * @var FlickrPhoto $photo
          */

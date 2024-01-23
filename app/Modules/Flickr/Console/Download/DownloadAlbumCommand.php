@@ -3,10 +3,12 @@
 namespace App\Modules\Flickr\Console\Download;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Client\Repositories\IntegrationRepository;
+use App\Modules\Core\Console\Traits\HasIntegrationsCommand;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
@@ -22,6 +24,8 @@ use Illuminate\Support\Facades\Event;
 
 class DownloadAlbumCommand extends Command
 {
+    use HasIntegrationsCommand;
+
     public const COMMAND = 'flickr:download-album {--photoset_id=}';
     /**
      * The name and signature of the console command.
@@ -35,9 +39,7 @@ class DownloadAlbumCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Download all photos\'s album.';
-
-    private Integration $integration;
+    protected $description = 'Download all album\'s photos.';
 
     /**
      * @return void
@@ -46,51 +48,59 @@ class DownloadAlbumCommand extends Command
      */
     public function handle(): void
     {
-        $this->info('Preparing ...');
+        $this->info('Download photoset: <fg=blue>' . $this->option('photoset_id') . '</> ...');
 
-        $this->integration();
+        $this->processNonePrimaryIntegration(FlickrService::SERVICE_NAME, function (Integration $integration) {
+            if (!$photosetInfo = $this->getPhotosetInfo($integration)) {
+                return;
+            }
 
-        if (!$photosetInfo = $this->getPhotosetInfo()) {
-            return;
-        }
+            $contact = $this->prepareContact($photosetInfo->owner);
+            $photoset = $this->preparePhotoset($photosetInfo, $contact);
+            /**
+             * We don't need to create Google Photo Album at this time
+             */
 
-        $contact = $this->prepareContact($photosetInfo->owner);
-        $photoset = $this->preparePhotoset($photosetInfo, $contact);
+            $task = $this->prepareTask($photoset, $photosetInfo);
 
-        /**
-         * We don't need to create Google Photo Album at this time
-         */
+            // Check if all photoset's photos are fetch
+            if ($photoset->relationshipPhotos()->count() !== $photoset->photos) {
+                $this->preparePhotos($task, $integration);
+                return;
+            }
 
-        $task = $this->prepareTask($photoset, $photosetInfo);
+            $this->info('All photos are ready. Dispatching event to download photoset');
 
-        // Check if all photoset's photos are fetch
-        if ($photoset->relationshipPhotos()->count() !== $photoset->photos) {
-            $this->preparePhotos($task);
-            return;
-        }
-
-        $this->info('All photos are ready. Dispatching event to download photoset');
-
-        Event::dispatch(new PhotosetReadyForDownloadEvent($task));
+            Event::dispatch(new PhotosetReadyForDownloadEvent($task));
+        });
     }
 
-    private function integration(): Integration
+    private function prepareContact(string $owner): FlickrContact
     {
-        $this->info('Getting integration');
-        $this->integration = app(IntegrationRepository::class)->getNonPrimary(FlickrService::SERVICE_NAME);
-        $this->line('Integration: <info>' . $this->integration->id . '</info>');
+        $this->info('Getting contact: <fg=blue>' . $owner . '</>');
+        /**
+         * Create contact if needed for relationship with photoset
+         */
+        $contact = app(FlickrContactService::class)->create(['nsid' => $owner]);
+        $this->line('Contact: <info>' . $contact->nsid . '</info>');
 
-        return $this->integration;
+        PeopleInfoJob::dispatch($contact->nsid)->onQueue(FlickrService::QUEUE_NAME);
+        $this->warn('Dispatched people info job');
+
+        return $contact;
     }
 
     /**
+     * @param Integration $integration
+     * @return PhotosetEntity|null
      * @throws GuzzleException
-     * @throws MissingEntityElement
+     * @throws FailedException
+     * @throws InvalidRespondException
      */
-    private function getPhotosetInfo(): ?PhotosetEntity
+    private function getPhotosetInfo(Integration $integration): ?PhotosetEntity
     {
         $this->info('Getting photoset info');
-        $adapter = app(FlickrService::class)->setIntegration($this->integration)->photosets;
+        $adapter = app(FlickrService::class)->setIntegration($integration)->photosets;
         $photosetEntity = $adapter->getInfo((int)$this->option('photoset_id'));
 
         if (!$photosetEntity) {
@@ -103,23 +113,9 @@ class DownloadAlbumCommand extends Command
         return $photosetEntity;
     }
 
-    private function prepareContact(string $owner): FlickrContact
-    {
-        $this->info('Getting contact');
-        /**
-         * Create contact if needed for relationship with photoset
-         */
-        $contact = app(FlickrContactService::class)->create(['nsid' => $owner]);
-        $this->line('Contact: <info>' . $contact->nsid . '</info>');
-        PeopleInfoJob::dispatch($contact->nsid)->onQueue(FlickrService::QUEUE_NAME);
-        $this->warn('Dispatched people info job');
-
-        return $contact;
-    }
-
     private function preparePhotoset(PhotosetEntity $photosetInfo, FlickrContact $contact): FlickrPhotoset
     {
-        $this->info('Getting photoset');
+        $this->info('Getting photoset: <fg=blue>' . $photosetInfo->id . '</>');
         /**
          * @var FlickrPhotoset $photoset
          */
@@ -128,7 +124,7 @@ class DownloadAlbumCommand extends Command
             'owner' => $contact->nsid,
         ], $photosetInfo->toArray());
 
-        $this->line('Photoset: <info>' . $photoset->id . '</info>');
+        $this->line('Photoset has <fg=blue>' . $photosetInfo->photos . '</> photos');
 
         return $photoset;
     }
@@ -137,33 +133,53 @@ class DownloadAlbumCommand extends Command
     {
         $this->info('Preparing task');
         /**
-         * This task should be done or completed after all photos are downloaded
+         * This task will be transitioned to Downloaded when all photos are downloaded
+         * - And will be deleted as soon as all photos are downloaded
          * @var Task $task
          */
-        $task = $photoset->tasks()->create([
-            'task' => TaskService::TASK_DOWNLOAD_PHOTOSET,
-            'payload' => [
-                'photos' => $photosetInfo->photos
-            ],
-        ]);
+        $task = $photoset->tasks()->where('task', TaskService::TASK_DOWNLOAD_PHOTOSET)->first();
+        /**
+         * @phpstan-ignore-next-line
+         */
+        if ($task) {
+            $this->warn('Task already exists');
+        } else {
+            $task = $photoset->tasks()->create([
+                'task' => TaskService::TASK_DOWNLOAD_PHOTOSET,
+                'payload' => [
+                    'photos' => $photosetInfo->photos
+                ],
+            ]);
+        }
 
-        $this->line('Registered ' . TaskService::TASK_DOWNLOAD_PHOTOSET . ' for photoset: <info>' . $task->uuid . '</info>');
+        $this->line(
+            'Registered task <options=bold;fg=blue>'
+            . TaskService::TASK_DOWNLOAD_PHOTOSET
+            . '</> for photoset: <fg=blue>' . $task->uuid . '</>'
+        );
 
         return $task;
     }
 
-    private function preparePhotos(Task $task): void
+    private function preparePhotos(Task $task, Integration $integration): void
     {
         $this->info('Preparing photos');
-        // Create task to fetch photoset's photos
-        $subTask = $task->subTasks()->create([
-            'model_type' => $task->model_type,
-            'model_id' => $task->model_id,
-            'task' => TaskService::TASK_PHOTOSET_PHOTOS,
-        ]);
-        $subTask->transitionTo(InProgressState::class);
+        $task->transitionTo(InProgressState::class);
 
-        PhotosetPhotosJob::dispatch($this->integration, $subTask)->onQueue(FlickrService::QUEUE_NAME);
+        // Create task to fetch photoset's photos
+        $subTask = $task->subTasks()->where('task', TaskService::TASK_PHOTOSET_PHOTOS)->first();
+        if ($subTask) {
+            $this->warn('Task already exists');
+        } else {
+            $subTask = $task->subTasks()->create([
+                'model_type' => $task->model_type,
+                'model_id' => $task->model_id,
+                'task' => TaskService::TASK_PHOTOSET_PHOTOS,
+            ]);
+            $this->line('Registered task <options=bold;fg=blue>' . $subTask->task . '</>');
+        }
+
+        PhotosetPhotosJob::dispatch($integration, $subTask)->onQueue(FlickrService::QUEUE_NAME);
         $this->warn('There are no photos yet. Registered task to fetch photos of photoset');
     }
 }

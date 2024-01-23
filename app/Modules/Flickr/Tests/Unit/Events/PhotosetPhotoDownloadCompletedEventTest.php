@@ -45,6 +45,7 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
                 'photos' => 1
             ]
         ]);
+        // This task state transited in PhotosetReadyForDownloadEvent event
         $task->transitionTo(InProgressState::class);
 
         $subTask = $task->subTasks()->create([
@@ -59,6 +60,7 @@ class PhotosetPhotoDownloadCompletedEventTest extends TestCase
                 $mock->shouldReceive('createPhoto');
             })
         );
+        // Transited in DownloadPhotoJob
         $subTask->transitionTo(InProgressState::class);
 
         Event::dispatch(new PhotosetPhotoDownloadCompletedEvent($subTask));

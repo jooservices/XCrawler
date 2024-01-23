@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Listeners;
 
+use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\DownloadedState;
 use App\Modules\Core\StateMachine\Task\InitState;
@@ -12,7 +13,6 @@ use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetPhotoReadyForUploadEvent;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
-use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Support\Facades\Event;
@@ -32,8 +32,14 @@ class PhotosetEventSubscriber
             $event->task->transitionTo(InProgressState::class);
         }
 
+        /**
+         * Fetch photoset photos completed
+         */
         $event->task->transitionTo(CompletedState::class);
 
+        /**
+         * parent : download-photoset
+         */
         if (
             $event->task->parentTask()->exists()
             && $event->task->parentTask->task === TaskService::TASK_DOWNLOAD_PHOTOSET
@@ -50,12 +56,15 @@ class PhotosetEventSubscriber
     {
         $event->task->transitionTo(InProgressState::class);
         $event->task->model->relationshipPhotos->each(function ($photo) use ($event) {
-            $task = $photo->tasks()->create([
-                'task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
-                'task_id' => $event->task->id, // 'parent_task_id
-            ]);
+            $task = $photo->tasks()->where('task', TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO)->first();
+            if (!$task) {
+                $task = $photo->tasks()->create([
+                    'task' => TaskService::TASK_DOWNLOAD_PHOTOSET_PHOTO,
+                    'task_id' => $event->task->id, // 'parent_task_id
+                ]);
+            }
 
-            DownloadPhotoJob::dispatch($task)->onQueue(FlickrService::QUEUE_NAME);
+            DownloadPhotoJob::dispatch($task)->onQueue(GooglePhotos::QUEUE_NAME);
         });
     }
 
@@ -89,15 +98,21 @@ class PhotosetEventSubscriber
          */
         $photoset->createGooglePhotoAlbum();
         $photos = $photoset->relationshipPhotos;
-        $task = $photoset->tasks()->create([
-            'task' => TaskService::TASK_UPLOAD_PHOTOSET,
-            'payload' => [
-                'photos' => $photos->count(),
-            ]
-        ]);
-        $task->transitionTo(InProgressState::class);
+        $task = $photoset->tasks()->where('task', TaskService::TASK_UPLOAD_PHOTOSET)->first();
+        if (!$task) {
+            $task = $photoset->tasks()->create([
+                'task' => TaskService::TASK_UPLOAD_PHOTOSET,
+                'payload' => [
+                    'photos' => $photos->count(),
+                ]
+            ]);
+        }
 
         foreach ($photos as $photo) {
+            if ($photo->tasks()->where('task', TaskService::TASK_UPLOAD_PHOTO)->exists()) {
+                continue;
+            }
+
             $task->subTasks()->create([
                 'model_type' => $photo->getMorphClass(),
                 'model_id' => $photo->id,
