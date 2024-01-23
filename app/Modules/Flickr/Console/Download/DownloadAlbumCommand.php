@@ -149,7 +149,11 @@ class DownloadAlbumCommand extends Command
             ]);
         }
 
-        $this->line('Registered task <options=bold;fg=blue>' . TaskService::TASK_DOWNLOAD_PHOTOSET . '</> for photoset: <fg=blue>' . $task->uuid . '</>');
+        $this->line(
+            'Registered task <options=bold;fg=blue>'
+            . TaskService::TASK_DOWNLOAD_PHOTOSET
+            . '</> for photoset: <fg=blue>' . $task->uuid . '</>'
+        );
 
         return $task;
     }
