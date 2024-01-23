@@ -29,4 +29,13 @@ trait HasIntegrationsCommand
                 $callback($integration);
             });
     }
+
+    public function processNonePrimaryIntegration(string $service, callable $callback): void
+    {
+        $integration = app(IntegrationRepository::class)
+            ->getNonPrimary($service);
+
+        $this->output->text('Processing integration: <options=bold;fg=blue>' . $integration->name .'</>');
+        $callback($integration);
+    }
 }

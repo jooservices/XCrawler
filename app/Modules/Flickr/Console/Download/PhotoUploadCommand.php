@@ -2,14 +2,17 @@
 
 namespace App\Modules\Flickr\Console\Download;
 
-use App\Modules\Core\Repositories\TaskRepository;
+use App\Modules\Client\Services\GooglePhotos;
+use App\Modules\Core\Console\Traits\HasTasksCommand;
+use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Jobs\PhotoUploadJob;
-use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Services\TaskService;
 use Illuminate\Console\Command;
 
 class PhotoUploadCommand extends Command
 {
+    use HasTasksCommand;
+
     public const COMMAND = 'flickr:photo-upload';
     /**
      * The name and signature of the console command.
@@ -26,13 +29,12 @@ class PhotoUploadCommand extends Command
     protected $description = 'Download all photos\'s album.';
 
     /**
-     * @param TaskRepository $taskRepository
      * @return void
      */
-    public function handle(TaskRepository $taskRepository): void
+    public function handle(): void
     {
-        $taskRepository->tasks(TaskService::TASK_UPLOAD_PHOTO, 5)->each(function ($task) {
-            PhotoUploadJob::dispatch($task)->onQueue(FlickrService::QUEUE_NAME);
+        $this->processTasks(TaskService::TASK_UPLOAD_PHOTO, 5, function (Task $task) {
+            PhotoUploadJob::dispatch($task)->onQueue(GooglePhotos::QUEUE_NAME);
         });
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Client\Services\GooglePhotos;
 use Illuminate\Support\Str;
 
 $default = [
@@ -214,6 +215,14 @@ return [
                 'queue' => ['flickr'],
                 'maxProcesses' => env('HORIZON_OAUTH_MAX_PROCESSES', 5),
                 'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 2),
+            ]
+        ),
+        GooglePhotos::QUEUE_NAME => array_merge(
+            $default,
+            [
+                'queue' => [GooglePhotos::QUEUE_NAME],
+                'maxProcesses' => env('HORIZON_GOOGLE_PHOTOS_MAX_PROCESSES', 0),
+                'minProcesses' => env('HORIZON_GOOGLE_PHOTOS_MIN_PROCESSES', 0),
             ]
         ),
     ],

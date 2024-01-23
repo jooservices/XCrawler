@@ -22,6 +22,8 @@ class GooglePhotos
         'https://www.googleapis.com/auth/photoslibrary.sharing'
     ];
 
+    public const QUEUE_NAME = 'google_photos';
+
     private UserRefreshCredentials $authCredentials;
 
     /**

@@ -5,7 +5,6 @@ namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\UserDeletedException;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Services\FlickrContactService;

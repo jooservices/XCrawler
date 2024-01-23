@@ -2,6 +2,7 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Events;
 
+use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Jobs\DownloadPhotoJob;
@@ -17,11 +18,15 @@ class PhotosetReadyForDownloadEventTest extends TestCase
     {
         Queue::fake(DownloadPhotoJob::class);
 
+        $totalPhotos = 10;
         $photoset = FlickrPhotoset::factory()->create();
         $photoset->relationshipPhotos()->createMany(
-            FlickrPhotoset::factory()->count(10)->make()->toArray()
+            FlickrPhotoset::factory()->count($totalPhotos)->make()->toArray()
         );
 
+        /**
+         * @var Task $task
+         */
         $task = $photoset->tasks()->create([
             'task' => TaskService::TASK_DOWNLOAD_PHOTOSET
         ]);
@@ -29,7 +34,10 @@ class PhotosetReadyForDownloadEventTest extends TestCase
         Event::dispatch(new PhotosetReadyForDownloadEvent($task));
 
         $this->assertTrue($task->refresh()->isState(InProgressState::class));
+        $this->assertEquals($totalPhotos, $task->subTasks()->count());
 
-        Queue::assertPushed(DownloadPhotoJob::class, 10);
+        Queue::assertPushed(DownloadPhotoJob::class, function ($job) use ($task) {
+            return $job->task->is($task->subTasks()->first());
+        });
     }
 }

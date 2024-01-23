@@ -7,12 +7,16 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Event;
-use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
 use Throwable;
 
 class PhotosetPhotosJob extends BaseJob
@@ -33,10 +37,14 @@ class PhotosetPhotosJob extends BaseJob
     /**
      * @param FlickrService $flickrService
      * @return void
-     * @throws CouldNotPerformTransition
+     * @throws FailedException
+     * @throws InvalidRespondException
+     * @throws MissingEntityElement
+     * @throws GuzzleException
      */
     public function handle(FlickrService $flickrService): void
     {
+        $this->task->transitionTo(InProgressState::class);
         $photoset = $this->task->model;
 
         $items = $flickrService->setIntegration($this->integration)

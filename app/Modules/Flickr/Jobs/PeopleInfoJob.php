@@ -6,7 +6,6 @@ use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Exceptions\EntityCastException;
 use App\Modules\Core\Jobs\BaseJob;
-use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
@@ -16,7 +15,6 @@ use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
-use Illuminate\Queue\SerializesModels;
 use Throwable;
 
 class PeopleInfoJob extends BaseJob

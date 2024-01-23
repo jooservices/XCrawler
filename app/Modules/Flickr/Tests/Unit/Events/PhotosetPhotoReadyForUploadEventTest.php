@@ -6,7 +6,7 @@ use App\Modules\Client\Models\Integration;
 use App\Modules\Client\Services\GooglePhotos;
 use App\Modules\Client\StateMachine\Integration\CompletedState;
 use App\Modules\Core\StateMachine\Task\CompletedState as TaskCompletedState;
-use App\Modules\Core\StateMachine\Task\InProgressState;
+use App\Modules\Core\StateMachine\Task\InitState;
 use App\Modules\Flickr\Console\Download\PhotoUploadCommand;
 use App\Modules\Flickr\Events\PhotosetPhotoReadyForUploadEvent;
 use App\Modules\Flickr\Models\FlickrPhoto;
@@ -22,6 +22,7 @@ class PhotosetPhotoReadyForUploadEventTest extends TestCase
 {
     public function testEvent()
     {
+        $totalPhotos = 5;
         Integration::factory()->create([
             'service' => GooglePhotos::SERVICE_NAME,
             'state_code' => CompletedState::class
@@ -36,7 +37,7 @@ class PhotosetPhotoReadyForUploadEventTest extends TestCase
         );
 
         $photoset = FlickrPhotoset::factory()->create();
-        FlickrPhoto::factory()->count(5)->create([
+        FlickrPhoto::factory()->count($totalPhotos)->create([
             'sizes' => [
                 [
                     'label' => 'Original',
@@ -53,17 +54,28 @@ class PhotosetPhotoReadyForUploadEventTest extends TestCase
             'album_id' => $this->faker->uuid
         ]);
 
+        /**
+         * - Create google album
+         * - Create upload photoset task
+         * - - Create upload photoset photo subtasks
+         */
         Event::dispatch(new PhotosetPhotoReadyForUploadEvent($photoset));
-        $task = $photoset->tasks()->where('task', TaskService::TASK_UPLOAD_PHOTOSET)->first();
-        $this->assertTrue($task->isState(InProgressState::class));
-        $this->assertEquals(5, $task->payload['photos']);
-        $this->assertEquals(5, $task->subTasks()->count());
 
+        $uploadTasks = $photoset->tasks()->where('task', TaskService::TASK_UPLOAD_PHOTOSET)->get();
+        $this->assertEquals(1, $uploadTasks->count());
+        $uploadTask = $uploadTasks->first();
+        $this->assertEquals($totalPhotos, $uploadTask->payload['photos']);
+        $this->assertEquals($totalPhotos, $uploadTask->subTasks()->count());
+        $this->assertTrue($uploadTask->isState(InitState::class));
+
+        /**
+         * This task will be called by PhotoUploadCommand
+         */
         $this->artisan(PhotoUploadCommand::COMMAND)->assertExitCode(0);
 
         $task = $photoset->tasks()->where('task', TaskService::TASK_UPLOAD_PHOTOSET)->first();
 
-        $this->assertEquals(5, $task->subTasks()->where('state_code', TaskCompletedState::class)->count());
+        $this->assertEquals($totalPhotos, $task->subTasks()->where('state_code', TaskCompletedState::class)->count());
         $this->assertTrue($task->isState(TaskCompletedState::class));
     }
 }
