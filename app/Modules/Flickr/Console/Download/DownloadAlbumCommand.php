@@ -129,7 +129,7 @@ class DownloadAlbumCommand extends Command
         return $photoset;
     }
 
-    private function prepareTask(FlickrPhotoset $photoset, PhotosetEntity $photosetInfo): ?Task
+    private function prepareTask(FlickrPhotoset $photoset, PhotosetEntity $photosetInfo): Task
     {
         $this->info('Preparing task');
         /**
@@ -138,6 +138,9 @@ class DownloadAlbumCommand extends Command
          * @var Task $task
          */
         $task = $photoset->tasks()->where('task', TaskService::TASK_DOWNLOAD_PHOTOSET)->first();
+        /**
+         * @phpstan-ignore-next-line
+         */
         if ($task) {
             $this->warn('Task already exists');
         } else {

@@ -45,7 +45,7 @@ class DownloadPhotoJob extends BaseJob
         Event::dispatch(new PhotosetPhotoDownloadCompletedEvent($this->task));
     }
 
-    private function download(): string
+    private function download(): int
     {
         $fileManager = app(FileManager::class);
 

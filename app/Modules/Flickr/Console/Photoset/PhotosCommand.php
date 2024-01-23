@@ -3,7 +3,6 @@
 namespace App\Modules\Flickr\Console\Photoset;
 
 use App\Modules\Client\Exceptions\NoIntegrateException;
-use App\Modules\Client\Repositories\IntegrationRepository;
 use App\Modules\Core\Console\Traits\HasIntegrationsCommand;
 use App\Modules\Core\Console\Traits\HasTasksCommand;
 use App\Modules\Core\Facades\Setting;
@@ -35,16 +34,14 @@ class PhotosCommand extends Command
     protected $description = 'Fetch photos for photosets';
 
     /**
-     * @param TaskService $taskService
-     * @param IntegrationRepository $repository
      * @return void
      * @throws NoIntegrateException
      */
-    public function handle(TaskService $taskService, IntegrationRepository $repository): void
+    public function handle(): void
     {
         $this->info('Fetching photos ...');
 
-        $this->processCompletedIntegrations(FlickrService::SERVICE_NAME, function ($integration) use ($taskService) {
+        $this->processCompletedIntegrations(FlickrService::SERVICE_NAME, function ($integration) {
             $this->processTasks(
                 TaskService::TASK_PHOTOSET_PHOTOS,
                 Setting::remember(
