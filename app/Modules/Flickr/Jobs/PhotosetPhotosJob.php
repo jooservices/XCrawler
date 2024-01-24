@@ -84,10 +84,10 @@ class PhotosetPhotosJob extends BaseJob
     protected function failedProcess(Throwable $throwable): void
     {
         switch ($throwable->getCode()) {
-            // Photoset deleted
+            // Photoset not found
             case 1:
-                // Photoset not found
                 $this->task->model->delete();
+                $this->task->delete();
                 break;
 
             case 2:
