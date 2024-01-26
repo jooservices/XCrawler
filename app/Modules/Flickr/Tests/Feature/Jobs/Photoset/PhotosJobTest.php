@@ -57,10 +57,8 @@ class PhotosJobTest extends TestCase
         $this->expectException(FailedException::class);
         PhotosetPhotosJob::dispatch($this->integration, $task);
 
-        $this->assertDatabaseMissing('flickr_photos', [
-            'id' => 1,
-        ]);
-
+        $this->assertDatabaseMissing('flickr_photosets', ['id' => 1]);
+        $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
         $this->assertTrue($task->isFailedState());
     }
 

@@ -18,6 +18,10 @@ abstract class TaskState extends State
             ->allowTransition(InProgressState::class, DownloadedState::class)
             # Recurring
             ->allowTransition(RecurringState::class, CompletedState::class)
-            ->allowTransition(RecurringState::class, FailedState::class);
+            ->allowTransition(RecurringState::class, FailedState::class)
+            # Failed
+            ->allowTransition(FailedState::class, InProgressState::class)
+            ->allowTransition(FailedState::class, RecurringState::class)
+            ->allowTransition(FailedState::class, CompletedState::class);
     }
 }

@@ -7,6 +7,7 @@ use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\DownloadedState;
 use App\Modules\Core\StateMachine\Task\InitState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
+use App\Modules\Flickr\Events\Exceptions\PhotosetNotFoundEvent;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Events\PhotosetPhotoDownloadCompletedEvent;

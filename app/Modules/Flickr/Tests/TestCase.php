@@ -14,6 +14,8 @@ class TestCase extends BaseTestCase
 {
     protected const NSID = '94529704@N02';
 
+    protected const NSID_USER_NOT_FOUND = '64994773@N03';
+
     protected const PHOTOSET_ID = 72157674594210788;
 
     private const DEFAULT_CONTENT_TYPE = [
@@ -206,19 +208,13 @@ class TestCase extends BaseTestCase
             ->withArgs(function ($method, $url, $options) {
                 return $method === 'POST'
                     && str_contains($url, 'flickr.favorites.getList')
-                    && $options['form_params']['per_page'] === 500
-                    && $options['form_params']['page'] === 1
-                    && $options['form_params']['user_id'] === '64994773@N03'; // User not found
+                    && $options['form_params']['user_id'] === self::NSID_USER_NOT_FOUND; // User not found
             })
             ->andReturn(
                 new Response(
                     200,
                     self::DEFAULT_CONTENT_TYPE,
-                    '{
-    "stat": "fail",
-    "code": 1,
-    "message": "User not found"
-}'
+                    $this->getFixtures('flickr_favorites_getList_user_not_found.json')
                 )
             );
     }
