@@ -8,6 +8,7 @@ use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\InProgressState;
+use App\Modules\Flickr\Events\Exceptions\PhotosetNotFoundEvent;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
@@ -86,8 +87,7 @@ class PhotosetPhotosJob extends BaseJob
         switch ($throwable->getCode()) {
             // Photoset not found
             case 1:
-                $this->task->model->delete();
-                $this->task->delete();
+                Event::dispatch(new PhotosetNotFoundEvent($this->task->model));
                 break;
 
             case 2:
@@ -95,6 +95,7 @@ class PhotosetPhotosJob extends BaseJob
                 $contact = $this->task->model->contact;
                 $this->task->model->delete();
                 $contact->delete();
+                $this->task->delete();
                 break;
         }
     }

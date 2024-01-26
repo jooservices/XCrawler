@@ -3,15 +3,17 @@
 namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
 use App\Modules\Core\StateMachine\Task\CompletedState;
+use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
+use App\Modules\Flickr\Events\Exceptions\UserNotFoundEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\TaskService;
 use App\Modules\Flickr\Tests\TestCase;
+use Exception;
 use Illuminate\Support\Facades\Event;
 
 class ContactFavoritesJobTest extends TestCase
@@ -54,19 +56,47 @@ class ContactFavoritesJobTest extends TestCase
         $this->assertDatabaseCount('flickr_photos', 0);
         $this->assertDatabaseCount('flickr_contacts', 0);
 
-        $contact = app(FlickrContactService::class)->create(['nsid' => '64994773@N03']);
+        $contact = app(FlickrContactService::class)->create(['nsid' => self::NSID_USER_NOT_FOUND]);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
 
         $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
         $task->transitionTo(InProgressState::class);
 
-        $this->expectException(FailedException::class);
-        $this->expectException(UserNotFoundException::class);
-        ContactFavoritesJob::dispatch($this->integration, $task);
+        try {
+            ContactFavoritesJob::dispatch($this->integration, $task);
+        } catch (Exception $e) {
+            $this->assertInstanceOf(UserNotFoundException::class, $e);
+        }
 
         // Tasks deleted
         $this->assertEquals(0, $contact->refresh()->tasks->count());
+        // Contact soft deleted
         $this->assertTrue($contact->trashed());
         $this->assertDatabaseMissing('tasks', ['id' => $task->id]);
+    }
+
+    public function testGetPeopleFavoritesWithUserNotFoundFakeEvent()
+    {
+        Event::fake(UserNotFoundEvent::class);
+        $this->assertDatabaseCount('flickr_photos', 0);
+        $this->assertDatabaseCount('flickr_contacts', 0);
+
+        $contact = app(FlickrContactService::class)->create(['nsid' => self::NSID_USER_NOT_FOUND]);
+        $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
+
+        $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
+        $task->transitionTo(InProgressState::class);
+
+        try {
+            ContactFavoritesJob::dispatch($this->integration, $task);
+        } catch (Exception $e) {
+            $this->assertInstanceOf(UserNotFoundException::class, $e);
+        }
+
+        Event::assertDispatched(UserNotFoundEvent::class, function ($event) use ($contact) {
+            return $event->contact->is($contact);
+        });
+
+        $this->assertTrue($task->refresh()->isState(FailedState::class));
     }
 }

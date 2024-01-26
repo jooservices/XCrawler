@@ -8,15 +8,18 @@ use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\CompletedState;
+use App\Modules\Flickr\Events\Exceptions\UserNotFoundEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
+use App\Modules\Flickr\Services\Flickr\Adapters\Favorites;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Event;
 use Throwable;
 
 /**
@@ -78,9 +81,8 @@ class ContactFavoritesJob extends BaseJob
     protected function failedProcess(Throwable $throwable): void
     {
         switch ($throwable->getCode()) {
-            case 1:
-                $this->task->model->tasks()->delete();
-
+            case Favorites::ERROR_CODE_USER_NOT_FOUND:
+                Event::dispatch(new UserNotFoundEvent($this->task->model));
                 throw new UserNotFoundException($throwable->getMessage(), $throwable->getCode(), $throwable);
         }
     }
