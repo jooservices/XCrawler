@@ -104,7 +104,6 @@ class Generator
     {
         if (!isset($this->modules[ucfirst($provider)])) {
             throw new NoProviderException('No provider found for ' . $provider);
-
         }
 
         $classNamespace = $this->modules[ucfirst($provider)]
