@@ -33,10 +33,7 @@ class IntegrationRepositoryTest extends TestCase
 
     public function testGetInit()
     {
-        $integration = $integration = app(Generator::class)
-            ->integration()
-            ->factory()
-            ->get();
+        $integration = Integration::factory()->create(['service' => 'test']);
         $integrations = app(IntegrationRepository::class)
             ->getInit($integration->service);
 
