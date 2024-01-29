@@ -10,7 +10,7 @@ use Mockery\MockInterface;
 
 class ClientProvider implements ProviderInterface
 {
-    private Mockery\MockInterface $clientMock;
+    private Mockery\MockInterface|Mockery\LegacyMockInterface $clientMock;
 
     public function __construct()
     {
@@ -28,7 +28,10 @@ class ClientProvider implements ProviderInterface
         }
 
         app()->instance(Client::class, $this->clientMock);
-        app()->instance(Factory::class, Mockery::mock(Factory::class, function (MockInterface $mock) {
+        app()->instance(Factory::class, Mockery::mock(Factory::class, function (MockInterface|Mockery\LegacyMockInterface $mock) {
+            /**
+             * @phpstan-ignore-next-line
+             */
             $mock->shouldReceive('enableRetries')
                 ->andReturnSelf();
 
