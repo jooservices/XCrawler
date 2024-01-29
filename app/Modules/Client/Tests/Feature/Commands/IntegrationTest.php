@@ -7,6 +7,7 @@ use App\Modules\Client\Exceptions\NoIntegrateException;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\StateMachine\Integration\CompletedState;
 use App\Modules\Client\StateMachine\Integration\InitState;
+use App\Modules\Core\God\Generator;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
 
@@ -14,7 +15,10 @@ class IntegrationTest extends TestCase
 {
     public function testFlickrIntegration()
     {
-        $integration = Integration::factory()->create(['name' => 'test',]);
+        $integration = app(Generator::class)
+            ->integration()
+            ->factory()
+            ->get();
 
         $this->artisan('client:integration')
             ->expectsQuestion('Enter service: ', FlickrService::SERVICE_NAME)
