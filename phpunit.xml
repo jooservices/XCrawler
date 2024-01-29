@@ -54,6 +54,7 @@
             <directory suffix=".php">./app/Modules/*/Routes</directory>
             <directory suffix=".php">./app/Modules/*/Tests</directory>
             <directory suffix=".php">./app/Modules/*/Providers</directory>
+            <directory suffix=".php">./app/Modules/*/God</directory>
 
         </exclude>
     </coverage>

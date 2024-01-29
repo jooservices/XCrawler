@@ -6,6 +6,7 @@ use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
+use App\Modules\Flickr\God\Providers\AbstractProvider;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\TaskService;
@@ -21,7 +22,7 @@ class PhotosJobTest extends TestCase
             RecurredTaskEvent::class,
         ]);
         $contact = FlickrContact::factory()->create([
-            'nsid' => self::NSID
+            'nsid' => AbstractProvider::NSID
         ]);
 
         $photoset = $contact->photosets()->create([
@@ -42,7 +43,7 @@ class PhotosJobTest extends TestCase
     public function testGetPhotosetsPhotoNotFound()
     {
         $contact = FlickrContact::factory()->create([
-            'nsid' => self::NSID
+            'nsid' => AbstractProvider::NSID
         ]);
 
         $photoset = $contact->photosets()->create([
@@ -65,7 +66,7 @@ class PhotosJobTest extends TestCase
     public function testGetPhotosetsPhotoUserNotFound()
     {
         $contact = FlickrContact::factory()->create([
-            'nsid' => self::NSID
+            'nsid' => AbstractProvider::NSID
         ]);
 
         $photoset = $contact->photosets()->create([
@@ -81,7 +82,7 @@ class PhotosJobTest extends TestCase
         PhotosetPhotosJob::dispatch($this->integration, $task);
 
         $this->assertDatabaseMissing('flickr_contacts', [
-            'nsid' => self::NSID
+            'nsid' => AbstractProvider::NSID
         ]);
         $this->assertDatabaseMissing('flickr_photos', [
             'id' => 1,

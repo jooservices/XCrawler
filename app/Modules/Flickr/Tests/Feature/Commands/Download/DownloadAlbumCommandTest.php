@@ -8,6 +8,7 @@ use App\Modules\Client\StateMachine\Integration\CompletedState;
 use App\Modules\Core\Models\Task;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
+use App\Modules\Flickr\God\Providers\AbstractProvider;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Jobs\PhotosetPhotosJob;
 use App\Modules\Flickr\Models\FlickrContact;
@@ -52,11 +53,11 @@ class DownloadAlbumCommandTest extends TestCase
             PhotosetPhotosJob::class
         ]);
 
-        $this->artisan('flickr:download-album --photoset_id=' . self::PHOTOSET_ID)
-            ->expectsOutput('Download photoset: ' . self::PHOTOSET_ID . ' ...')
-            ->expectsOutput('Getting contact: ' . self::NSID)
+        $this->artisan('flickr:download-album --photoset_id=' . AbstractProvider::PHOTOSET_ID)
+            ->expectsOutput('Download photoset: ' . AbstractProvider::PHOTOSET_ID . ' ...')
+            ->expectsOutput('Getting contact: ' . AbstractProvider::NSID)
             ->expectsOutput('Dispatched people info job')
-            ->expectsOutput('Getting photoset: ' . self::PHOTOSET_ID)
+            ->expectsOutput('Getting photoset: ' . AbstractProvider::PHOTOSET_ID)
             ->expectsOutput('Photoset has 1 photos')
             ->expectsOutput('Preparing task')
             ->expectsOutput('Preparing photos')
@@ -75,10 +76,10 @@ class DownloadAlbumCommandTest extends TestCase
         /**
          * Prepare contact
          */
-        $this->assertDatabaseHas('flickr_contacts', ['nsid' => self::NSID]);
+        $this->assertDatabaseHas('flickr_contacts', ['nsid' => AbstractProvider::NSID]);
         $this->assertDatabaseHas('flickr_photosets', [
-            'id' => self::PHOTOSET_ID,
-            'owner' => self::NSID,
+            'id' => AbstractProvider::PHOTOSET_ID,
+            'owner' => AbstractProvider::NSID,
             'title' => 'Phương Trần',
             'photos' => 1
         ]);
@@ -88,11 +89,11 @@ class DownloadAlbumCommandTest extends TestCase
          */
         $this->assertDatabaseHas('tasks', [
             'model_type' => FlickrPhotoset::class,
-            'model_id' => self::PHOTOSET_ID,
+            'model_id' => AbstractProvider::PHOTOSET_ID,
             'task' => TaskService::TASK_DOWNLOAD_PHOTOSET,
         ]);
 
-        $task = Task::where('model_id', self::PHOTOSET_ID)
+        $task = Task::where('model_id', AbstractProvider::PHOTOSET_ID)
             ->where('model_type', FlickrPhotoset::class)
             ->where('task', TaskService::TASK_DOWNLOAD_PHOTOSET)
             ->first();
@@ -117,10 +118,10 @@ class DownloadAlbumCommandTest extends TestCase
         /**
          * Prepare init data
          */
-        $contact = FlickrContact::factory()->create(['nsid' => self::NSID]);
+        $contact = FlickrContact::factory()->create(['nsid' => AbstractProvider::NSID]);
 
         $photoset = FlickrPhotoset::factory()->create([
-            'id' => self::PHOTOSET_ID,
+            'id' => AbstractProvider::PHOTOSET_ID,
             'owner' => $contact->nsid
         ]);
 
@@ -131,16 +132,16 @@ class DownloadAlbumCommandTest extends TestCase
 
         $this->assertFalse($photoset->tasks()->exists());
 
-        $this->artisan('flickr:download-album --photoset_id=' . self::PHOTOSET_ID)
+        $this->artisan('flickr:download-album --photoset_id=' . AbstractProvider::PHOTOSET_ID)
             ->assertExitCode(0);
 
         // One request to fetch photoset info
         $this->assertEquals(1, $this->integration->fresh()->requested_times);
 
-        $this->assertDatabaseHas('flickr_contacts', ['nsid' => self::NSID]);
+        $this->assertDatabaseHas('flickr_contacts', ['nsid' => AbstractProvider::NSID]);
         $this->assertDatabaseHas('flickr_photosets', [
-            'id' => self::PHOTOSET_ID,
-            'owner' => self::NSID,
+            'id' => AbstractProvider::PHOTOSET_ID,
+            'owner' => AbstractProvider::NSID,
             'title' => 'Phương Trần',
             'photos' => 1
         ]);

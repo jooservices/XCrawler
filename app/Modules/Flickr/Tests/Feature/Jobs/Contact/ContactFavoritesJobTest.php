@@ -9,6 +9,7 @@ use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\Exceptions\UserNotFoundEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
+use App\Modules\Flickr\God\Providers\AbstractProvider;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\TaskService;
@@ -26,7 +27,7 @@ class ContactFavoritesJobTest extends TestCase
         /**
          * This user have 1487 favorites.
          */
-        $contact = app(FlickrContactService::class)->create(['nsid' => self::NSID]);
+        $contact = app(FlickrContactService::class)->create(['nsid' => AbstractProvider::NSID]);
 
         $this->assertEquals(0, (int)$this->integration->refresh()->requested_times);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
@@ -56,7 +57,7 @@ class ContactFavoritesJobTest extends TestCase
         $this->assertDatabaseCount('flickr_photos', 0);
         $this->assertDatabaseCount('flickr_contacts', 0);
 
-        $contact = app(FlickrContactService::class)->create(['nsid' => self::NSID_USER_NOT_FOUND]);
+        $contact = app(FlickrContactService::class)->create(['nsid' => AbstractProvider::NSID_USER_NOT_FOUND]);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
 
         $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();
@@ -81,7 +82,7 @@ class ContactFavoritesJobTest extends TestCase
         $this->assertDatabaseCount('flickr_photos', 0);
         $this->assertDatabaseCount('flickr_contacts', 0);
 
-        $contact = app(FlickrContactService::class)->create(['nsid' => self::NSID_USER_NOT_FOUND]);
+        $contact = app(FlickrContactService::class)->create(['nsid' => AbstractProvider::NSID_USER_NOT_FOUND]);
         $this->assertEquals(count(TaskService::CONTACT_TASKS), $contact->refresh()->tasks->count());
 
         $task = $contact->refresh()->tasks()->where('task', TaskService::TASK_CONTACT_FAVORITES)->first();

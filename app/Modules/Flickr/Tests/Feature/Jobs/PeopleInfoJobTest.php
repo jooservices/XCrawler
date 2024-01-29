@@ -4,6 +4,7 @@ namespace App\Modules\Flickr\Tests\Feature\Jobs;
 
 use App\Modules\Client\Models\Integration;
 use App\Modules\Client\StateMachine\Integration\CompletedState;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\UserDeletedException;
 use App\Modules\Flickr\Jobs\PeopleInfoJob;
 use App\Modules\Flickr\Models\FlickrContact;
@@ -20,7 +21,7 @@ class PeopleInfoJobTest extends TestCase
             'state_code' => CompletedState::class
         ]);
 
-        $nsid = '16842686@N04';
+        $nsid = '94529704@N02';
         PeopleInfoJob::dispatch($nsid);
 
         $this->assertDatabaseHas('flickr_contacts', [
@@ -36,12 +37,10 @@ class PeopleInfoJobTest extends TestCase
             'state_code' => CompletedState::class
         ]);
 
-        $contact = FlickrContact::factory()->create([
-            'nsid' => 'User deleted'
-        ]);
+        $contact = FlickrContact::factory()->create(['nsid' => 5]);
 
-        $this->expectException(UserDeletedException::class);
-        PeopleInfoJob::dispatch('User deleted');
+        $this->expectException(FailedException::class);
+        PeopleInfoJob::dispatch(5);
         $this->assertDatabaseMissing('flickr_contacts', [
             'nsid' => 'User deleted'
         ]);

@@ -9,6 +9,7 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\PermissionDeniedException;
 use App\Modules\Flickr\Exceptions\UserDeletedException;
 use App\Modules\Flickr\Models\FlickrContact;
 use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
@@ -24,14 +25,17 @@ class PeopleInfoJob extends BaseJob
     }
 
     /**
-     * @throws MissingEntityElement
-     * @throws InvalidRespondException
-     * @throws FailedException
-     * @throws NoIntegrateException
-     * @throws GuzzleException
+     * @param IntegrationRepository $repository
+     * @return void
      * @throws EntityCastException
+     * @throws FailedException
+     * @throws GuzzleException
+     * @throws InvalidRespondException
+     * @throws MissingEntityElement
+     * @throws NoIntegrateException
+     * @throws PermissionDeniedException
      */
-    public function handle(IntegrationRepository $repository)
+    public function handle(IntegrationRepository $repository): void
     {
         $integration = $repository->getNonPrimary(FlickrService::SERVICE_NAME);
         /**

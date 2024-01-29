@@ -6,6 +6,7 @@ use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Exceptions\UserDeletedException;
+use App\Modules\Flickr\God\Providers\People;
 use App\Modules\Flickr\Jobs\ContactPhotosJob;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
@@ -54,7 +55,7 @@ class ContactPhotosJobTest extends TestCase
 
     public function testJobWhenUserDeleted()
     {
-        $contact = app(FlickrContactService::class)->create(['nsid' => '-5',]);
+        $contact = app(FlickrContactService::class)->create(['nsid' => People::USER_DELETED_ID,]);
         $task = $contact->refresh()->tasks()
             ->where('task', TaskService::TASK_CONTACT_PHOTOS)->first();
 

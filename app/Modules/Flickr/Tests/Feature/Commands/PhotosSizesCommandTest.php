@@ -39,7 +39,7 @@ class PhotosSizesCommandTest extends TestCase
         ]);
 
         $photo = FlickrPhoto::factory()->create([
-            'id' => 10,
+            'id' => 1,
             'sizes' => null,
         ]);
         $this->expectException(FailedException::class);
