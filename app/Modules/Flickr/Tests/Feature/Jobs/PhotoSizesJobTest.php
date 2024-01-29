@@ -39,7 +39,7 @@ class PhotoSizesJobTest extends TestCase
     {
         Event::fake(PhotoSizedEvent::class);
         $photo = FlickrPhoto::factory()->create([
-            'id' => 10
+            'id' => 1
         ]);
 
         $this->expectException(FailedException::class);

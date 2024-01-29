@@ -2,12 +2,21 @@
 
 namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
+use GuzzleHttp\Exception\GuzzleException;
 
 class ContactsTest extends TestCase
 {
+    /**
+     * @throws MissingEntityElement
+     * @throws InvalidRespondException
+     * @throws FailedException
+     * @throws GuzzleException
+     */
     public function testGetList()
     {
         $adapter = app(FlickrService::class)->setIntegration($this->integration)->contacts;
@@ -26,13 +35,16 @@ class ContactsTest extends TestCase
         $this->assertTrue($items->isCompleted());
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws MissingEntityElement
+     * @throws FailedException
+     */
     public function testGetListWithException()
     {
         $this->expectException(InvalidRespondException::class);
 
         $adapter = app(FlickrService::class)->setIntegration($this->integration)->contacts;
-        $adapter->getList([
-            'exception' => true
-        ]);
+        $adapter->getList(['exception' => true]);
     }
 }

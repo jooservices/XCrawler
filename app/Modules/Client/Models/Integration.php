@@ -55,7 +55,7 @@ class Integration extends Model implements CredentialsInterface
         'key' => 'string',
         'secret' => 'string',
         'callback' => 'string',
-        'is_primary' => 'string',
+        'is_primary' => 'bool',
         'token' => 'string',
         'token_secret' => 'string',
         'refresh_token' => 'string',

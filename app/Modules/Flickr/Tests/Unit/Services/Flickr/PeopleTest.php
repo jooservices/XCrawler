@@ -4,10 +4,15 @@ namespace App\Modules\Flickr\Tests\Unit\Services\Flickr;
 
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
+use App\Modules\Flickr\Exceptions\PermissionDeniedException;
+use App\Modules\Flickr\God\Providers\AbstractProvider;
+use App\Modules\Flickr\God\Providers\People as GodPeople;
 use App\Modules\Flickr\Services\Flickr\Adapters\People;
 use App\Modules\Flickr\Services\Flickr\Entities\PeopleInfoEntity;
 use App\Modules\Flickr\Services\FlickrService;
 use App\Modules\Flickr\Tests\TestCase;
+use GuzzleHttp\Exception\GuzzleException;
 
 class PeopleTest extends TestCase
 {
@@ -17,18 +22,27 @@ class PeopleTest extends TestCase
     {
         parent::setUp();
 
-        $this->adapter = app(FlickrService::class)->setIntegration($this->integration)->people;
+        $this->adapter = app(FlickrService::class)
+            ->setIntegration($this->integration)->people;
     }
 
+    /**
+     * @throws MissingEntityElement
+     * @throws InvalidRespondException
+     * @throws GuzzleException
+     * @throws PermissionDeniedException
+     */
     public function testGetPhotosUnknownUser()
     {
         $this->expectException(FailedException::class);
-        $this->adapter->getPhotos(['user_id' => '44203036@N06']);
+        $this->adapter->getPhotos(
+            ['user_id' => (string)GodPeople::USER_UNKNOWN_ID]
+        );
     }
 
     public function testGetPhotos()
     {
-        $items = $this->adapter->getPhotos(['user_id' => self::NSID]);
+        $items = $this->adapter->getPhotos(['user_id' => AbstractProvider::NSID]);
 
         $this->assertCount(358, $items->getItems());
         $this->assertEquals(1, $items->getPage());
@@ -37,6 +51,13 @@ class PeopleTest extends TestCase
         $this->assertTrue($items->isCompleted());
     }
 
+    /**
+     * @throws MissingEntityElement
+     * @throws InvalidRespondException
+     * @throws FailedException
+     * @throws GuzzleException
+     * @throws PermissionDeniedException
+     */
     public function testGetPhotosHavePages()
     {
         $items = $this->adapter->getPhotos(['user_id' => '73115043@N07']);
@@ -49,16 +70,27 @@ class PeopleTest extends TestCase
         $this->assertEquals(2, $items->getNextPage());
     }
 
+    /**
+     * @throws MissingEntityElement
+     * @throws InvalidRespondException
+     * @throws FailedException
+     * @throws GuzzleException
+     * @throws PermissionDeniedException
+     */
     public function testGetPeopleInfo()
     {
-        $nsid = '16842686@N04';
-
-        $peopleInfo = $this->adapter->getInfo($nsid);
+        $peopleInfo = $this->adapter->getInfo(AbstractProvider::NSID);
         $this->assertInstanceOf(PeopleInfoEntity::class, $peopleInfo);
-        $this->assertEquals($nsid, $peopleInfo->nsid);
-        $this->assertEquals('Michigan, USA', $peopleInfo->location);
+        $this->assertEquals(AbstractProvider::NSID, $peopleInfo->nsid);
+        $this->assertEquals('SoulEvilX', $peopleInfo->username);
     }
 
+    /**
+     * @throws MissingEntityElement
+     * @throws FailedException
+     * @throws GuzzleException
+     * @throws PermissionDeniedException
+     */
     public function testGetPeopleInfoWithException()
     {
         $this->expectException(InvalidRespondException::class);

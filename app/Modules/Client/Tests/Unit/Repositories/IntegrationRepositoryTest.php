@@ -9,14 +9,17 @@ use App\Modules\Client\StateMachine\Integration\CompletedState;
 use App\Modules\Client\StateMachine\Integration\InitState;
 use App\Modules\Client\StateMachine\Integration\InProgressState;
 use App\Modules\Client\Tests\TestCase;
+use App\Modules\Core\God\Generator;
+use App\Modules\Flickr\Services\FlickrService;
 
 class IntegrationRepositoryTest extends TestCase
 {
     public function testGetItems()
     {
-        $integration = Integration::factory()->create([
-            'service' => 'test'
-        ]);
+        $integration = app(Generator::class)
+            ->integration()
+            ->factory()
+            ->get();
         $integration->transitionTo(InProgressState::class);
 
         $integrations = app(IntegrationRepository::class)
@@ -40,8 +43,12 @@ class IntegrationRepositoryTest extends TestCase
 
     public function testGetCompleted()
     {
+        $integration =  Integration::factory()->create([
+            'service' => FlickrService::SERVICE_NAME,
+            'state_code' => CompletedState::class
+        ]);
         $integrations = app(IntegrationRepository::class)
-            ->getCompleted($this->integration->service);
+            ->getCompleted($integration->service);
 
         $this->assertEquals(1, $integrations->count());
 
