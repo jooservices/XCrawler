@@ -7,8 +7,6 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\StateMachine\Task\InitState;
-use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\Exceptions\PhotosetNotFoundEvent;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
@@ -46,10 +44,6 @@ class PhotosetPhotosJob extends BaseJob
      */
     public function handle(FlickrService $flickrService): void
     {
-        if ($this->task->isState(InitState::class)) {
-            $this->task->transitionTo(InProgressState::class);
-        }
-
         $photoset = $this->task->model;
 
         $items = $flickrService->setIntegration($this->integration)
