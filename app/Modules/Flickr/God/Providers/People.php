@@ -78,7 +78,7 @@ class People extends AbstractProvider
             ->andReturn(new Response(
                 200,
                 self::DEFAULT_CONTENT_TYPE,
-                $this->error(1, self::INVALID_USER_IDS[self::USER_DELETED_ID])
+                $this->error(5, self::INVALID_USER_IDS[self::USER_DELETED_ID])
             ));
     }
 

@@ -39,10 +39,11 @@ class PeopleInfoJobTest extends TestCase
 
         $contact = FlickrContact::factory()->create(['nsid' => 5]);
 
-        $this->expectException(FailedException::class);
+        $this->expectException(UserDeletedException::class);
         PeopleInfoJob::dispatch(5);
+
         $this->assertDatabaseMissing('flickr_contacts', [
-            'nsid' => 'User deleted'
+            'nsid' => 5
         ]);
 
         $this->assertTrue($contact->refresh()->trashed());
