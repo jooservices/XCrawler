@@ -7,15 +7,10 @@ use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\Traits\HasRecurring;
 use App\Modules\Flickr\Services\FlickrService;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -37,16 +32,9 @@ class PhotosetsJob extends BaseJob
     {
     }
 
-    /**
-     * @param FlickrService $flickrService
-     * @return void
-     * @throws GuzzleException
-     * @throws InvalidRespondException
-     * @throws FailedException
-     * @throws MissingEntityElement
-     */
-    public function handle(FlickrService $flickrService): void
+    public function process(): bool
     {
+        $flickrService = app(FlickrService::class);
         $contact = $this->task->model;
         $columns = DB::getSchemaBuilder()->getColumnListing('flickr_photosets');
 
@@ -78,8 +66,7 @@ class PhotosetsJob extends BaseJob
         });
 
         if ($items->isCompleted()) {
-            $this->task->transitionTo(CompletedState::class);
-            return;
+            return true;
         }
 
         $this->task->update([
@@ -92,6 +79,8 @@ class PhotosetsJob extends BaseJob
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
+
+        return false;
     }
 
     /**

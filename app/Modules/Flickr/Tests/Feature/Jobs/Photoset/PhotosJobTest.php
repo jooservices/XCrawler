@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Tests\Feature\Jobs\Photoset;
 
 use App\Modules\Core\StateMachine\Task\InProgressState;
+use App\Modules\Flickr\Events\Exceptions\PhotosetNotFoundEvent;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
 use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
@@ -64,6 +65,37 @@ class PhotosJobTest extends TestCase
     }
 
     public function testGetPhotosetsPhotoUserNotFound()
+    {
+        Event::fake(PhotosetNotFoundEvent::class);
+
+        $contact = FlickrContact::factory()->create([
+            'nsid' => AbstractProvider::NSID
+        ]);
+
+        $photoset = $contact->photosets()->create([
+            'id' => 1,
+        ]);
+
+        $task = $photoset->tasks()->create([
+            'task' => TaskService::TASK_PHOTOSET_PHOTOS,
+        ]);
+        $task->transitionTo(InProgressState::class);
+
+        $this->expectException(FailedException::class);
+        PhotosetPhotosJob::dispatch($this->integration, $task);
+
+        $this->assertDatabaseMissing('flickr_contacts', [
+            'nsid' => AbstractProvider::NSID
+        ]);
+        $this->assertDatabaseMissing('flickr_photos', [
+            'id' => 1,
+        ]);
+
+        Event::assertDispatched(PhotosetNotFoundEvent::class);
+        $this->assertTrue($task->isFailedState());
+    }
+
+    public function testGetPhotosetPhotoUserNotFound()
     {
         $contact = FlickrContact::factory()->create([
             'nsid' => AbstractProvider::NSID

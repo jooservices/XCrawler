@@ -5,6 +5,7 @@ namespace App\Modules\Flickr\Console\Download;
 use App\Modules\Client\Models\Integration;
 use App\Modules\Core\Console\Traits\HasIntegrationsCommand;
 use App\Modules\Core\Models\Task;
+use App\Modules\Core\StateMachine\Task\InitState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\PhotosetReadyForDownloadEvent;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
@@ -167,7 +168,10 @@ class DownloadAlbumCommand extends Command
         $task->transitionTo(InProgressState::class);
 
         // Create task to fetch photoset's photos
-        $subTask = $task->subTasks()->where('task', TaskService::TASK_PHOTOSET_PHOTOS)->first();
+        $subTask = $task->subTasks()
+            ->where('task', TaskService::TASK_PHOTOSET_PHOTOS)
+            ->where('state_code', InitState::class)
+            ->first();
         if ($subTask) {
             $this->warn('Task already exists');
         } else {
@@ -179,6 +183,7 @@ class DownloadAlbumCommand extends Command
             $this->line('Registered task <options=bold;fg=blue>' . $subTask->task . '</>');
         }
 
+        $subTask->transitionTo(InProgressState::class);
         PhotosetPhotosJob::dispatch($integration, $subTask)->onQueue(FlickrService::QUEUE_NAME);
         $this->warn('There are no photos yet. Registered task to fetch photos of photoset');
     }
