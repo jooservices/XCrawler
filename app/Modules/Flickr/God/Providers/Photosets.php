@@ -79,6 +79,7 @@ class Photosets extends AbstractProvider
                     $this->error(1, 'Photoset not found')
                 )
             );
+
         // User not found
         $this->mock->shouldReceive('request')
             ->withArgs(function ($method, $url, $options) {
@@ -91,7 +92,7 @@ class Photosets extends AbstractProvider
                 new Response(
                     200,
                     self::DEFAULT_CONTENT_TYPE,
-                    $this->error(1, 'User not found')
+                    $this->error(2, 'User not found')
                 )
             );
     }

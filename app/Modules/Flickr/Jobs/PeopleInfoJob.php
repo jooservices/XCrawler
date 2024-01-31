@@ -53,6 +53,8 @@ class PeopleInfoJob extends BaseJob
     public function failed(Throwable $throwable)
     {
         switch ($throwable->getCode()) {
+            // User not found
+            case 1:
             // User deleted
             case 5:
                 $contact = FlickrContact::where('nsid', $this->nsid)->first();
