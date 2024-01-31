@@ -10,6 +10,15 @@ use Throwable;
 
 trait HasTaskJob
 {
+    public function handle()
+    {
+        $this->prepareState();
+
+        if ($this->process()) {
+            $this->completed();
+        }
+    }
+
     public function prepareState()
     {
         if ($this->task->isState(InitState::class)) {
@@ -32,4 +41,6 @@ trait HasTaskJob
     }
 
     abstract protected function failedProcess(Throwable $throwable): void;
+
+    abstract protected function process(): bool;
 }

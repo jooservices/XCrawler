@@ -41,16 +41,11 @@ class ContactFavoritesJob extends BaseJob
     {
     }
 
-    /**
-     * @param FlickrService $flickrService
-     * @param FlickrContactService $contactService
-     * @return void
-     * @throws GuzzleException
-     * @throws InvalidRespondException
-     * @throws MissingEntityElement|FailedException
-     */
-    public function handle(FlickrService $flickrService, FlickrContactService $contactService): void
+    public function process(): bool
     {
+        $flickrService = app(FlickrService::class);
+        $contactService = app(FlickrContactService::class);
+
         $items = $flickrService->setIntegration($this->integration)->favorites->getList([
             'user_id' => $this->task->model->nsid,
             'page' => $this->page
@@ -59,8 +54,7 @@ class ContactFavoritesJob extends BaseJob
         $contactService->addPhotos($items->getItems());
 
         if ($items->isCompleted()) {
-            $this->task->transitionTo(CompletedState::class);
-            return;
+            return true;
         }
 
         $this->task->update([
@@ -73,6 +67,8 @@ class ContactFavoritesJob extends BaseJob
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
+
+        return false;
     }
 
     /**

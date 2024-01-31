@@ -35,18 +35,9 @@ class ContactPhotosJob extends BaseJob
     public function __construct(public Integration $integration, public Task $task, public int $page = 1)
     {
     }
-
-    /**
-     * @param FlickrService $flickrService
-     * @return void
-     * @throws FailedException
-     * @throws InvalidRespondException
-     * @throws MissingEntityElement
-     * @throws GuzzleException
-     * @throws CouldNotPerformTransition
-     */
-    public function handle(FlickrService $flickrService): void
+    public function process(): bool
     {
+        $flickrService = app(FlickrService::class);
         $contactService = app(FlickrContactService::class);
 
         $photos = $flickrService->setIntegration($this->integration)->people->getPhotos([
@@ -57,8 +48,7 @@ class ContactPhotosJob extends BaseJob
         $contactService->addPhotos($photos->getItems());
 
         if ($photos->isCompleted()) {
-            $this->task->transitionTo(CompletedState::class);
-            return;
+            return true;
         }
 
         $this->task->update([
@@ -70,6 +60,8 @@ class ContactPhotosJob extends BaseJob
         $this->recurringTask();
 
         self::dispatch($this->integration, $this->task, $photos->getNextPage());
+
+        return false;
     }
 
     /**

@@ -34,16 +34,9 @@ class PhotosetPhotosJob extends BaseJob
     {
     }
 
-    /**
-     * @param FlickrService $flickrService
-     * @return void
-     * @throws FailedException
-     * @throws InvalidRespondException
-     * @throws MissingEntityElement
-     * @throws GuzzleException
-     */
-    public function handle(FlickrService $flickrService): void
+    public function process(): bool
     {
+        $flickrService = app(FlickrService::class);
         $photoset = $this->task->model;
 
         $items = $flickrService->setIntegration($this->integration)
@@ -65,7 +58,7 @@ class PhotosetPhotosJob extends BaseJob
 
         if ($items->isCompleted()) {
             Event::dispatch(new FetchPhotosetPhotosCompletedEvent($this->task));
-            return;
+            return true;
         }
 
         $this->task->update([
@@ -78,6 +71,8 @@ class PhotosetPhotosJob extends BaseJob
 
         self::dispatch($this->integration, $this->task, $items->getNextPage())
             ->onQueue(FlickrService::QUEUE_NAME);
+
+        return false;
     }
 
     protected function failedProcess(Throwable $throwable): void
