@@ -2,6 +2,7 @@
 
 namespace App\Modules\Core\God;
 
+use App\Modules\Core\God\Exceptions\InvalidProvider;
 use App\Modules\Core\God\Exceptions\NoProviderException;
 use App\Modules\Core\God\Providers\ProviderInterface;
 use Illuminate\Support\Str;
@@ -99,6 +100,7 @@ class Generator
 
     /**
      * @throws NoProviderException
+     * @throws InvalidProvider
      */
     public function mockClient(string $provider, array $methods = []): void
     {
@@ -110,7 +112,7 @@ class Generator
             . '\\ClientProvider';
 
         if (!is_subclass_of($classNamespace, ProviderInterface::class)) {
-            throw new \Exception('ClientProvider must implement ProviderInterface');
+            throw new InvalidProvider('ClientProvider must implement ProviderInterface');
         }
         $class = app($classNamespace);
         call_user_func_array([$class, self::EXECUTE_METHOD], $methods);
