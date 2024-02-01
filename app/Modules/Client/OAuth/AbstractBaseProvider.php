@@ -2,6 +2,7 @@
 
 namespace App\Modules\Client\OAuth;
 
+use App\Modules\Client\Exceptions\InvalidUrlException;
 use App\Modules\Client\OAuth\Credentials\CredentialsInterface;
 use App\Modules\Client\OAuth\Storage\TokenStorageInterface;
 use App\Modules\Client\Services\XClient;
@@ -59,7 +60,7 @@ abstract class AbstractBaseProvider implements ProviderInterface
         }
 
         if ($baseApiUri === null) {
-            throw new Exception(
+            throw new InvalidUrlException(
                 'An absolute URI must be passed to ServiceInterface::request as no baseApiUri is set.'
             );
         }
