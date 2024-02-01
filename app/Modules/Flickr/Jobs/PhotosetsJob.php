@@ -3,9 +3,8 @@
 namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\BaseTaskJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
-use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
@@ -16,12 +15,11 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Throwable;
 
-class PhotosetsJob extends BaseJob
+class PhotosetsJob extends BaseTaskJob
 {
     use SerializesModels;
     use HasRecurring;
     use HasModelJob;
-    use HasTaskJob;
 
     /**
      * @param Integration $integration

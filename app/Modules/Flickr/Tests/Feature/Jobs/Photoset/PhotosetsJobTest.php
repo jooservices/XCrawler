@@ -45,14 +45,12 @@ class PhotosetsJobTest extends TestCase
             RecurredTaskEvent::class
         ]);
 
-        $contact = app(FlickrContactService::class)->create([
-            'nsid' => '34938526@N02'
-        ]);
+        $contact = app(FlickrContactService::class)
+            ->create(['nsid' => '34938526@N02']);
 
         $task = $contact->tasks()
             ->where('task', TaskService::TASK_CONTACT_PHOTOSETS)
             ->first();
-        $task->transitionTo(InProgressState::class);
 
         PhotosetsJob::dispatch($this->integration, $task);
 

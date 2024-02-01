@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Core\Jobs\Traits;
+namespace App\Modules\Core\Jobs;
 
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
@@ -8,9 +8,9 @@ use App\Modules\Core\StateMachine\Task\InitState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use Throwable;
 
-trait HasTaskJob
+abstract class BaseTaskJob extends BaseJob
 {
-    public function handle()
+    public function handle(): void
     {
         $this->prepareState();
 
@@ -19,14 +19,14 @@ trait HasTaskJob
         }
     }
 
-    public function prepareState()
+    public function prepareState(): void
     {
         if ($this->task->isState(InitState::class)) {
             $this->task->transitionTo(InProgressState::class);
         }
     }
 
-    public function failed(Throwable $throwable)
+    public function failed(Throwable $throwable): void
     {
         if (isset($this->task)) {
             $this->task->transitionTo(FailedState::class);
@@ -35,7 +35,7 @@ trait HasTaskJob
         $this->failedProcess($throwable);
     }
 
-    public function completed()
+    public function completed(): void
     {
         $this->task->transitionTo(CompletedState::class);
     }

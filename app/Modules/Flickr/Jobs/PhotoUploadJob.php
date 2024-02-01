@@ -8,9 +8,10 @@ use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Exceptions\Google\GoogleAlbumNotFound;
 use App\Modules\Flickr\Models\FlickrPhoto;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Queue\SerializesModels;
 
-class PhotoUploadJob extends BaseJob
+class PhotoUploadJob extends BaseJob implements ShouldBeUnique
 {
     use SerializesModels;
 
@@ -18,6 +19,14 @@ class PhotoUploadJob extends BaseJob
 
     public function __construct(public Task $task)
     {
+    }
+
+    /**
+     * Get the unique ID for the job.
+     */
+    public function uniqueId(): string
+    {
+        return $this->task->id;
     }
 
     /**
