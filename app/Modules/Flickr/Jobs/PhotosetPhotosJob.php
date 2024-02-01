@@ -61,12 +61,7 @@ class PhotosetPhotosJob extends BaseTaskJob
             ]
         ]);
 
-        $this->recurringTask();
-
-        self::dispatch($this->integration, $this->task, $items->getNextPage())
-            ->onQueue(FlickrService::QUEUE_NAME);
-
-        return false;
+        return $this->recurringTask($this->integration, $this->task, $items->getNextPage());
     }
 
     protected function failedProcess(Throwable $throwable): void
