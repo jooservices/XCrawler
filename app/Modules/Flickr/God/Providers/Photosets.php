@@ -52,17 +52,20 @@ class Photosets extends AbstractProvider
     protected function getPhotos()
     {
         // Photoset photos
-        $this->mock->shouldReceive('request')
-            ->withArgs(function ($method, $url, $options) {
-                return $method === 'POST'
-                    && str_contains($url, 'flickr.photosets.getPhotos')
-                    && $options['form_params']['per_page'] === 500
-                    && $options['form_params']['photoset_id'] === self::PHOTOSET_ID
-                    && $options['form_params']['user_id'] === self::NSID;
-            })
-            ->andReturn(
-                $this->success('flickr_photosets_photos.json')
-            );
+        for ($index=1; $index <=2; $index++) {
+            $this->mock->shouldReceive('request')
+                ->withArgs(function ($method, $url, $options) use ($index) {
+                    return $method === 'POST'
+                        && str_contains($url, 'flickr.photosets.getPhotos')
+                        && $options['form_params']['per_page'] === 500
+                        && $options['form_params']['page'] === $index
+                        && $options['form_params']['photoset_id'] === self::PHOTOSET_ID
+                        && $options['form_params']['user_id'] === self::NSID;
+                })
+                ->andReturn(
+                    $this->success('flickr_photosets_'. $index. '_photos.json')
+                );
+        }
 
         // Photoset not found
         $this->mock->shouldReceive('request')

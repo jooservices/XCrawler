@@ -57,9 +57,10 @@ class PhotosetsTest extends TestCase
 
         $this->assertCount(1, $items->getItems());
         $this->assertEquals(1, $items->getPage());
-        $this->assertEquals(1, $items->getPages());
-        $this->assertEquals(1, $items->getTotal());
-        $this->assertTrue($items->isCompleted());
+        $this->assertEquals(2, $items->getPages());
+        $this->assertEquals(2, $items->getTotal());
+
+        $this->assertFalse($items->isCompleted());
     }
 
     /**

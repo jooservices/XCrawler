@@ -33,11 +33,10 @@ class PhotosJobTest extends TestCase
         $task = $photoset->tasks()->create([
             'task' => TaskService::TASK_PHOTOSET_PHOTOS,
         ]);
-        $task->transitionTo(InProgressState::class);
 
         PhotosetPhotosJob::dispatch($this->integration, $task);
 
-        $this->assertEquals(1, $photoset->refresh()->relationshipPhotos->count());
+        $this->assertEquals(2, $photoset->refresh()->relationshipPhotos->count());
         Event::assertDispatched(FetchPhotosetPhotosCompletedEvent::class);
     }
 
@@ -54,7 +53,6 @@ class PhotosJobTest extends TestCase
         $task = $photoset->tasks()->create([
             'task' => TaskService::TASK_PHOTOSET_PHOTOS,
         ]);
-        $task->transitionTo(InProgressState::class);
 
         $this->expectException(FailedException::class);
         PhotosetPhotosJob::dispatch($this->integration, $task);

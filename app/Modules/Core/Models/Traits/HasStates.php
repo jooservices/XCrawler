@@ -13,11 +13,12 @@ trait HasStates
 
     public function transitionTo(string $stateClass): void
     {
+        $this->refresh();
         if ($this->state_code->getValue() === $stateClass) {
             return;
         }
 
-        $this->state_code->transitionTo($stateClass);
+        $this->state_code = $this->state_code->transitionTo($stateClass)->state_code;
     }
 
     public function isCompletedState(): bool
