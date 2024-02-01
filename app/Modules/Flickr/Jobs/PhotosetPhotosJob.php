@@ -8,7 +8,7 @@ use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Events\Exceptions\PhotosetNotFoundEvent;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
-use App\Modules\Flickr\Jobs\Traits\HasRecurring;
+use App\Modules\Flickr\Jobs\Traits\HasRecurringTask;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Support\Facades\Event;
@@ -17,7 +17,7 @@ use Throwable;
 class PhotosetPhotosJob extends BaseTaskJob
 {
     use HasModelJob;
-    use HasRecurring;
+    use HasRecurringTask;
 
     /**
      * Create a new job instance.

@@ -8,7 +8,7 @@ use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Events\Exceptions\UserNotFoundEvent;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
-use App\Modules\Flickr\Jobs\Traits\HasRecurring;
+use App\Modules\Flickr\Jobs\Traits\HasRecurringTask;
 use App\Modules\Flickr\Services\Flickr\Adapters\Favorites;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
@@ -22,7 +22,7 @@ use Throwable;
 class ContactFavoritesJob extends BaseTaskJob
 {
     use SerializesModels;
-    use HasRecurring;
+    use HasRecurringTask;
     use HasModelJob;
 
     /**
@@ -59,12 +59,11 @@ class ContactFavoritesJob extends BaseTaskJob
             ]
         ]);
 
-        $this->recurringTask();
-
-        self::dispatch($this->integration, $this->task, $items->getNextPage())
-            ->onQueue(FlickrService::QUEUE_NAME);
-
-        return false;
+        return $this->recurringTask(
+            $this->integration,
+            $this->task,
+            $items->getNextPage()
+        );
     }
 
     /**

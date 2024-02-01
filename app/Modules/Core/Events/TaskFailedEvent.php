@@ -1,14 +1,11 @@
 <?php
 
-namespace App\Modules\Flickr\Events;
+namespace App\Modules\Core\Events;
 
 use App\Modules\Core\Models\Task;
-use Illuminate\Queue\SerializesModels;
 
-class RecurredTaskEvent
+class TaskFailedEvent
 {
-    use SerializesModels;
-
     /**
      * Create a new event instance.
      *

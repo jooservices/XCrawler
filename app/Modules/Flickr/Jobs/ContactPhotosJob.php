@@ -7,7 +7,7 @@ use App\Modules\Core\Jobs\BaseTaskJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Exceptions\UserDeletedException;
-use App\Modules\Flickr\Jobs\Traits\HasRecurring;
+use App\Modules\Flickr\Jobs\Traits\HasRecurringTask;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
 use Illuminate\Queue\SerializesModels;
@@ -16,7 +16,7 @@ use Throwable;
 class ContactPhotosJob extends BaseTaskJob
 {
     use SerializesModels;
-    use HasRecurring;
+    use HasRecurringTask;
     use HasModelJob;
 
     /**
@@ -49,11 +49,11 @@ class ContactPhotosJob extends BaseTaskJob
             ]
         ]);
 
-        $this->recurringTask();
-
-        self::dispatch($this->integration, $this->task, $photos->getNextPage());
-
-        return false;
+        return $this->recurringTask(
+            $this->integration,
+            $this->task,
+            $photos->getNextPage()
+        );
     }
 
     /**
