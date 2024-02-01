@@ -24,7 +24,7 @@ class PhotoUploadJob extends BaseJob implements ShouldBeUnique
     /**
      * Get the unique ID for the job.
      */
-    public function uniqueId(): string
+    public function uniqueId(): int
     {
         return $this->task->id;
     }
