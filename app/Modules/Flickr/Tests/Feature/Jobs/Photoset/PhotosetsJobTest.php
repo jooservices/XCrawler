@@ -2,11 +2,11 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs\Photoset;
 
+use App\Modules\Core\Events\RecurredTaskEvent;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Core\StateMachine\Task\RecurringState;
 use App\Modules\Flickr\Events\PhotosetCreatedEvent;
-use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\Jobs\PhotosetsJob;
 use App\Modules\Flickr\Services\FlickrContactService;
@@ -45,14 +45,12 @@ class PhotosetsJobTest extends TestCase
             RecurredTaskEvent::class
         ]);
 
-        $contact = app(FlickrContactService::class)->create([
-            'nsid' => '34938526@N02'
-        ]);
+        $contact = app(FlickrContactService::class)
+            ->create(['nsid' => '34938526@N02']);
 
         $task = $contact->tasks()
             ->where('task', TaskService::TASK_CONTACT_PHOTOSETS)
             ->first();
-        $task->transitionTo(InProgressState::class);
 
         PhotosetsJob::dispatch($this->integration, $task);
 

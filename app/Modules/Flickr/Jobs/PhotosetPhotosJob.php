@@ -3,27 +3,21 @@
 namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\BaseTaskJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
-use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
 use App\Modules\Flickr\Events\Exceptions\PhotosetNotFoundEvent;
 use App\Modules\Flickr\Events\FetchPhotosetPhotosCompletedEvent;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
-use App\Modules\Flickr\Jobs\Traits\HasRecurring;
+use App\Modules\Flickr\Jobs\Traits\HasRecurringTask;
 use App\Modules\Flickr\Models\FlickrPhoto;
 use App\Modules\Flickr\Services\FlickrService;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Event;
 use Throwable;
 
-class PhotosetPhotosJob extends BaseJob
+class PhotosetPhotosJob extends BaseTaskJob
 {
     use HasModelJob;
-    use HasRecurring;
-    use HasTaskJob;
+    use HasRecurringTask;
 
     /**
      * Create a new job instance.

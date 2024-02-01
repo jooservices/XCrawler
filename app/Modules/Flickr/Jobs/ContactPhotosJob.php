@@ -3,29 +3,21 @@
 namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\BaseTaskJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
-use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\StateMachine\Task\CompletedState;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Exceptions\UserDeletedException;
-use App\Modules\Flickr\Jobs\Traits\HasRecurring;
+use App\Modules\Flickr\Jobs\Traits\HasRecurringTask;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
-use Spatie\ModelStates\Exceptions\CouldNotPerformTransition;
 use Throwable;
 
-class ContactPhotosJob extends BaseJob
+class ContactPhotosJob extends BaseTaskJob
 {
     use SerializesModels;
-    use HasRecurring;
+    use HasRecurringTask;
     use HasModelJob;
-    use HasTaskJob;
 
     /**
      * Create a new job instance.
@@ -57,11 +49,11 @@ class ContactPhotosJob extends BaseJob
             ]
         ]);
 
-        $this->recurringTask();
-
-        self::dispatch($this->integration, $this->task, $photos->getNextPage());
-
-        return false;
+        return $this->recurringTask(
+            $this->integration,
+            $this->task,
+            $photos->getNextPage()
+        );
     }
 
     /**

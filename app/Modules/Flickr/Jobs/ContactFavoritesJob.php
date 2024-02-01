@@ -3,21 +3,15 @@
 namespace App\Modules\Flickr\Jobs;
 
 use App\Modules\Client\Models\Integration;
-use App\Modules\Core\Jobs\BaseJob;
+use App\Modules\Core\Jobs\BaseTaskJob;
 use App\Modules\Core\Jobs\Traits\HasModelJob;
-use App\Modules\Core\Jobs\Traits\HasTaskJob;
 use App\Modules\Core\Models\Task;
-use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Flickr\Events\Exceptions\UserNotFoundEvent;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
-use App\Modules\Flickr\Exceptions\FlickrRespondedException\MissingEntityElement;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
-use App\Modules\Flickr\Jobs\Traits\HasRecurring;
+use App\Modules\Flickr\Jobs\Traits\HasRecurringTask;
 use App\Modules\Flickr\Services\Flickr\Adapters\Favorites;
 use App\Modules\Flickr\Services\FlickrContactService;
 use App\Modules\Flickr\Services\FlickrService;
-use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Event;
 use Throwable;
@@ -25,20 +19,22 @@ use Throwable;
 /**
  * Get all favorites of a contact.
  */
-class ContactFavoritesJob extends BaseJob
+class ContactFavoritesJob extends BaseTaskJob
 {
     use SerializesModels;
-    use HasRecurring;
+    use HasRecurringTask;
     use HasModelJob;
-    use HasTaskJob;
 
     /**
      * @param Integration $integration
      * @param Task $task
      * @param int $page
      */
-    public function __construct(public Integration $integration, public Task $task, public int $page = 1)
-    {
+    public function __construct(
+        public Integration $integration,
+        public Task $task,
+        public int $page = 1
+    ) {
     }
 
     public function process(): bool
@@ -63,12 +59,11 @@ class ContactFavoritesJob extends BaseJob
             ]
         ]);
 
-        $this->recurringTask();
-
-        self::dispatch($this->integration, $this->task, $items->getNextPage())
-            ->onQueue(FlickrService::QUEUE_NAME);
-
-        return false;
+        return $this->recurringTask(
+            $this->integration,
+            $this->task,
+            $items->getNextPage()
+        );
     }
 
     /**

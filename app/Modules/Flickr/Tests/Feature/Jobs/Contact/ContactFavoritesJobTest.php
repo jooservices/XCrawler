@@ -2,12 +2,12 @@
 
 namespace App\Modules\Flickr\Tests\Feature\Jobs\Contact;
 
+use App\Modules\Core\Events\RecurredTaskEvent;
 use App\Modules\Core\StateMachine\Task\CompletedState;
 use App\Modules\Core\StateMachine\Task\FailedState;
 use App\Modules\Core\StateMachine\Task\InProgressState;
 use App\Modules\Flickr\Events\ContactCreatedEvent;
 use App\Modules\Flickr\Events\Exceptions\UserNotFoundEvent;
-use App\Modules\Flickr\Events\RecurredTaskEvent;
 use App\Modules\Flickr\Exceptions\UserNotFoundException;
 use App\Modules\Flickr\God\Providers\AbstractProvider;
 use App\Modules\Flickr\Jobs\ContactFavoritesJob;
