@@ -37,13 +37,16 @@ class PhotosSizesCommand extends Command
 
         $photoRepository = app(PhotoRepository::class);
 
-        $this->processNonePrimaryIntegrations(FlickrService::SERVICE_NAME, function ($integration) use ($photoRepository) {
+        $this->processNonePrimaryIntegrations(
+            FlickrService::SERVICE_NAME,
+            function ($integration) use ($photoRepository) {
 
-            $photoRepository->getNoSizesPhotos(Setting::remember('flickr', 'task_photos_sizes_limit', fn() => 10))
-                ->each(function ($photo) use ($integration) {
-                    $this->output->text('Processing photo <fg=blue>' . $photo->id . '</>');
-                    PhotosizesJob::dispatch($integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
-                });
-        });
+                $photoRepository->getNoSizesPhotos(Setting::remember('flickr', 'task_photos_sizes_limit', fn() => 10))
+                    ->each(function ($photo) use ($integration) {
+                        $this->output->text('Processing photo <fg=blue>' . $photo->id . '</>');
+                        PhotosizesJob::dispatch($integration, $photo)->onQueue(FlickrService::QUEUE_NAME);
+                    });
+            }
+        );
     }
 }

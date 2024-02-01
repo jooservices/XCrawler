@@ -28,18 +28,21 @@ class ClientProvider implements ProviderInterface
         }
 
         app()->instance(Client::class, $this->clientMock);
-        app()->instance(Factory::class, Mockery::mock(Factory::class, function (MockInterface|Mockery\LegacyMockInterface $mock) {
-            /**
-             * @phpstan-ignore-next-line
-             */
-            $mock->shouldReceive('enableRetries')
-                ->andReturnSelf();
+        app()->instance(
+            Factory::class,
+            Mockery::mock(Factory::class, function (MockInterface|Mockery\LegacyMockInterface $mock) {
+                /**
+                 * @phpstan-ignore-next-line
+                 */
+                $mock->shouldReceive('enableRetries')
+                    ->andReturnSelf();
 
-            $mock->shouldReceive('make')
-                ->andReturn(app(Client::class));
+                $mock->shouldReceive('make')
+                    ->andReturn(app(Client::class));
 
-            $mock->shouldReceive('enableLogging');
-        }));
+                $mock->shouldReceive('enableLogging');
+            })
+        );
 
         return $this;
     }
