@@ -246,4 +246,24 @@ class OnejavServiceTest extends TestCase
         Event::assertDispatched(ItemUpdatedEvent::class);
         $this->assertCount(2, $movie->refresh()->genres);
     }
+
+    public function testUpdate()
+    {
+        Event::fake([
+            ItemCreatedEvent::class,
+            ItemUpdatedEvent::class
+        ]);
+
+        $onejav = Onejav::factory()->create();
+        $this->service = app(OnejavService::class);
+
+        $this->service->create([
+            'url' => $onejav->url,
+            'dvd_id' => $onejav->dvd_id
+        ]);
+
+        Event::assertDispatched(ItemUpdatedEvent::class, function ($event) use ($onejav) {
+            return $event->model->is($onejav);
+        });
+    }
 }
