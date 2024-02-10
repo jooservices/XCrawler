@@ -3,7 +3,11 @@
 namespace App\Modules\Core\Models\Traits;
 
 use ReflectionClass;
+use Spatie\ModelStates\State;
 
+/**
+ * @property State $state_code
+ */
 trait HasStates
 {
     public function isState(string $stateClass): bool
@@ -18,6 +22,9 @@ trait HasStates
             return;
         }
 
+        /**
+         * @phpstan-ignore-next-line
+         */
         $this->state_code = $this->state_code->transitionTo($stateClass)->state_code;
     }
 
