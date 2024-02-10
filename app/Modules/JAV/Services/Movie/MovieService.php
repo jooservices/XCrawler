@@ -63,6 +63,10 @@ class MovieService
     private function insertPerformers(MovieEntityInterface $movie): void
     {
         $performers = $movie->getPerformers();
+        if (empty($performers)) {
+            return;
+        }
+
         $performers = array_diff(
             $performers,
             MoviePerformer::whereIn('name', $performers)->pluck('name')->toArray()
@@ -83,6 +87,9 @@ class MovieService
     private function insertGenres(MovieEntityInterface $movie): void
     {
         $genres = $movie->getGenres();
+        if (empty($genres)) {
+            return;
+        }
         $genres = array_diff(
             $genres,
             MovieGenre::whereIn('name', $genres)->pluck('name')->toArray()

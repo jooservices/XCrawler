@@ -6,11 +6,11 @@ interface MovieEntityInterface
 {
     public function getDvdId(): string;
 
-    public function getGenres(): array;
+    public function getGenres(): ?array;
 
-    public function getPerformers(): array;
+    public function getPerformers(): ?array;
 
-    public function getCover();
+    public function getCover(): ?string;
 
     public function getUrl(): string;
 

@@ -57,12 +57,12 @@ class Onejav extends Model implements MovieEntityInterface
         return $this->dvd_id;
     }
 
-    public function getGenres(): array
+    public function getGenres(): ?array
     {
         return $this->genres;
     }
 
-    public function getPerformers(): array
+    public function getPerformers(): ?array
     {
         return $this->performers;
     }
@@ -82,7 +82,7 @@ class Onejav extends Model implements MovieEntityInterface
         return OnejavFactory::new();
     }
 
-    public function getCover(): string
+    public function getCover(): ?string
     {
         return $this->cover;
     }
