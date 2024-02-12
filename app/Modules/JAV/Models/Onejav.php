@@ -25,8 +25,7 @@ class Onejav extends Model implements MovieEntityInterface
     use HasFactory;
     use HasUuid;
 
-    protected $connection = 'mongodb';
-    protected $collection = 'onejav';
+    protected $table = 'onejav';
 
     protected $fillable = [
         'url',

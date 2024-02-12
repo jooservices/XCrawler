@@ -19,13 +19,13 @@ return new class extends Migration
             $table->string('uuid')->unique();
 
             $table->string('url')->unique();
-            $table->string('cover');
+            $table->string('cover')->nullable();
             $table->string('dvd_id')->index();
             $table->float('size')->nullable();
             $table->date('date')->nullable();
             $table->json('genres')->nullable();
             $table->json('performers')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('torrent')->nullable();
             $table->json('gallery')->nullable();
 
