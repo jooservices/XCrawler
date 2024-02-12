@@ -55,7 +55,7 @@ class Migrate extends Command
                     'genres' => $document['genres'] ?? null,
                     'description' => $document['description'] ?? null,
                     'performers' => $document['performers'] ?? null,
-                    'torrent' => $document['torrent'],
+                    'torrent' => $document['torrent'] ?? null,
                     'gallery' => $document['gallery'] ?? null,
                     'created_at' => $document['created_at']->toDateTime()->format('Y-m-d'),
                     'updated_at' => $document['updated_at']->toDateTime()->format('Y-m-d'),
