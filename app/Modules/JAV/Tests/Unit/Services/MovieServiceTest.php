@@ -20,7 +20,6 @@ class MovieServiceTest extends TestCase
 
     public function testCreateMovie()
     {
-
         $genres = $this->onejav->getGenres();
         $performers = $this->onejav->getPerformers();
 
@@ -68,5 +67,38 @@ class MovieServiceTest extends TestCase
         app(MovieService::class)->create($this->onejav);
 
         $this->assertEquals(1, Movie::all()->count());
+    }
+
+    public function testCreateMovieWillInsertPerformers()
+    {
+        $genres = $this->onejav->getGenres();
+        $performers = $this->onejav->getPerformers();
+
+        $movie = app(MovieService::class)->create($this->onejav);
+        $this->assertEquals($genres, $movie->genres->pluck('name')->toArray());
+        $this->assertEquals($performers, $movie->performers->pluck('name')->toArray());
+    }
+
+    public function testUpdateMovieWillInsertPerformers()
+    {
+        $genres = $this->onejav->getGenres();
+        $performers = $this->onejav->getPerformers();
+
+        $movie = app(MovieService::class)->create($this->onejav);
+        $this->assertEquals(2, $movie->genres->count());
+        $this->assertEquals($genres, $movie->genres->pluck('name')->toArray());
+        $this->assertEquals($performers, $movie->performers->pluck('name')->toArray());
+
+        $this->onejav->update([
+            'genres' => [
+                'genre1',
+                'genre2',
+                'genre3',
+            ],
+        ]);
+
+        $movie = app(MovieService::class)->update($this->onejav);
+        $this->assertEquals(3, $movie->genres->count());
+        $this->assertEquals($this->onejav->getGenres(), $movie->genres->pluck('name')->toArray());
     }
 }
