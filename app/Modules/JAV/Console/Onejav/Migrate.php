@@ -51,7 +51,7 @@ class Migrate extends Command
                     'uuid' => Str::orderedUuid(),
                     'cover' => $document['cover'] ?? null,
                     'size' => $document['size'] ?? null,
-                    'date' => $document['date']->toDateTime()->format('Y-m-d'),
+                    'date' => isset($document['date']) ? $document['date']->toDateTime()->format('Y-m-d') : null,
                     'genres' => $document['genres'] ?? null,
                     'description' => $document['description'] ?? null,
                     'performers' => $document['performers'] ?? null,
