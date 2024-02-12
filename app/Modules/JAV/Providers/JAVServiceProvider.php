@@ -5,6 +5,7 @@ namespace App\Modules\JAV\Providers;
 use App\Modules\JAV\Console\Onejav\AllCommand;
 use App\Modules\JAV\Console\Onejav\DailyCommand;
 use App\Modules\JAV\Console\Onejav\ItemsCommand;
+use App\Modules\JAV\Console\Onejav\Migrate;
 use App\Modules\JAV\Console\Onejav\TagsCommand;
 use Illuminate\Support\ServiceProvider;
 
@@ -60,6 +61,7 @@ class JAVServiceProvider extends ServiceProvider
             DailyCommand::class,
             AllCommand::class,
             TagsCommand::class,
+            Migrate::class
         ]);
     }
 }

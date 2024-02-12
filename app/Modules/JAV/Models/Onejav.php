@@ -2,11 +2,12 @@
 
 namespace App\Modules\JAV\Models;
 
+use App\Modules\Core\Models\Traits\HasUuid;
 use App\Modules\JAV\Database\factories\OnejavFactory;
 use App\Modules\JAV\Services\Movie\Interfaces\MovieEntityInterface;
 use App\Modules\JAV\Services\Movie\Traits\HasMovieObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Jenssegers\Mongodb\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string $url
@@ -22,6 +23,7 @@ class Onejav extends Model implements MovieEntityInterface
 {
     use HasMovieObserver;
     use HasFactory;
+    use HasUuid;
 
     protected $connection = 'mongodb';
     protected $collection = 'onejav';
