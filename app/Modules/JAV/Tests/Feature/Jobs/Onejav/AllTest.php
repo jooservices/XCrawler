@@ -44,7 +44,7 @@ class AllTest extends TestCase
 
         AllJob::dispatch('new');
 
-        $this->assertDatabaseCount('onejav', 10, 'mongodb');
+        $this->assertDatabaseCount('onejav', 10);
         // Move to next page
         $this->assertEquals(12216, Setting::getInt('onejav', 'new_current_page'));
         $this->assertEquals(12218, Setting::getInt('onejav', 'new_last_page'));

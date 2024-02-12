@@ -86,6 +86,6 @@ class DailyTest extends TestCase
         Event::assertDispatched(ItemUpdatedEvent::class, function ($event) {
             return $event->model->url === 'https://onejav.com/torrent/stars908';
         });
-        $this->assertDatabaseCount('onejav', 60, 'mongodb');
+        $this->assertDatabaseCount('onejav', 60);
     }
 }

@@ -218,12 +218,13 @@ class OnejavServiceTest extends TestCase
         Event::assertDispatchedTimes(RetriedEvent::class, 3);
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         Event::fake([
             ItemCreatedEvent::class,
             ItemUpdatedEvent::class
         ]);
+
         $this->service = app(OnejavService::class);
         $movie = $this->service->create([
             'url' => $this->faker->url,

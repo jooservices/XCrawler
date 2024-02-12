@@ -47,6 +47,6 @@ class ItemsTest extends TestCase
         ItemsJob::dispatch($url);
 
         Event::assertDispatched(ItemCreatedEvent::class, 10);
-        $this->assertDatabaseCount('onejav', 10, 'mongodb');
+        $this->assertDatabaseCount('onejav', 10);
     }
 }
