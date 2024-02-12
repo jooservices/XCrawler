@@ -49,15 +49,14 @@ class Migrate extends Command
                     'dvd_id' => $document['dvd_id'],
                 ], [
                     'uuid' => Str::orderedUuid(),
-                    'cover' => $document['cover'],
-
+                    'cover' => $document['cover'] ?? null,
                     'size' => $document['size'],
                     'date' => $document['date']->toDateTime()->format('Y-m-d'),
-                    'genres' => $document['genres'],
-                    'description' => $document['description'],
-                    'performers' => $document['performers'],
+                    'genres' => $document['genres'] ?? null,
+                    'description' => $document['description'] ?? null,
+                    'performers' => $document['performers'] ?? null,
                     'torrent' => $document['torrent'],
-                    'gallery' => $document['gallery'],
+                    'gallery' => $document['gallery'] ?? null,
                     'created_at' => $document['created_at']->toDateTime()->format('Y-m-d'),
                     'updated_at' => $document['updated_at']->toDateTime()->format('Y-m-d'),
                 ]);
