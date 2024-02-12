@@ -37,7 +37,11 @@ class MovieService
         return app(IdolRepository::class)->items();
     }
 
-    public function create(MovieEntityInterface $movie): void
+    /**
+     * @param MovieEntityInterface $movie
+     * @return Movie
+     */
+    public function create(MovieEntityInterface $movie): Movie
     {
         $this->movie = Movie::firstOrCreate([
             'dvd_id' => $movie->getDvdId(),
@@ -48,9 +52,15 @@ class MovieService
 
         $this->insertPerformers($movie);
         $this->insertGenres($movie);
+
+        return $this->movie;
     }
 
-    public function update(MovieEntityInterface $movie): void
+    /**
+     * @param MovieEntityInterface $movie
+     * @return Movie
+     */
+    public function update(MovieEntityInterface $movie): Movie
     {
         $this->movie = Movie::updateOrCreate([
             'dvd_id' => $movie->getDvdId(),
@@ -58,6 +68,11 @@ class MovieService
             'url' => $movie->getUrl(),
             'cover' => $movie->getCover(),
         ]);
+
+        $this->insertPerformers($movie);
+        $this->insertGenres($movie);
+
+        return $this->movie;
     }
 
     private function insertPerformers(MovieEntityInterface $movie): void

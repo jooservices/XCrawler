@@ -4,15 +4,9 @@ namespace App\Modules\JAV\Jobs\Onejav;
 
 use App\Modules\Core\Jobs\BaseJob;
 use App\Modules\JAV\Services\OnejavService;
-use Carbon\Carbon;
 
 class DailyJob extends BaseJob
 {
-    public function uniqueId(): string
-    {
-        return Carbon::now()->format('Y/m/d');
-    }
-
     /**
      * Execute the job.
      *
