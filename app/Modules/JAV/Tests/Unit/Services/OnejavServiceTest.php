@@ -5,9 +5,12 @@ namespace App\Modules\JAV\Tests\Unit\Services;
 use App\Modules\Core\Entities\EntityInterface;
 use App\Modules\Core\Facades\Setting;
 use App\Modules\JAV\Events\Onejav\DailyCompletedEvent;
+use App\Modules\JAV\Events\Onejav\ItemCreatedEvent;
 use App\Modules\JAV\Events\Onejav\ItemsCompletedEvent;
+use App\Modules\JAV\Events\Onejav\ItemUpdatedEvent;
 use App\Modules\JAV\Events\Onejav\RetriedEvent;
 use App\Modules\JAV\Exceptions\OnejavRetryFailed;
+use App\Modules\JAV\Models\Onejav;
 use App\Modules\JAV\Services\OnejavService;
 use App\Modules\JAV\Tests\TestCase;
 use Carbon\Carbon;
@@ -213,5 +216,54 @@ class OnejavServiceTest extends TestCase
         $this->assertEquals(1, Setting::get(OnejavService::SERVICE_NAME, 'new_last_page'));
 
         Event::assertDispatchedTimes(RetriedEvent::class, 3);
+    }
+
+    public function testCreate()
+    {
+        Event::fake([
+            ItemCreatedEvent::class,
+            ItemUpdatedEvent::class
+        ]);
+        $this->service = app(OnejavService::class);
+        $movie = $this->service->create([
+            'url' => $this->faker->url,
+            'dvd_id' => $this->faker->uuid
+        ]);
+
+        $this->assertEmpty($movie->genrers);
+        Event::assertDispatched(ItemCreatedEvent::class);
+
+        $onejav = Onejav::where('dvd_id', $movie->dvd_id)->first();
+        $this->service->create([
+            'url' => $onejav->url,
+            'dvd_id' => $onejav->dvd_id,
+            'genres' => [
+                $this->faker->name,
+                $this->faker->name,
+            ]
+        ]);
+
+        Event::assertDispatched(ItemUpdatedEvent::class);
+        $this->assertCount(2, $movie->refresh()->genres);
+    }
+
+    public function testUpdate()
+    {
+        Event::fake([
+            ItemCreatedEvent::class,
+            ItemUpdatedEvent::class
+        ]);
+
+        $onejav = Onejav::factory()->create();
+        $this->service = app(OnejavService::class);
+
+        $this->service->create([
+            'url' => $onejav->url,
+            'dvd_id' => $onejav->dvd_id
+        ]);
+
+        Event::assertDispatched(ItemUpdatedEvent::class, function ($event) use ($onejav) {
+            return $event->model->is($onejav);
+        });
     }
 }
