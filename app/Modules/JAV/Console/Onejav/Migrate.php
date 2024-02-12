@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Jenssegers\Mongodb\Connection;
 
 class Migrate extends Command
 {
@@ -35,7 +36,11 @@ class Migrate extends Command
         $this->output->text('Migrating Onejav from MongoDB to MySQL...');
         $this->output->progressStart();
 
-        DB::connection('mongodb')
+        /**
+         * @var Connection $connection
+         */
+        $connection = DB::connection('mongodb');
+        $connection
             ->collection('onejav')
             ->cursor()
             ->each(function ($document) {
