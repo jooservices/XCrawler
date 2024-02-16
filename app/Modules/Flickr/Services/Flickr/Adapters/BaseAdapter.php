@@ -3,6 +3,7 @@
 namespace App\Modules\Flickr\Services\Flickr\Adapters;
 
 use App\Modules\Client\OAuth\OAuth1\Providers\Flickr;
+use App\Modules\Flickr\Exceptions\FlickrRespondedException\ApiDownException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\FailedException;
 use App\Modules\Flickr\Exceptions\FlickrRespondedException\InvalidRespondException;
 use App\Modules\Flickr\Exceptions\PermissionDeniedException;
@@ -23,6 +24,7 @@ class BaseAdapter
      * @throws GuzzleException
      * @throws InvalidRespondException|FailedException
      * @throws PermissionDeniedException
+     * @throws ApiDownException
      */
     protected function request(string $method, array $params = []): array
     {
@@ -40,7 +42,10 @@ class BaseAdapter
         if (
             !$this->isSuccessfull($data)
         ) {
-            throw new FailedException($data['message'] ?? 'Unknown error', $data['code'] ?? 0);
+            throw match ($data['code'] ?? 0) {
+                201 => new ApiDownException($data['message'], $data['code']),
+                default => new FailedException($data['message'] ?? 'Unknown error', $data['code'] ?? 0),
+            };
         }
 
         return $data;
