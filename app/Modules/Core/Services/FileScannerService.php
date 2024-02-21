@@ -28,10 +28,9 @@ class FileScannerService
 
     public function scan(
         string $path,
-        array  $allowedExtensions = self::ALLOWED_EXTENSIONS,
-        array  $ignoredDirectories = self::IGNORED_DIRECTORIES
-    ): void
-    {
+        array $allowedExtensions = self::ALLOWED_EXTENSIONS,
+        array $ignoredDirectories = self::IGNORED_DIRECTORIES
+    ): void {
         $files = File::files($path);
         foreach ($files as $file) {
             if ($file->isDir()) {
