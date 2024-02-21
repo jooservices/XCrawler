@@ -1,19 +1,37 @@
 <?php
 
 use App\Modules\Client\Services\GooglePhotos;
+use App\Modules\Flickr\Services\FlickrService;
+use App\Modules\JAV\Services\OnejavService;
 use Illuminate\Support\Str;
 
-$default = [
-    'connection' => 'redis',
-    'balance' => 'auto',
-    'autoScalingStrategy' => 'time',
-    'maxTime' => 0,
-    'maxJobs' => 0,
-    'tries' => 10,
-    'nice' => 0,
-    'memory' => env('HORIZON_DEFAULT_MEMORY', 2048),
-    'timeout' => env('HORIZON_DEFAULT_TIMEOUT', 600),
+$workers = [];
+$channels = [
+    'default' ,
+    OnejavService::QUEUE_NAME ,
+    FlickrService::QUEUE_NAME,
+    GooglePhotos::QUEUE_NAME ,
 ];
+
+foreach ($channels as $channel) {
+    $envKey = strtoupper($channel);
+    if (env('HORIZON_HAVE_' . strtoupper($channel))) {
+        $workers[$channel] = [
+            'connection' => 'redis',
+            'queue' => [strtolower($channel)],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'tries' => 10,
+            'nice' => 0,
+            'memory' => env('HORIZON_' . $envKey. '_MEMORY', 2048),
+            'timeout' => env('HORIZON_' . $envKey. '_TIMEOUT', 600),
+            'maxProcesses' => env('HORIZON_'. $envKey.'_MAX_PROCESSES', 10),
+            'minProcesses' => env('HORIZON_'. $envKey.'_MIN_PROCESSES', 5),
+        ];
+    }
+}
 
 return [
 
@@ -192,40 +210,7 @@ return [
     |
     */
 
-    'defaults' => [
-        'default' => array_merge(
-            $default,
-            [
-                'queue' => ['default'],
-                'maxProcesses' => env('HORIZON_DEFAULT_MAX_PROCESSES', 10),
-                'minProcesses' => env('HORIZON_DEFAULT_MIN_PROCESSES', 5),
-            ]
-        ),
-        'onejav' => array_merge(
-            $default,
-            [
-                'queue' => ['onejav'],
-                'maxProcesses' => env('HORIZON_ONEJAV_MAX_PROCESSES', 2),
-                'minProcesses' => env('HORIZON_ONEJAV_MIN_PROCESSES', 1),
-            ]
-        ),
-        'oauth' => array_merge(
-            $default,
-            [
-                'queue' => ['flickr'],
-                'maxProcesses' => env('HORIZON_OAUTH_MAX_PROCESSES', 5),
-                'minProcesses' => env('HORIZON_OAUTH_MIN_PROCESSES', 2),
-            ]
-        ),
-        GooglePhotos::QUEUE_NAME => array_merge(
-            $default,
-            [
-                'queue' => [GooglePhotos::QUEUE_NAME],
-                'maxProcesses' => env('HORIZON_GOOGLE_PHOTOS_MAX_PROCESSES', 0),
-                'minProcesses' => env('HORIZON_GOOGLE_PHOTOS_MIN_PROCESSES', 0),
-            ]
-        ),
-    ],
+    'defaults' => $workers,
 
     'environments' => [
         'production' => [
