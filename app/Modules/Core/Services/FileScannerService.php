@@ -5,6 +5,7 @@ namespace App\Modules\Core\Services;
 use App\Modules\Core\Entities\VideoCodecEntity;
 use App\Modules\Core\Jobs\FileScanJob;
 use Illuminate\Support\Facades\File;
+use phpDocumentor\Reflection\Types\Self_;
 use RuntimeException;
 
 class FileScannerService
@@ -20,16 +21,26 @@ class FileScannerService
         'mpeg',
     ];
 
-    public function scan(string $path, array $allowedExtensions = self::ALLOWED_EXTENSIONS)
+    public const IGNORED_DIRECTORIES = [
+        'lost+found',
+        '.DS_Store',
+        '.Trash-1000',
+    ];
+
+    public function scan(string $path, array $allowedExtensions = self::ALLOWED_EXTENSIONS, array $ignoredDirectories = self::IGNORED_DIRECTORIES): void
     {
         $files = File::files($path);
         foreach ($files as $file) {
             if ($file->isDir()) {
+                if (in_array($file->getFilename(), $ignoredDirectories, true)) {
+                    continue;
+                }
+
                 $this->scan($file->getPathname());
                 return;
             }
 
-            if (in_array(strtolower($file->getExtension()), self::ALLOWED_EXTENSIONS)) {
+            if (in_array(strtolower($file->getExtension()), $allowedExtensions, true)) {
                 FileScanJob::dispatch($file->getPathname())->onQueue('primary');
             }
         }
