@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 $workers = [];
 $channels = [
     'default' ,
+    'primary',
     OnejavService::QUEUE_NAME ,
     FlickrService::QUEUE_NAME,
     GooglePhotos::QUEUE_NAME ,
