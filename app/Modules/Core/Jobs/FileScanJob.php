@@ -17,19 +17,19 @@ class FileScanJob extends BaseJob
     }
 
 
-    public function handle()
+    public function handle(): void
     {
         $video = app(FileScannerService::class)->ffprobe($this->filePath);
         $fileInfo = pathinfo($this->filePath);
 
         File::updateOrCreate(
             [
-                'hash' => hash_file('sha256', $this->filePath),
-            ],
-            [
                 'storage' => 'local',
+                'hash' => hash_file('sha256', $this->filePath),
                 'name' => $fileInfo['basename'],
                 'path' => $fileInfo['dirname'],
+            ],
+            [
                 'type' => $video->get('codec_type'),
                 'extension' => $fileInfo['extension'],
                 'format' => $video->get('codec_tag_string'),

@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 
 class FileScanner extends Command
 {
-    public const COMMAND = 'jav:file-scanner {path}';
+    public const COMMAND = 'file-scanner {path}';
 
     /**
      * The name and signature of the console command.
