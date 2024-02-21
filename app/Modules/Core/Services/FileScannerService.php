@@ -5,7 +5,6 @@ namespace App\Modules\Core\Services;
 use App\Modules\Core\Entities\VideoCodecEntity;
 use App\Modules\Core\Jobs\FileScanJob;
 use Illuminate\Support\Facades\File;
-use phpDocumentor\Reflection\Types\Self_;
 use RuntimeException;
 
 class FileScannerService
@@ -27,7 +26,11 @@ class FileScannerService
         '.Trash-1000',
     ];
 
-    public function scan(string $path, array $allowedExtensions = self::ALLOWED_EXTENSIONS, array $ignoredDirectories = self::IGNORED_DIRECTORIES): void
+    public function scan(
+        string $path,
+        array  $allowedExtensions = self::ALLOWED_EXTENSIONS,
+        array  $ignoredDirectories = self::IGNORED_DIRECTORIES
+    ): void
     {
         $files = File::files($path);
         foreach ($files as $file) {
@@ -50,7 +53,7 @@ class FileScannerService
     {
         // Default options
         $options = '-loglevel quiet -show_format -show_streams -print_format json';
-            $options .= ' -pretty';
+        $options .= ' -pretty';
 
         // Run the ffprobe, save the JSON output then decode
         $json = json_decode(shell_exec(
@@ -61,6 +64,6 @@ class FileScannerService
             throw new RuntimeException('FFProbe failed to run.');
         }
 
-        return new VideoCodecEntity((array) $json->streams[0]);
+        return new VideoCodecEntity((array)$json->streams[0]);
     }
 }
