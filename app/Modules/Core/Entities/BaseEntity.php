@@ -27,10 +27,6 @@ class BaseEntity implements EntityInterface
 
     public function setData(array $data): void
     {
-        if (empty($this->fields)) {
-            return;
-        }
-
         foreach ($data as $item => $value) {
             $this->set($item, $value);
         }
