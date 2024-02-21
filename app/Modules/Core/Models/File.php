@@ -44,9 +44,4 @@ class File extends Model
         'height' => 'integer',
         'metadata' => 'array',
     ];
-
-    protected static function newFactory()
-    {
-        return \App\Modules\Core\Database\factories\FileFactory::new();
-    }
 }
