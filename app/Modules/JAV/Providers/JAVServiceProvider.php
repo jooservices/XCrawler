@@ -2,6 +2,7 @@
 
 namespace App\Modules\JAV\Providers;
 
+use App\Modules\JAV\Console\MovieScanner;
 use App\Modules\JAV\Console\Onejav\AllCommand;
 use App\Modules\JAV\Console\Onejav\DailyCommand;
 use App\Modules\JAV\Console\Onejav\ItemsCommand;
@@ -61,7 +62,8 @@ class JAVServiceProvider extends ServiceProvider
             DailyCommand::class,
             AllCommand::class,
             TagsCommand::class,
-            Migrate::class
+            Migrate::class,
+            MovieScanner::class
         ]);
     }
 }
