@@ -34,16 +34,19 @@ class MovieScanner extends Command
     {
         $source = $this->option('source');
 
+        $this->output->progressStart();
         switch ($source) {
             case 'onejav':
                 foreach(Onejav::cursor() as $movie) {
                     ItemJob::dispatch($movie)->onQueue(OnejavService::QUEUE_NAME);
-                    exit;
+                    $this->output->progressAdvance();
                 }
                 break;
             default:
                 // Do nothing
                 break;
         }
+
+        $this->output->progressFinish();
     }
 }
