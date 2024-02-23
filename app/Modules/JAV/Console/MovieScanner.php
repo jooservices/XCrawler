@@ -36,7 +36,7 @@ class MovieScanner extends Command
 
         switch ($source) {
             case 'onejav':
-                foreach(Onejav::cursor() as $movie) {
+                foreach (Onejav::cursor() as $movie) {
                     ItemJob::dispatch($movie)->onQueue(OnejavService::QUEUE_NAME);
                     exit;
                 }
