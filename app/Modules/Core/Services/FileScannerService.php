@@ -6,6 +6,7 @@ use App\Modules\Core\Entities\VideoCodecEntity;
 use App\Modules\Core\Jobs\FileScanJob;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
+use App\Modules\Core\Models\File as FileModel;
 
 class FileScannerService
 {
@@ -64,5 +65,27 @@ class FileScannerService
         }
 
         return new VideoCodecEntity((array)$json->streams[0]);
+    }
+
+    public function create(VideoCodecEntity $videoCodec, array $pathinfo, int $fileSize, string $hash): FileModel
+    {
+        return FileModel::updateOrCreate(
+            [
+                'storage' => 'local',
+                'hash' => $hash,
+                'name' => $pathinfo['basename'],
+                'path' => $pathinfo['dirname'],
+            ],
+            [
+                'type' => $videoCodec->get('codec_type'),
+                'extension' => $pathinfo['extension'],
+                'format' => $videoCodec->get('codec_tag_string'),
+                'size' => $fileSize,
+                'ratio' => $videoCodec->get('display_aspect_ratio'),
+                'width' => $videoCodec->get('width'),
+                'height' => $videoCodec->get('height'),
+                'metadata' => $videoCodec->toArray(),
+            ]
+        );
     }
 }

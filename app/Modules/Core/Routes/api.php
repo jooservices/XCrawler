@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Modules\Core\Http\Controllers\FileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/core', function (Request $request) {
-    return $request->user();
-});
+Route::prefix('files')
+    ->name('files.')
+    ->controller(FileController::class)
+    ->group(function () {
+        Route::post('/', 'create')->name('create');
+    });
