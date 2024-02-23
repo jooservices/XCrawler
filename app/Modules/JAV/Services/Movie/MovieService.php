@@ -82,11 +82,6 @@ class MovieService
             return;
         }
 
-        $performers = array_diff(
-            $performers,
-            MoviePerformer::whereIn('name', $performers)->pluck('name')->toArray()
-        );
-
         collect($performers)->each(function ($performer) {
             $performer = MoviePerformer::firstOrCreate([
                 'name' => $performer
@@ -105,10 +100,6 @@ class MovieService
         if (empty($genres)) {
             return;
         }
-        $genres = array_diff(
-            $genres,
-            MovieGenre::whereIn('name', $genres)->pluck('name')->toArray()
-        );
 
         collect($genres)->each(function ($genre) {
             $genre = MovieGenre::firstOrCreate([
