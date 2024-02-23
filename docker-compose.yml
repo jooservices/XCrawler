@@ -1,0 +1,47 @@
+version: '3.8'
+
+networks:
+  xcrawler:
+
+services:
+  app:
+    build:
+      context: ./docker
+      dockerfile: app.dockerfile
+    ports:
+      - "8089:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/.env:/var/www/html/.env
+      - ./docker/supervisor/xcrawler.conf:/etc/supervisor/conf.d/xcrawler.conf:ro
+      - ./docker/supervisor/supervisord.conf:/etc/supervisor/supervisord.conf:ro
+
+    depends_on:
+      - redis
+      - mysql
+    networks:
+      - xcrawler
+
+  mysql:
+    image: mariadb:10.11
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3309:3306"
+    volumes:
+        - ./docker/mysql:/var/lib/mysql
+    environment:
+      MARIADB_DATABASE: xcrawler
+      MARIADB_USER: xcrawler
+      MARIADB_PASSWORD: xcrawler
+      MARIADB_ROOT_PASSWORD: secret
+    networks:
+      - xcrawler
+
+  redis:
+    image: redis
+    restart: unless-stopped
+    ports:
+      - "6369:6379"
+    networks:
+      - xcrawler
