@@ -49,4 +49,39 @@ class AllTest extends TestCase
         $this->assertEquals(12216, Setting::getInt('onejav', 'new_current_page'));
         $this->assertEquals(12218, Setting::getInt('onejav', 'new_last_page'));
     }
+
+    public function testHaveNoItems()
+    {
+        $this->instance(
+            Client::class,
+            Mockery::mock(Client::class, function (MockInterface $mock) {
+                for ($index = 12215; $index <= 12218; $index++) {
+                    $mock->shouldReceive('request')
+                        ->withArgs(function ($method, $url, $payload) use ($index) {
+                            return $method === 'GET'
+                                && !empty($url)
+                                && $payload['query']['page'] === $index;
+                        })
+                        ->andReturn(
+                            new Response(
+                                200,
+                                [],
+                                ''
+                            )
+                        );
+                }
+            })
+        );
+
+        $this->mockFactory();
+
+        Setting::setInt('onejav', 'new_current_page', 12215);
+
+        AllJob::dispatch('new');
+
+        $this->assertDatabaseCount('onejav', 0);
+        // Move to next page
+        $this->assertEquals(1, Setting::getInt('onejav', 'new_current_page'));
+        $this->assertEquals(1, Setting::getInt('onejav', 'new_last_page'));
+    }
 }
