@@ -11,11 +11,12 @@ use App\Modules\Client\Uri\UriInterface;
  */
 class Signature implements SignatureInterface
 {
-    protected string $algorithm = 'HMAC-SHA1';
+    public const HASHING_ALGORITHM_HMAC_SHA1 = 'HMAC-SHA1';
+    private string $algorithm = self::HASHING_ALGORITHM_HMAC_SHA1;
 
-    protected string $tokenSecret = '';
+    private string $tokenSecret = '';
 
-    public function __construct(protected CredentialsInterface $credentials)
+    public function __construct(private readonly CredentialsInterface $credentials)
     {
     }
 
@@ -33,7 +34,6 @@ class Signature implements SignatureInterface
         return $this;
     }
 
-
     public function getSignature(UriInterface $uri, array $params, string $method = 'POST'): string
     {
         $queryStringData = [];
@@ -47,12 +47,7 @@ class Signature implements SignatureInterface
 
         // determine base uri
         $baseUri = $uri->getScheme() . '://' . $uri->getRawAuthority();
-
-        if ($uri->getPath() === '/') {
-            $baseUri .= $uri->hasExplicitTrailingHostSlash() ? '/' : '';
-        } else {
-            $baseUri .= $uri->getPath();
-        }
+        $baseUri .= $uri->getPath();
 
         $baseString = strtoupper($method) . '&';
         $baseString .= rawurlencode($baseUri) . '&';
@@ -62,6 +57,7 @@ class Signature implements SignatureInterface
     }
 
     /**
+     * @param array $signatureData
      * @return string
      */
     protected function buildSignatureDataString(array $signatureData): string
@@ -78,11 +74,11 @@ class Signature implements SignatureInterface
     }
 
     /**
-     * @param $data
+     * @param string $data
      * @return string
      * @throws UnsupportedHashAlgorithmException
      */
-    protected function hash($data): string
+    protected function hash(string $data): string
     {
         switch (strtoupper($this->algorithm)) {
             case 'HMAC-SHA1':
