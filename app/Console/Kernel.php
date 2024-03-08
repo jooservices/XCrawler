@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel
      * @param Schedule $schedule
      * @return void
      */
-    protected function schedule(Schedule $schedule): void
+    final protected function schedule(Schedule $schedule): void
     {
         /**
          * JAV
@@ -33,13 +33,13 @@ class Kernel extends ConsoleKernel
          * Flickr
          */
         $schedule->command(ContactsCommand::COMMAND)->weekly();
-        $schedule->command(PhotosCommand::COMMAND)->everyMinute();
-        $schedule->command(FavoritesCommand::COMMAND)->everyMinute();
+        $schedule->command(PhotosCommand::COMMAND)->everyFiveMinutes();
+        $schedule->command(FavoritesCommand::COMMAND)->everyFiveMinutes();
 
-        $schedule->command(PhotosetsCommand::COMMAND)->everyMinute();
-        $schedule->command(PhotosetPhotosCommand::COMMAND)->everyMinute();
+        $schedule->command(PhotosetsCommand::COMMAND)->everyFiveMinutes();
+        $schedule->command(PhotosetPhotosCommand::COMMAND)->everyFiveMinutes();
 
-        $schedule->command(PhotosSizesCommand::COMMAND)->everyMinute();
+        $schedule->command(PhotosSizesCommand::COMMAND)->everyFiveMinutes();
 
         $schedule->command(PhotoUploadCommand::COMMAND)->everyMinute();
     }
@@ -49,7 +49,7 @@ class Kernel extends ConsoleKernel
      *
      * @return void
      */
-    protected function commands()
+    final protected function commands(): void
     {
         $this->load(__DIR__ . '/Commands');
 

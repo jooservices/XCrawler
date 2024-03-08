@@ -5,9 +5,9 @@ namespace App\Modules\Client\OAuth\Credentials;
 class Credentials implements CredentialsInterface
 {
     public function __construct(
-        protected string $consumerId,
-        protected string $consumerSecret,
-        protected string $callbackUrl
+        private string $consumerId,
+        private string $consumerSecret,
+        private string $callbackUrl
     ) {
     }
 

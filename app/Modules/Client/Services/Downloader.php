@@ -14,7 +14,7 @@ class Downloader
     public function download(string $url, string $saveTo, string $method = 'GET'): false|int
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new InvalidUrlException('Invalid URL');
+            throw new InvalidUrlException($url);
         }
 
         $ch = curl_init();

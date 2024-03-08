@@ -2,7 +2,6 @@
 
 namespace App\Modules\Flickr\Providers;
 
-use App\Modules\Flickr\Console\Album\DownloadPhotosCommand;
 use App\Modules\Flickr\Console\Contact\FavoritesCommand;
 use App\Modules\Flickr\Console\Contact\InfoCommand;
 use App\Modules\Flickr\Console\Contact\PhotosCommand;
@@ -10,7 +9,6 @@ use App\Modules\Flickr\Console\Contact\PhotosetsCommand;
 use App\Modules\Flickr\Console\ContactsCommand;
 use App\Modules\Flickr\Console\Download\DownloadAlbumCommand;
 use App\Modules\Flickr\Console\Download\PhotoUploadCommand;
-use App\Modules\Flickr\Console\MigrateContacts;
 use App\Modules\Flickr\Console\Photoset\PhotosCommand as PhotosetPhotosCommand;
 use App\Modules\Flickr\Console\PhotosSizesCommand;
 use App\Modules\Flickr\Console\SyncContactTasksCommand;
@@ -36,6 +34,7 @@ class FlickrServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerConfig();
+        $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
     }
 
@@ -53,6 +52,24 @@ class FlickrServiceProvider extends ServiceProvider
             module_path($this->moduleName, 'Config/config.php'),
             $this->moduleNameLower
         );
+    }
+
+    /**
+     * Register views.
+     *
+     * @return void
+     */
+    public function registerViews()
+    {
+        $viewPath = resource_path('views/modules/' . $this->moduleNameLower);
+
+        $sourcePath = module_path($this->moduleName, 'Resources/views');
+
+        $this->publishes([
+            $sourcePath => $viewPath
+        ], ['views', $this->moduleNameLower . '-module-views']);
+
+        $this->loadViewsFrom(array_merge($this->getPublishableViewPaths(), [$sourcePath]), $this->moduleNameLower);
     }
 
     /**
@@ -87,5 +104,16 @@ class FlickrServiceProvider extends ServiceProvider
     public function provides(): array
     {
         return [];
+    }
+
+    private function getPublishableViewPaths(): array
+    {
+        $paths = [];
+        foreach (\Config::get('view.paths') as $path) {
+            if (is_dir($path . '/modules/' . $this->moduleNameLower)) {
+                $paths[] = $path . '/modules/' . $this->moduleNameLower;
+            }
+        }
+        return $paths;
     }
 }
