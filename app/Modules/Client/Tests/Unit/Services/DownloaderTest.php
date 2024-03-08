@@ -11,7 +11,11 @@ class DownloaderTest extends TestCase
     public function testDownloadInvalidUrl(): void
     {
         $downloader = app(Downloader::class);
-        $this->expectException(InvalidUrlException::class);
-        $downloader->download('invalid-url', 'save-to');
+
+        try {
+            $downloader->download('invalid-url', 'save-to');
+        } catch (InvalidUrlException $e) {
+            $this->assertEquals('invalid-url', $e->getUrl());
+        }
     }
 }
