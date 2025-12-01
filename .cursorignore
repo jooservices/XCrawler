@@ -1,0 +1,53 @@
+# ===== COMMON LARGE FOLDERS =====
+node_modules/
+vendor/
+bower_components/
+dist/
+build/
+coverage/
+
+# ===== ENV & SECRETS =====
+.env
+.env.*
+!.env.example
+
+# ===== GIT IGNORE =====
+.git/
+.gitignore
+.gitattributes
+
+# ===== IDE =====
+.vscode/
+.idea/
+*.code-workspace
+
+# ===== LOGS & RUNTIME =====
+storage/
+bootstrap/cache/
+logs/
+*.log
+
+# ===== TEMP =====
+.tmp/
+temp/
+tmp/
+*.tmp
+
+# ===== DOCKER =====
+docker-data/
+docker-volumes/
+*.pid
+
+# ===== FRONTEND =====
+.next/
+.nuxt/
+out/
+public/build/
+
+# ===== TEST ARTIFACTS =====
+phpunit.xml
+junit.xml
+
+# ===== MISC =====
+.DS_Store
+Thumbs.db

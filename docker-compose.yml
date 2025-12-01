@@ -1,0 +1,135 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xcrawler_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./storage:/var/www/html/storage
+      - ./media:/var/www/html/media
+    expose:
+      - "9000"
+    environment:
+      - APP_NAME=XCrawler
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8080
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=xcrawler
+      - DB_USERNAME=xcrawler
+      - DB_PASSWORD=xcrawler
+      - CACHE_STORE=redis
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - QUEUE_CONNECTION=redis
+      - FLICKR_HUB_URL=http://flickrhub:8000
+      - FLICKR_CALLBACK_URL=http://app/api/flick/callback
+      - FLICK_MAX_DEPTH=3
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - xcrawler-network
+    command: php-fpm
+
+  nginx:
+    image: nginx:alpine
+    container_name: xcrawler_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - xcrawler-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: xcrawler_mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=xcrawler
+      - MYSQL_USER=xcrawler
+      - MYSQL_PASSWORD=xcrawler
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - xcrawler-network
+
+  redis:
+    image: redis:alpine
+    container_name: xcrawler_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - xcrawler-network
+
+  flickrhub:
+    # Note: FlickrHub should be a separate service
+    # For now, you can run it separately or use the existing flickrhub service
+    # Uncomment and configure if you have a flickrhub Dockerfile
+    # build:
+    #   context: ./flickrhub
+    #   dockerfile: Dockerfile
+    # container_name: xcrawler_flickrhub
+    # restart: unless-stopped
+    # ports:
+    #   - "8000:8000"
+    # environment:
+    #   - FLICKR_KEY=${FLICKR_KEY}
+    #   - FLICKR_SECRET=${FLICKR_SECRET}
+    # networks:
+    #   - xcrawler-network
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: xcrawler_queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    environment:
+      - APP_NAME=XCrawler
+      - APP_ENV=local
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=xcrawler
+      - DB_USERNAME=xcrawler
+      - DB_PASSWORD=xcrawler
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - QUEUE_CONNECTION=redis
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - xcrawler-network
+    command: php artisan queue:work --tries=3 --timeout=90
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  xcrawler-network:
+    driver: bridge
+

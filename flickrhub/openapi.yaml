@@ -1,0 +1,155 @@
+openapi: 3.0.0
+info:
+  title: FlickrHub API
+  version: 1.0.0
+  description: Proxy service for Flickr API with rate limiting and queue management
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development
+
+paths:
+  /flickr/request:
+    post:
+      summary: Submit Flickr API request
+      tags:
+        - Flickr
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - method
+                - params
+                - callback_url
+              properties:
+                method:
+                  type: string
+                  example: flickr.photos.search
+                  description: Flickr API method name
+                params:
+                  type: object
+                  example: {"text": "cats", "per_page": 5}
+                  description: Parameters for the Flickr API call
+                callback_url:
+                  type: string
+                  format: uri
+                  example: https://example.com/callback
+                  description: URL to receive the callback with results
+                oauth_token:
+                  type: string
+                  nullable: true
+                  description: Client's OAuth token (optional)
+                oauth_secret:
+                  type: string
+                  nullable: true
+                  description: Client's OAuth secret (optional, required if token provided)
+      responses:
+        '200':
+          description: Request queued successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  request_id:
+                    type: integer
+                    example: 123
+                  status:
+                    type: string
+                    enum: [queued]
+                    example: queued
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: The given data was invalid.
+                  errors:
+                    type: object
+          
+  /health:
+    get:
+      summary: Health check
+      tags:
+        - System
+      responses:
+        '200':
+          description: System health status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  checks:
+                    type: object
+                    properties:
+                      mysql:
+                        type: string
+                        example: ok
+                      redis:
+                        type: string
+                        example: ok
+                      mongodb:
+                        type: string
+                        example: ok
+                  timestamp:
+                    type: string
+                    format: date-time
+                    
+  /oauth/initiate:
+    get:
+      summary: Initiate OAuth flow
+      tags:
+        - OAuth
+      parameters:
+        - name: callback_url
+          in: query
+          schema:
+            type: string
+            format: uri
+          description: Optional callback URL for the OAuth flow
+      responses:
+        '302':
+          description: Redirect to Flickr authorization
+          
+  /oauth/status:
+    get:
+      summary: Check OAuth authentication status
+      tags:
+        - OAuth
+      responses:
+        '200':
+          description: OAuth status
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  default_authenticated:
+                    type: boolean
+                    example: true
+                  active_tokens_count:
+                    type: integer
+                    example: 1
+                  tokens:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        identifier:
+                          type: string
+                        is_default:
+                          type: boolean
+                        created_at:
+                          type: string
+                          format: date-time

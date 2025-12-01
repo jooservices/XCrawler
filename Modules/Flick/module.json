@@ -1,0 +1,11 @@
+{
+    "name": "Flick",
+    "alias": "flick",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Flick\\Providers\\FlickServiceProvider"
+    ],
+    "files": []
+}
