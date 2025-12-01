@@ -2,7 +2,7 @@
 
 # XCrawler Setup Script
 
-echo "🕷️  Setting up XCrawler..."
+echo "🚀 Deploying XCrawler..."
 
 # Check if .env exists
 if [ ! -f .env ]; then
