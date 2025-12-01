@@ -7,7 +7,10 @@
     <div class="space-y-4">
       <!-- Crawl Command -->
       <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Start Crawl</label>
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Crawl</label>
+          <span class="text-xs text-gray-500 italic">Fetch photos from a specific user or group</span>
+        </div>
         <div class="flex gap-2">
           <input 
             v-model="crawlUrl" 
@@ -23,11 +26,18 @@
             <i class="fas fa-play"></i>
           </button>
         </div>
+        <p class="text-xs text-gray-500 mt-1">
+          <i class="fas fa-info-circle mr-1"></i>
+          Example: <code>https://www.flickr.com/photos/username/</code> or <code>12345678@N00</code>
+        </p>
       </div>
 
       <!-- Download Command -->
       <div class="border-b border-gray-200 dark:border-gray-700 pb-4">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Download Photos</label>
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Download Photos</label>
+          <span class="text-xs text-gray-500 italic">Download actual image files to local storage</span>
+        </div>
         <div class="flex gap-2 mb-2">
           <input 
             v-model="downloadNsid" 
@@ -49,26 +59,39 @@
             <i class="fas fa-download"></i>
           </button>
         </div>
-        <p class="text-xs text-gray-500">Limit: number of photos to download (prioritizes undownloaded)</p>
+        <p class="text-xs text-gray-500">
+          <i class="fas fa-info-circle mr-1"></i>
+          Downloads photos that have been crawled but not yet saved locally. Use limit to control batch size.
+        </p>
       </div>
 
       <!-- Quick Actions -->
       <div class="grid grid-cols-2 gap-4">
-        <button 
-          @click="execute('retry', { all: true })" 
-          :disabled="loading"
-          class="flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
-        >
-          <i class="fas fa-redo"></i> Retry Failed
-        </button>
+        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+          <button 
+            @click="execute('retry', { all: true })" 
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-2 bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-md disabled:opacity-50 mb-2"
+          >
+            <i class="fas fa-redo"></i> Retry Failed
+          </button>
+          <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+            Re-queue all failed tasks for processing.
+          </p>
+        </div>
         
-        <button 
-          @click="execute('cleanup', { older_than: '7d' })" 
-          :disabled="loading"
-          class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
-        >
-          <i class="fas fa-trash"></i> Cleanup
-        </button>
+        <div class="p-3 bg-gray-50 dark:bg-gray-700 rounded">
+          <button 
+            @click="execute('cleanup', { older_than: '7d' })" 
+            :disabled="loading"
+            class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md disabled:opacity-50 mb-2"
+          >
+            <i class="fas fa-trash"></i> Cleanup
+          </button>
+          <p class="text-xs text-gray-500 dark:text-gray-400 text-center">
+            Remove tasks older than 7 days.
+          </p>
+        </div>
       </div>
 
       <!-- Output Console -->

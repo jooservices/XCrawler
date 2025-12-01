@@ -29,14 +29,14 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - QUEUE_CONNECTION=redis
-      - FLICKR_HUB_URL=http://flickrhub:8000
-      - FLICKR_CALLBACK_URL=http://app/api/flick/callback
+      - FLICKR_HUB_URL=http://flickrhub-app:8000
+      - FLICKR_CALLBACK_URL=http://xcrawler_nginx:80/api/flick/callback
       - FLICK_MAX_DEPTH=3
     depends_on:
       - mysql
       - redis
     networks:
-      - xcrawler-network
+      - xcrawler-hub-network
     command: php-fpm
 
   nginx:
@@ -51,7 +51,7 @@ services:
     depends_on:
       - app
     networks:
-      - xcrawler-network
+      - xcrawler-hub-network
 
   mysql:
     image: mysql:8.0
@@ -67,7 +67,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - xcrawler-network
+      - xcrawler-hub-network
 
   redis:
     image: redis:alpine
@@ -78,24 +78,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - xcrawler-network
-
-  flickrhub:
-    # Note: FlickrHub should be a separate service
-    # For now, you can run it separately or use the existing flickrhub service
-    # Uncomment and configure if you have a flickrhub Dockerfile
-    # build:
-    #   context: ./flickrhub
-    #   dockerfile: Dockerfile
-    # container_name: xcrawler_flickrhub
-    # restart: unless-stopped
-    # ports:
-    #   - "8000:8000"
-    # environment:
-    #   - FLICKR_KEY=${FLICKR_KEY}
-    #   - FLICKR_SECRET=${FLICKR_SECRET}
-    # networks:
-    #   - xcrawler-network
+      - xcrawler-hub-network
 
   queue:
     build:
@@ -118,18 +101,20 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - QUEUE_CONNECTION=redis
+      - FLICKR_HUB_URL=http://flickrhub-app:8000
     depends_on:
       - mysql
       - redis
     networks:
-      - xcrawler-network
+      - xcrawler-hub-network
     command: php artisan queue:work --tries=3 --timeout=90
 
 volumes:
   mysql_data:
   redis_data:
 
-networks:
-  xcrawler-network:
-    driver: bridge
 
+networks:
+  xcrawler-hub-network:
+    driver: bridge
+    name: xcrawler-hub-network
